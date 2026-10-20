@@ -1,0 +1,4 @@
+project_id = "enzemdcsfoxbpjyvyknh"
+
+[functions.campus-aura-email]
+verify_jwt = true
