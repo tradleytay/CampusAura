@@ -1075,6 +1075,7 @@
       welcomeHeading.textContent = `Welcome back, ${displayName.split(' ')[0]} 👋`
     }
     setupTabs();
+    setupForms(session.user);
     setupAnalytics();
     setupActions();
     setupAdminEmailComposer();
