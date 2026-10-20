@@ -74,6 +74,25 @@
       <p><span class="live-dot"></span>New places added regularly</p>
     </section>
 
+    <section class="container accom-browse" id="browse">
+      <div class="accom-browse-heading"><div><p class="eyebrow">Find your next place</p><h2>Browse homes near <span>your campus.</span></h2></div><p>Search by area, compare prices, and save the places you want to come back to.</p></div>
+      <section class="accom-filter-panel" aria-label="Accommodation filters">
+        <div class="accom-filter-top"><div><span class="filter-kicker">Search homes</span><h3>What are you looking for?</h3></div><button id="resetFilters" class="btn btn-ghost">Reset filters</button></div>
+        <div class="accom-filter-fields">
+          <label for="accomSearch"><span>Search</span><input type="text" id="accomSearch" placeholder="Title or location..."></label>
+          <label for="locationFilter"><span>Area</span><select id="locationFilter"><option value="">All locations</option><option>North Campus</option><option>South Campus</option><option>City Center</option></select></label>
+          <label for="priceFilter"><span>Monthly budget</span><select id="priceFilter"><option value="">Any price</option><option value="0-3000">Under K3,000</option><option value="3000-5000">K3,000 - K5,000</option><option value="5000-8000">K5,000 - K8,000</option><option value="8000-100000">K8,000 and above</option></select></label>
+          <button id="accomFilterBtn" class="btn btn-primary">Find homes <span>→</span></button>
+        </div>
+      </section>
+
+      <div class="decision-note"><strong>Before you commit:</strong> CampusAura reviews listings before publication, but does not inspect properties or guarantee a provider, listing, availability, or legal status. Confirm the details independently before paying or sharing documents.</div>
+      <div class="accom-results-bar"><div><strong>Available homes</strong><span>Take your time — your next place is worth it.</span></div><div class="results-controls"><div class="sort-options"><label for="sortBy">Sort by</label><select id="sortBy" class="sort-select"><option value="newest">Newest first</option><option value="price-low">Price: Low to High</option><option value="price-high">Price: High to Low</option><option value="popular">Most Popular</option></select></div><div class="view-toggle"><button class="view-btn active" data-view="grid" title="Grid view">⊞</button><button class="view-btn" data-view="list" title="List view">≡</button></div></div></div>
+      <div id="emptyState" class="empty-state" style="display:none"><div class="empty-icon">⌂</div><h3>No homes found</h3><p>Try adjusting your filters or search terms.</p><button onclick="document.getElementById('resetFilters').click()" class="btn btn-primary">Clear filters</button></div>
+      <div class="grid cards accom-grid" id="accommodationGrid"><div class="feed-loading">Loading homes...</div></div>
+      <div class="load-more-container"><button id="loadMoreBtn" class="btn btn-secondary btn-lg" style="display:none">Load more homes <span>↓</span></button></div>
+    </section>
+
     <section class="container accom-help">
       <div>
         <p class="eyebrow">A little extra confidence</p>
@@ -96,25 +115,6 @@
           <p>Make your next move with more confidence.</p>
         </div>
       </div>
-    </section>
-
-    <section class="container accom-browse" id="browse">
-      <div class="accom-browse-heading"><div><p class="eyebrow">Find your next place</p><h2>Browse homes near <span>your campus.</span></h2></div><p>Search by area, compare prices, and save the places you want to come back to.</p></div>
-      <section class="accom-filter-panel" aria-label="Accommodation filters">
-        <div class="accom-filter-top"><div><span class="filter-kicker">Search homes</span><h3>What are you looking for?</h3></div><button id="resetFilters" class="btn btn-ghost">Reset filters</button></div>
-        <div class="accom-filter-fields">
-          <label for="accomSearch"><span>Search</span><input type="text" id="accomSearch" placeholder="Title or location..."></label>
-          <label for="locationFilter"><span>Area</span><select id="locationFilter"><option value="">All locations</option><option>North Campus</option><option>South Campus</option><option>City Center</option></select></label>
-          <label for="priceFilter"><span>Monthly budget</span><select id="priceFilter"><option value="">Any price</option><option value="0-3000">Under K3,000</option><option value="3000-5000">K3,000 - K5,000</option><option value="5000-8000">K5,000 - K8,000</option><option value="8000-100000">K8,000 and above</option></select></label>
-          <button id="accomFilterBtn" class="btn btn-primary">Find homes <span>→</span></button>
-        </div>
-      </section>
-
-      <div class="decision-note"><strong>Before you commit:</strong> CampusAura reviews listings before publication, but does not inspect properties or guarantee a provider, listing, availability, or legal status. Confirm the details independently before paying or sharing documents.</div>
-      <div class="accom-results-bar"><div><strong>Available homes</strong><span>Take your time — your next place is worth it.</span></div><div class="results-controls"><div class="sort-options"><label for="sortBy">Sort by</label><select id="sortBy" class="sort-select"><option value="newest">Newest first</option><option value="price-low">Price: Low to High</option><option value="price-high">Price: High to Low</option><option value="popular">Most Popular</option></select></div><div class="view-toggle"><button class="view-btn active" data-view="grid" title="Grid view">⊞</button><button class="view-btn" data-view="list" title="List view">≡</button></div></div></div>
-      <div id="emptyState" class="empty-state" style="display:none"><div class="empty-icon">⌂</div><h3>No homes found</h3><p>Try adjusting your filters or search terms.</p><button onclick="document.getElementById('resetFilters').click()" class="btn btn-primary">Clear filters</button></div>
-      <div class="grid cards accom-grid" id="accommodationGrid"><div class="feed-loading">Loading homes...</div></div>
-      <div class="load-more-container"><button id="loadMoreBtn" class="btn btn-secondary btn-lg" style="display:none">Load more homes <span>↓</span></button></div>
     </section>
 
     
