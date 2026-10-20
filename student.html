@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Manage your saved accommodation, event RSVPs, and marketplace activity in your CampusAura student dashboard.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Student Dashboard — CampusAura</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+  <link rel="manifest" href="icons/site.webmanifest">
+  <meta name="theme-color" content="#2563EB">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/rebuild.css">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8P3TYMPQ5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-C8P3TYMPQ5');
+  </script>
+</head>
+
+<body class="dashboard-page student-page">
+  <!-- Student Top Bar -->
+  <header class="admin-topbar">
+    <div class="admin-topbar-inner">
+      <a href="student.html" class="admin-brand">
+        <img src="icons/icon.png" alt="CampusAura logo" class="admin-brand-logo">
+        <span>CampusAura <em>Student</em></span>
+      </a>
+      <nav class="admin-topnav" aria-label="Student dashboard navigation">
+        <a href="index.html" class="admin-toplink">View Site</a>
+        <button id="signOutBtn" class="admin-toplink admin-toplink-ghost" type="button">Sign out</button>
+        <span class="admin-chip">Student account</span>
+      </nav>
+    </div>
+  </header>
+
+  <div class="admin-layout">
+        <aside class="admin-sidebar"><div class="admin-profile luxury-profile"><div class="admin-profile-avatar">CA</div><div><div class="admin-profile-name">Student</div><div class="admin-profile-sub">Loading account…</div><span class="account-verification-badge is-unverified" id="studentVerificationBadge" role="status">Unverified</span></div></div><button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="studentDashboardNav"><span class="dashboard-nav-toggle-icon" aria-hidden="true"><span></span><span></span><span></span></span><span>Dashboard sections</span></button><nav class="admin-tabs" id="studentDashboardNav" role="tablist" aria-label="Student dashboard sections"><button class="admin-tab active" id="student-tab-overview" data-tab="overview" role="tab" aria-selected="true" aria-controls="panel-overview"><span>Overview</span><small>Your campus</small></button><button class="admin-tab" id="student-tab-saved" data-tab="saved" role="tab" aria-selected="false" aria-controls="panel-saved"><span>Saved listings</span><small>Your shortlist</small></button><button class="admin-tab" id="student-tab-rsvps" data-tab="rsvps" role="tab" aria-selected="false" aria-controls="panel-rsvps"><span>My RSVPs</span><small>Upcoming events</small></button><button class="admin-tab" id="student-tab-mylistings" data-tab="mylistings" role="tab" aria-selected="false" aria-controls="panel-mylistings"><span>My listings</span><small>Marketplace items</small></button><button class="admin-tab" id="student-tab-verification" data-tab="verification" role="tab" aria-selected="false" aria-controls="panel-verification"><span>Verify student status</span><small>Optional student ID check</small></button></nav><div class="admin-sidebar-foot"></div></aside>
+    <!-- Main Content -->
+    <main class="admin-main">
+
+      <!-- Overview -->
+      <section class="admin-panel active" id="panel-overview" role="tabpanel" aria-labelledby="student-tab-overview" tabindex="0">
+        <div class="admin-panel-head">
+          <div>
+            <span class="dashboard-kicker">Your campus, in one place</span>
+            <h1>Welcome back, Jessica</h1>
+            <p class="section-subtitle">Pick up where you left off or find something new today.</p>
+          </div>
+          <div class="dashboard-actions" aria-label="Quick actions">
+            <a class="dashboard-action dashboard-action-primary" href="accommodation.html">Find accommodation</a>
+            <a class="dashboard-action" href="events.html">Explore events</a>
+            <button class="dashboard-action" type="button" data-tab-target="verification">Verify student status</button>
+          </div>
+        </div>
+
+        <div class="admin-stats">
+          <div class="admin-stat">
+            <div class="admin-stat-icon">🔖</div>
+            <div>
+              <span class="admin-stat-number" id="statSaved">0</span>
+              <span class="admin-stat-label">Saved Listings</span>
+            </div>
+          </div>
+          <div class="admin-stat">
+            <div class="admin-stat-icon">🎟️</div>
+            <div>
+              <span class="admin-stat-number" id="statRsvps">0</span>
+              <span class="admin-stat-label">Event RSVPs</span>
+            </div>
+          </div>
+          <div class="admin-stat">
+            <div class="admin-stat-icon">📦</div>
+            <div>
+              <span class="admin-stat-number" id="statMyListings">0</span>
+              <span class="admin-stat-label">My Marketplace Items</span>
+            </div>
+          </div>
+          <div class="admin-stat admin-stat-accent">
+            <div class="admin-stat-icon">🏠</div>
+            <div>
+              <span class="admin-stat-number" id="statAccom">0</span>
+              <span class="admin-stat-label">Places available</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="admin-card dashboard-feature-card">
+            <div class="dashboard-card-head">
+              <div><span class="dashboard-card-label">Next up</span><h2>Your upcoming events</h2></div>
+              <button class="dashboard-text-link" type="button" data-tab-target="rsvps">View all</button>
+            </div>
+            <div id="overviewRsvps" class="admin-recent"></div>
+          </div>
+          <div class="admin-card dashboard-feature-card">
+            <div class="dashboard-card-head">
+              <div><span class="dashboard-card-label">Shortlist</span><h2>Saved accommodation</h2></div>
+              <button class="dashboard-text-link" type="button" data-tab-target="saved">View all</button>
+            </div>
+            <div id="overviewSaved" class="admin-recent"></div>
+          </div>
+        </div>
+
+        <div class="admin-card dashboard-marketplace-card">
+          <div class="dashboard-card-head">
+            <div><span class="dashboard-card-label">Marketplace</span><h2>Your recent items</h2></div>
+            <button class="dashboard-text-link" type="button" data-tab-target="mylistings">Manage items</button>
+          </div>
+          <div id="overviewListings" class="dashboard-listing-strip"></div>
+        </div>
+      </section>
+
+      <!-- Saved Listings -->
+      <section class="admin-panel" id="panel-saved" role="tabpanel" aria-labelledby="student-tab-saved" tabindex="0">
+        <div class="admin-panel-head">
+          <h1>Saved Listings</h1>
+          <p class="section-subtitle">Accommodations you've bookmarked.</p>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr><th>Title</th><th>Location</th><th>Price</th><th></th></tr>
+              </thead>
+              <tbody id="savedTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- RSVPs -->
+      <section class="admin-panel" id="panel-rsvps" role="tabpanel" aria-labelledby="student-tab-rsvps" tabindex="0">
+        <div class="admin-panel-head">
+          <h1>My RSVPs</h1>
+          <p class="section-subtitle">Events you're going to.</p>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr><th>Event</th><th>Date</th><th>Location</th><th></th></tr>
+              </thead>
+              <tbody id="rsvpTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- My Listings -->
+      <section class="admin-panel" id="panel-mylistings" role="tabpanel" aria-labelledby="student-tab-mylistings" tabindex="0">
+        <div class="admin-panel-head">
+          <h1>My Marketplace Items</h1>
+          <p class="section-subtitle">Items you're selling.</p>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr><th>Title</th><th>Category</th><th>Price</th></tr>
+              </thead>
+              <tbody id="myListingsTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="admin-panel" id="panel-verification" role="tabpanel" aria-labelledby="student-tab-verification" tabindex="0">
+        <div class="admin-panel-head"><div><span class="dashboard-kicker">Optional student check</span><h1>Verify your student status</h1><p class="section-subtitle">Upload a student ID for CampusAura review. Your account stays usable while we review it.</p></div></div>
+        <div class="admin-card">
+          <p id="studentVerificationStatus" class="auth-status" role="status" aria-live="polite">Student verification is optional. Submit a current student ID if you want a verified student status.</p>
+          <form id="studentVerificationForm" class="admin-form">
+            <label class="auth-field" for="studentIdDocument"><span>Student ID</span><input id="studentIdDocument" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required><small class="file-help">PDF, JPG, or PNG; maximum 5 MB. Your document is stored privately for CampusAura review.</small></label>
+            <label class="consent-check"><input id="studentIdConsent" type="checkbox" required><span>I confirm this is my current student ID and agree to its private review for student verification.</span></label>
+            <button id="studentVerificationSubmit" class="btn btn-primary" type="submit">Submit student ID</button>
+          </form>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/session-timeout.js"></script>
+  <script src="js/dashboard-nav.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/student.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

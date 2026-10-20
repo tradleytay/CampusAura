@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="description" content="CampusAura is the trusted student platform for housing, marketplace finds, and campus events.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CampusAura">
+  <meta property="og:title" content="CampusAura | Your campus, in one place">
+  <meta property="og:description" content="Find student accommodation, shop campus essentials, and discover events with CampusAura.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="CampusAura | Your campus, in one place">
+  <meta name="twitter:description" content="Find student accommodation, shop campus essentials, and discover events with CampusAura.">
+  <meta name="theme-color" content="#122033">
+  <title>CampusAura | Your campus, in one place</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="manifest" href="icons/site.webmanifest">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/rebuild.css">
+  <link rel="stylesheet" href="css/home.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8P3TYMPQ5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-C8P3TYMPQ5');
+  </script>
+
+</head>
+
+<body data-page="index" class="home-page">
+  <div class="loader-overlay" id="loader" role="status" aria-live="polite" aria-label="Loading CampusAura">
+    <div class="loader-center">
+      <div class="loader-ring"></div>
+      <div class="loader-ring loader-ring-inner"></div>
+      <img src="icons/icon.png" alt="" class="loader-logo">
+    </div>
+    <div class="loader-brand">Campus<span class="brand-accent">Aura</span></div>
+    <p class="loader-tagline">Your campus, in one place.</p>
+    <div class="loader-bar" aria-hidden="true"><span class="loader-bar-fill"></span></div>
+  </div>
+
+  <header class="site-header" id="siteHeader">
+    <div class="container nav-row">
+      <a href="index.html" class="brand" aria-label="CampusAura home">
+        <img src="icons/icon.png" alt="" class="brand-logo">
+        <span class="brand-text">Campus<span class="brand-accent">Aura</span></span>
+      </a>
+
+      <nav class="nav" id="siteNav" aria-label="Primary navigation">
+        <a href="index.html" class="nav-link active-nav-link" data-nav="home">Home</a>
+        <a href="about.html" class="nav-link" data-nav="about">About</a>
+        <div class="nav-dropdown" id="studentHub">
+          <button type="button" class="nav-link nav-dropdown-btn" id="hubBtn" data-hub-toggle aria-haspopup="true" aria-expanded="false" aria-controls="hubMenu">
+            Student Hub
+            <svg class="caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="nav-dropdown-menu" id="hubMenu" role="menu" aria-label="Student Hub" aria-hidden="true">
+            <a href="accommodation.html" class="hub-item" role="menuitem" data-nav="accommodation"><span class="hub-icon">⌂</span><span class="hub-text"><strong class="hub-title">Accommodation</strong><small class="hub-desc">Find a place to live</small></span></a>
+            <a href="marketplace.html" class="hub-item" role="menuitem" data-nav="marketplace"><span class="hub-icon">↗</span><span class="hub-text"><strong class="hub-title">Marketplace</strong><small class="hub-desc">Buy and sell with students</small></span></a>
+            <a href="events.html" class="hub-item" role="menuitem" data-nav="events"><span class="hub-icon">✦</span><span class="hub-text"><strong class="hub-title">Events</strong><small class="hub-desc">See what is happening</small></span></a>
+          </div>
+        </div>
+        <a href="contact.html" class="nav-link" data-nav="contact">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a id="authNavLink" href="auth.html" class="btn btn-ghost nav-auth-link">Sign in</a>
+        <a href="https://whatsapp.com/channel/00029Vb89OaC2phHQLS9GZq37" class="btn btn-primary nav-cta">Join Community <span aria-hidden="true">↗</span></a>
+        <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-controls="siteNav" aria-expanded="false"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+  <div class="nav-backdrop" id="navBackdrop" aria-hidden="true"></div>
+
+  <main>
+    <section class="home-hero">
+      <div class="container home-hero-grid">
+        <div class="home-hero-copy">
+          <p class="eyebrow"><span class="eyebrow-dot"></span> Built for student life</p>
+          <h1>Find a room. <em>Find your people.</em></h1>
+          <p class="hero-intro">Explore student accommodation, useful finds from your campus community, and events worth showing up for.</p>
+          
+          <div class="home-hero-actions">
+            <a href="accommodation.html" class="btn btn-primary">Find accommodation <span aria-hidden="true">→</span></a>
+            <a href="marketplace.html" class="home-secondary-link">Browse the marketplace <span aria-hidden="true">↗</span></a>
+          </div>
+
+          <form class="home-search" id="homeSearch" role="search" onsubmit="return false">
+            <span class="search-icon" aria-hidden="true">⌕</span>
+            <label class="visually-hidden" for="globalSearch">Search CampusAura</label>
+            <input type="search" id="globalSearch" placeholder="Search rooms, textbooks, events..." autocomplete="off">
+            <button id="searchBtn" class="search-submit" type="submit">Search <span aria-hidden="true">→</span></button>
+          </form>
+
+          <div class="hero-links" aria-label="Explore CampusAura">
+            <span>Explore:</span>
+            <a href="#fresh-content">Just added <span aria-hidden="true">↓</span></a>
+            <a href="#upcoming-events">Upcoming events <span aria-hidden="true">↓</span></a>
+          </div>
+        </div>
+
+        <div class="home-hero-art">
+          <div class="hero-art-card hero-art-main">
+            <img src="hero.png" alt="Students enjoying campus life" loading="eager">
+          </div>
+          <div class="hero-note hero-note-top"><span class="note-icon">✦</span><strong>Made for your campus</strong><small>People, places &amp; possibilities</small></div>
+          <div class="hero-note hero-note-bottom"><span class="note-number">✦</span><span><strong>Campus, happening now</strong><small>New places, finds &amp; events</small></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container live-strip" aria-label="Live CampusAura stats">
+      <div class="live-label"><span class="live-dot"></span><span>Live on CampusAura</span></div>
+      <div class="live-stat"><strong id="totalListings">—</strong><span>homes to explore</span></div>
+      <div class="live-stat"><strong id="totalMarket">—</strong><span>items for sale</span></div>
+      <div class="live-stat"><strong id="totalEvents">—</strong><span>upcoming events</span></div>
+      <a href="about.html" class="live-link">Why CampusAura? <span aria-hidden="true">→</span></a>
+    </section>
+
+    <section class="container discovery-section">
+      <div class="section-heading">
+        <div><p class="eyebrow">Explore the hub</p><h2>Where do you want <span>to start?</span></h2></div>
+        <p>Choose a path and find what you need around campus.</p>
+      </div>
+      <div class="discovery-grid">
+        <a class="discovery-card discovery-housing" href="accommodation.html"><span class="discovery-icon">⌂</span><span class="discovery-content"><small>Find your place</small><strong>Student housing</strong><span>Browse places to stay near campus <b>↗</b></span></span></a>
+        <a class="discovery-card discovery-market" href="marketplace.html"><span class="discovery-icon">↗</span><span class="discovery-content"><small>Buy or sell</small><strong>Marketplace</strong><span>Explore useful finds from students <b>↗</b></span></span></a>
+        <a class="discovery-card discovery-events" href="events.html"><span class="discovery-icon">✦</span><span class="discovery-content"><small>Make a plan</small><strong>Campus events</strong><span>Find events happening near you <b>↗</b></span></span></a>
+      </div>
+    </section>
+
+    <section class="container feed-section home-fresh-section" id="fresh-content" aria-labelledby="fresh-heading">
+      <div class="feed-heading">
+        <div><p class="eyebrow">Just added</p><h2 id="fresh-heading">Fresh from <span>your campus.</span></h2></div>
+        
+        <div class="home-fresh-heading-actions">
+          <a href="marketplace.html" class="text-link">Explore all listings <span>→</span></a>
+          
+          <div class="home-carousel-controls" aria-label="Fresh content carousel controls">
+            <button type="button" class="home-carousel-button" id="freshPrevious" aria-label="Previous slide">←</button>
+            <span class="home-carousel-count" id="freshSlideCount" aria-live="off">1 / 1</span>
+            <button type="button" class="home-carousel-button" id="freshNext" aria-label="Next slide">→</button>
+            <button type="button" class="home-carousel-button home-carousel-pause" id="freshPause" aria-label="Pause automatic slides" aria-pressed="false">Ⅱ</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="home-carousel" id="freshCarousel" role="region" aria-roledescription="carousel" aria-label="Recently added accommodation and marketplace listings">
+        <div class="home-carousel-viewport">
+          <div class="home-carousel-track" id="freshContentList" aria-live="off">
+            <div class="feed-loading">Finding the latest campus listings...</div>
+          </div>
+        </div>
+        
+        <div class="home-carousel-dots" id="freshSlideDots" aria-label="Choose a slide"></div>
+      
+      </div>
+    </section>
+
+    <section class="container feed-section home-upcoming-section" id="upcoming-events" aria-labelledby="events-heading">
+      <div class="feed-heading"><div><p class="eyebrow">Mark your calendar</p><h2 id="events-heading">Coming up <span>on campus.</span></h2></div><a href="events.html" class="text-link">See all events <span>→</span></a></div>
+      
+      <div class="grid home-upcoming-grid" id="upcomingEventsList" aria-live="polite">
+        <div class="feed-loading">Checking what’s coming up...</div>
+      </div>
+    </section>
+
+    
+    <section class="container trust-banner">
+      <div class="trust-banner-copy"><p class="eyebrow">A little more confidence</p><h2>Good decisions<br><span>start with clarity.</span></h2>re’re published. Check the details and contact us if something doesn’t look right.</p><a href="contact.html" class="btn btn-primary">Get help <span>→</span></a></div>
+      <div class="trust-points"><div><span>01</span><strong>Listings are reviewed</strong><p>Submitted accommodation and marketplace listings go through admin approval before appearing publicly.</p></div><div><span>02</span><strong>Check the details</strong><p>Review the description, location, and price before contacting a provider or seller.</p></div><div><span>03</span><strong>Need help?</strong><p>Contact CampusAura if you have a question or notice a problem.</p></div></div>
+    </section>
+
+    <section class="newsletter-section">
+      <div class="container newsletter-inner">
+        <div>
+          <p class="eyebrow">Stay in the loop</p>
+          <h2>Good things are happening.</h2>
+          <p>Get the latest campus finds and events in your inbox.</p>
+        </div>
+
+        <form class="newsletter-form" onsubmit="handleNewsletterSignup(event)">
+          <label class="visually-hidden" for="newsletterEmail">Your email address</label>
+          <input id="newsletterEmail" type="email" placeholder="Enter Your email" required>
+          <button class="btn btn-primary" type="submit">Subscribe <span>→</span>
+          </button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer home-footer">
+    <div class="container footer-top">
+      <a href="index.html" class="brand" aria-label="CampusAura home">
+        <img src="icons/icon.png" alt="" class="brand-logo">
+        <span class="brand-text">Campus<span class="brand-accent">Aura</span></span>
+      </a>
+      <p>Everything student. One trusted place.</p>
+
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </div>
+    </div>
+
+    <div class="container footer-bottom-content">
+      <span>&copy; 2026 CampusAura.Org</span>
+      <span>Made for students, with care.</span>
+    </div>
+  </footer>
+
+  <div class="listing-modal" id="listingModal" aria-hidden="true">
+    <div class="listing-modal-backdrop" data-modal-close></div>
+    <section class="listing-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="listingModalTitle">
+      <button class="listing-modal-close" type="button" aria-label="Close details" data-modal-close>&times;</button>
+      <div class="listing-modal-media" id="listingModalMedia"></div>
+      <div class="listing-modal-content">
+        <p class="listing-modal-kicker" id="listingModalKicker"></p>
+        <h2 id="listingModalTitle"></h2>
+        <div class="listing-modal-meta" id="listingModalMeta"></div>
+        <p class="listing-modal-description" id="listingModalDescription"></p>
+        <div class="listing-modal-contact" id="listingModalContact"></div>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/session-timeout.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

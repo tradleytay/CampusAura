@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Submit the documents needed to complete your CampusAura student or provider account verification.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#2563EB">
+  <title>Complete account verification — CampusAura</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="manifest" href="icons/site.webmanifest">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/rebuild.css">
+</head>
+<body class="auth-page">
+  <main class="auth-shell">
+    <a class="auth-brand" href="index.html">
+      <img src="icons/icon.png" alt="CampusAura logo">
+      <span>Campus<span class="brand-accent">Aura</span></span>
+    </a>
+    <section class="auth-card" aria-labelledby="verifyTitle">
+      <div class="auth-heading">
+        <span class="events-preview-glow" aria-hidden="true">🔐</span>
+        <h1 id="verifyTitle">One last step</h1>
+        <p>Provider applicants submit an NRC for review before they can publish listings. Students can optionally submit only their student ID from the student dashboard.</p>
+      </div>
+      <ol class="auth-steps" aria-label="Account setup progress">
+        <li class="is-complete"><span>1</span><strong>Account</strong></li>
+        <li class="is-complete"><span>2</span><strong>Confirm email</strong></li>
+        <li class="is-current"><span>3</span><strong>Verify</strong></li>
+      </ol>
+      <p id="verificationStatus" class="auth-status" role="status" aria-live="polite">Checking your account...</p>
+      <form id="verificationForm" class="auth-form" hidden>
+        <p class="registration-intro"><strong>Provider NRC review</strong><span>Your National Registration Card is stored privately for provider review. PDF, JPG, or PNG; maximum 5 MB.</span></p>
+        <label class="auth-field">
+          <span>National Registration Card (NRC)</span>
+          <input id="verifyIdentityDocument" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required>
+          <small class="file-help">Upload your NRC as a PDF, JPG, or PNG; maximum 5 MB.</small>
+        </label>
+        <label class="consent-check">
+          <input id="verifyDocumentConsent" type="checkbox" required>
+          <span>I confirm this NRC belongs to me and may be reviewed for provider account verification.</span>
+        </label>
+        <button id="verificationSubmit" class="btn btn-primary btn-lg" type="submit">Submit NRC</button>
+      </form>
+      <a class="auth-back" href="auth.html">Return to sign in</a>
+      <a class="auth-back" href="privacy.html">Privacy Policy</a>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/email.js"></script>
+  <script src="js/verify.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

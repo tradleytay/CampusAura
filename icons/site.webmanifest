@@ -1,0 +1,43 @@
+{
+  "name": "CampusAura",
+  "short_name": "CampusAura",
+  "id": "../index.html",
+  "description": "Student housing, marketplace, events, and campus life in one platform.",
+  "start_url": "../index.html",
+  "scope": "../",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#2563eb",
+  "categories": ["education", "productivity", "lifestyle"],
+  "icons": [
+    {
+      "src": "android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Accommodation",
+      "short_name": "Housing",
+      "url": "../accommodation.html"
+    },
+    {
+      "name": "Marketplace",
+      "short_name": "Market",
+      "url": "../marketplace.html"
+    },
+    {
+      "name": "Campus events",
+      "short_name": "Events",
+      "url": "../events.html"
+    }
+  ]
+}

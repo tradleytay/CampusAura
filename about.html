@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Learn how CampusAura is making student life simpler, more connected, and easier to navigate.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CampusAura">
+  <meta property="og:title" content="About CampusAura | Your campus, in one place">
+  <meta property="og:description" content="Learn how CampusAura connects students with housing, marketplace finds, and campus events.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="About CampusAura | Your campus, in one place">
+  <meta name="twitter:description" content="Learn how CampusAura connects students with housing, marketplace finds, and campus events.">
+  <meta name="theme-color" content="#122033">
+  <title>About CampusAura | Your campus, in one place</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="manifest" href="icons/site.webmanifest">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/rebuild.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8P3TYMPQ5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-C8P3TYMPQ5');
+  </script>
+</head>
+
+<body data-page="about" class="about-page">
+  <header class="site-header" id="siteHeader">
+    <div class="container nav-row">
+      <a href="index.html" class="brand" aria-label="CampusAura home">
+        <img src="icons/icon.png" alt="" class="brand-logo">
+        <span class="brand-text">Campus<span class="brand-accent">Aura</span></span>
+      </a>
+      <nav class="nav" id="siteNav" aria-label="Primary navigation">
+        <a href="index.html" class="nav-link" data-nav="home">Home</a>
+        <a href="about.html" class="nav-link active-nav-link" data-nav="about">About</a>
+        <div class="nav-dropdown" id="studentHub">
+          <button type="button" class="nav-link nav-dropdown-btn" id="hubBtn" data-hub-toggle aria-haspopup="true" aria-expanded="false" aria-controls="hubMenu">Student Hub <svg class="caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-dropdown-menu" id="hubMenu" role="menu" aria-label="Student Hub" aria-hidden="true">
+            <a href="accommodation.html" class="hub-item" role="menuitem" data-nav="accommodation"><span class="hub-icon">⌂</span><span class="hub-text"><strong class="hub-title">Accommodation</strong><small class="hub-desc">Find a place to live</small></span></a>
+            <a href="marketplace.html" class="hub-item" role="menuitem" data-nav="marketplace"><span class="hub-icon">↗</span><span class="hub-text"><strong class="hub-title">Marketplace</strong><small class="hub-desc">Buy and sell with students</small></span></a>
+            <a href="events.html" class="hub-item" role="menuitem" data-nav="events"><span class="hub-icon">✦</span><span class="hub-text"><strong class="hub-title">Events</strong><small class="hub-desc">See what is happening</small></span></a>
+          </div>
+        </div>
+        <a href="contact.html" class="nav-link" data-nav="contact">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <a id="authNavLink" href="auth.html" class="btn btn-ghost nav-auth-link">Sign in</a>
+        <a href="https://whatsapp.com/channel/00029Vb89OaC2phHQLS9GZq37" class="btn btn-primary nav-cta">Join Community <span aria-hidden="true">↗</span></a>
+        <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-controls="siteNav" aria-expanded="false"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+  <div class="nav-backdrop" id="navBackdrop" aria-hidden="true"></div>
+
+  <main>
+    <section class="about-hero">
+      <div class="container about-hero-grid">
+        <div>
+          <p class="eyebrow"><span class="eyebrow-dot"></span> The story behind CampusAura</p>
+          <h1>Student life is better when everything <em>connects.</em></h1>
+          <p class="about-lead">CampusAura is a student-first platform that brings the practical, social, and exciting parts of campus life into one trusted place.</p>
+          <div class="about-hero-actions"><a href="accommodation.html" class="btn btn-primary">Start exploring <span>→</span></a><a href="#why" class="btn btn-secondary">See why we built it <span>↓</span></a></div>
+        </div>
+        <div class="about-hero-visual">
+          <div class="about-image-frame"><img src="hero.png" alt="Students enjoying campus life together" loading="eager"></div>
+          <div class="about-floating-note"><span>✦</span><strong>Built around real student life</strong><small>Local, useful, connected.</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container about-intro" id="why">
+      <div class="about-intro-label"><span>01</span><p>Why we exist</p></div>
+      <div class="about-intro-copy"><h2>Campus life should feel <span>less scattered.</span></h2><p>Students spend too much time piecing together housing, deals, events, and opportunities from disconnected groups and platforms. CampusAura brings those moments together, so finding what you need feels as easy as finding your people.</p></div>
+    </section>
+
+    <section class="about-principles">
+      <div class="container principles-grid">
+        <div><p class="eyebrow">What guides us</p><h2>Useful by design.<br><span>Human at heart.</span></h2><p class="principles-lead">We are building the kind of platform we would want during our own student years: clear, welcoming, and genuinely helpful.</p></div>
+        <div class="principle-list">
+          <div><span>01</span><div><h3>Trust comes first</h3><p>We make it easier to discover people, places, and listings with confidence.</p></div></div>
+          <div><span>02</span><div><h3>Keep it close to campus</h3><p>Student life is local, so the experience should feel local too.</p></div></div>
+          <div><span>03</span><div><h3>Make room for possibility</h3><p>The right room, deal, or event can change the shape of a whole semester.</p></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container about-mission">
+      <div class="mission-panel"><p class="eyebrow">Our mission</p><h2>Make student life easier to navigate — and more rewarding to live.</h2><p>We are creating one trusted place for housing, buying and selling, events, and campus discovery. Not to add another thing to your day, but to make the day feel a little lighter.</p><div class="mission-metrics"><div><strong>1</strong><span>connected platform</span></div><div><strong>3</strong><span>student essentials</span></div><div><strong>∞</strong><span>ways to belong</span></div></div></div>
+      <div class="vision-panel"><span class="vision-mark">◎</span><p class="eyebrow">Our vision</p><h2>A campus where opportunity feels closer.</h2><p>CampusAura is growing toward a future where every student can find their place, their people, and their next opportunity with less friction.</p><div class="vision-orbit"><span>Students</span><span>Campus</span><span>Growth</span></div></div>
+    </section>
+
+    <section class="container about-cta"><div><p class="eyebrow">Ready when you are</p><h2>Make your campus feel <span>like home.</span></h2><p>Start with the thing you need today. Stay for everything else.</p></div><div class="about-cta-actions"><a href="index.html" class="btn btn-primary">Explore CampusAura <span>→</span></a><a href="contact.html" class="btn btn-ghost">Talk to us</a></div></section>
+  </main>
+
+  <!--section class="newsletter-section"><div class="container newsletter-inner"><div><p class="eyebrow">Stay in the loop</p><h2>Good things are happening.</h2><p>Get the latest campus finds and events in your inbox.</p></div><form class="newsletter-form" onsubmit="handleNewsletterSignup(event)"><label class="visually-hidden" for="newsletterEmail">Your email address</label><input id="newsletterEmail" type="email" placeholder="Your student email" required><button class="btn btn-primary" type="submit">Subscribe <span>→</span></button></form></div></section-->
+  <footer class="site-footer home-footer">
+    <div class="container footer-top">
+      <a href="index.html" class="brand" aria-label="CampusAura home">
+        <img src="icons/icon.png" alt="" class="brand-logo">
+        <span class="brand-text">Campus<span class="brand-accent">Aura</span></span>
+      </a>
+      <p>Everything student. One trusted place.</p>
+
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </div>
+    </div>
+
+    <div class="container footer-bottom-content">
+      <span>&copy; 2026 CampusAura.Org</span>
+      <span>Made for students, with care.</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/session-timeout.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

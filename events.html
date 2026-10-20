@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Discover campus events on CampusAura. Find student meetups, activities, and events happening in your community.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CampusAura">
+  <meta property="og:title" content="Campus Events | CampusAura">
+  <meta property="og:description" content="Find student meetups, activities, and events happening in your campus community.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Campus Events | CampusAura">
+  <meta name="twitter:description" content="Find student meetups, activities, and events happening in your campus community.">
+  <title>Campus Events | CampusAura</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+  <link rel="manifest" href="icons/site.webmanifest">
+  <meta name="theme-color" content="#122033">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/rebuild.css">
+  <link rel="stylesheet" href="css/home.css">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8P3TYMPQ5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-C8P3TYMPQ5');
+  </script>
+</head>
+<body data-page="events" class="events-page">
+  <header class="site-header" id="siteHeader">
+    <div class="container nav-row">
+      <a href="index.html" class="brand" aria-label="CampusAura home"><img src="icons/icon.png" alt="" class="brand-logo"><span class="brand-text">Campus<span class="brand-accent">Aura</span></span></a>
+      <nav class="nav" id="siteNav" aria-label="Primary navigation">
+        <a href="index.html" class="nav-link" data-nav="home">Home</a>
+        <a href="about.html" class="nav-link" data-nav="about">About</a>
+        <div class="nav-dropdown" id="studentHub">
+          <button type="button" class="nav-link nav-dropdown-btn" id="hubBtn" data-hub-toggle aria-haspopup="true" aria-expanded="false" aria-controls="hubMenu">Student Hub <svg class="caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-dropdown-menu" id="hubMenu" role="menu" aria-label="Student Hub" aria-hidden="true">
+            <a href="accommodation.html" class="hub-item" role="menuitem" data-nav="accommodation"><span class="hub-icon">⌂</span><span class="hub-text"><strong class="hub-title">Accommodation</strong><small class="hub-desc">Find a place to live</small></span></a>
+            <a href="marketplace.html" class="hub-item" role="menuitem" data-nav="marketplace"><span class="hub-icon">↗</span><span class="hub-text"><strong class="hub-title">Marketplace</strong><small class="hub-desc">Buy and sell with students</small></span></a>
+            <a href="events.html" class="hub-item" role="menuitem" data-nav="events"><span class="hub-icon">✦</span><span class="hub-text"><strong class="hub-title">Events</strong><small class="hub-desc">See what is happening</small></span></a>
+          </div>
+        </div>
+        <a href="contact.html" class="nav-link" data-nav="contact">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <a id="authNavLink" href="auth.html" class="btn btn-ghost nav-auth-link">Sign in</a>
+        <a href="https://whatsapp.com/channel/00029Vb89OaC2phHQLS9GZq37" class="btn btn-primary nav-cta">Join Community <span>↗</span></a>
+        <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-controls="siteNav" aria-expanded="false"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+  <div class="nav-backdrop" id="navBackdrop" aria-hidden="true"></div>
+
+  <main>
+    <section class="events-hero">
+      <div class="container events-hero-grid">
+        <div class="events-hero-copy">
+          <p class="eyebrow"><span class="eyebrow-dot"></span> Student life, in one place</p>
+          <h1>Find your next <span>campus moment.</span></h1>
+          <p class="events-hero-lead">Discover workshops, socials, sports, and career events happening around campus.</p>
+          <div class="events-hero-actions">
+            <a class="btn btn-primary" href="#eventBrowse">Explore events</a>
+            <a class="btn btn-secondary" href="contact.html">List an event</a>
+          </div>
+        </div>
+        <div class="events-hero-card">
+          <span class="events-hero-icon">📅</span>
+          <strong id="newTotalEvents">0</strong>
+          <span>upcoming events</span>
+          <div class="events-hero-rule"></div>
+          <p><strong id="newAttendingCount">0</strong> events on your RSVP list</p>
+        </div>
+      </div>
+    </section>
+    <div class="container events-content" id="eventBrowse">
+      <section class="events-toolbar" aria-labelledby="eventBrowseTitle">
+        <div class="events-section-heading">
+          <p class="eyebrow">Browse the calendar</p>
+          <h2 id="eventBrowseTitle">What’s happening</h2>
+          <p>Use the filters to find something that fits your schedule.</p>
+        </div>
+        <div class="event-types" aria-label="Filter by event type">
+          <button class="filter-chip active" onclick="filterEventType('all', this)">All events</button>
+          <button class="filter-chip" onclick="filterEventType('social', this)">Social</button>
+          <button class="filter-chip" onclick="filterEventType('workshop', this)">Workshop</button>
+          <button class="filter-chip" onclick="filterEventType('career', this)">Career</button>
+          <button class="filter-chip" onclick="filterEventType('sports', this)">Sports</button>
+        </div>
+      </section>
+      <section class="filters events-filter-card" aria-label="Search and filter events">
+        <div class="filters-header">
+          <div><p class="eyebrow">Refine your search</p><h3>Find an event</h3></div>
+          <button id="newResetFilters" class="btn btn-ghost" type="button">Reset</button>
+        </div>
+        <div class="filter-row">
+          <div class="filter-group"><label for="newEventSearch">Search</label><input type="search" id="newEventSearch" placeholder="Event name or keyword"></div>
+          <div class="filter-group"><label for="newEventLocation">Location</label><select id="newEventLocation"><option value="">All locations</option></select></div>
+          <div class="filter-group"><label for="newEventDate">When</label><select id="newEventDate"><option value="">Any time</option><option value="this-week">This week</option><option value="next-week">Next week</option><option value="this-month">This month</option></select></div>
+          <button id="newEventFilterBtn" class="btn btn-primary" type="button">Apply filters</button>
+        </div>
+      </section>
+      <div class="results-controls events-results-controls">
+        <div><strong>Upcoming events</strong><span class="results-note">Fresh opportunities to connect and learn</span></div>
+        <div class="sort-options"><label for="newEventSort">Sort</label><select id="newEventSort" class="sort-select"><option value="upcoming">Upcoming</option><option value="date">Date</option><option value="popular">Most popular</option></select><div class="view-toggle" aria-label="Choose event layout"><button class="view-btn active" data-view="grid" title="Grid view">⊞</button><button class="view-btn" data-view="list" title="List view">≡</button></div></div>
+      </div>
+      <section class="section events-results">
+        <div id="newEmptyState" class="empty-state" style="display:none"><div class="empty-icon">✦</div><h3>No events found</h3><p>Try another search or clear your filters.</p><button id="newClearFilters" class="btn btn-primary" type="button">Clear filters</button></div>
+        <div class="grid cards events-grid" id="newEventsGrid"></div>
+      </section>
+      <section class="events-featured"><div class="events-section-heading"><p class="eyebrow">Worth making time for</p><h2>Featured this month</h2></div><div class="banner-grid" id="newFeaturedEvents"></div></section>
+    </div>
+  </main>
+
+  <footer class="site-footer home-footer">
+    <div class="container footer-top">
+      <a href="index.html" class="brand" aria-label="CampusAura home">
+        <img src="icons/icon.png" alt="" class="brand-logo">
+        <span class="brand-text">Campus<span class="brand-accent">Aura</span></span>
+      </a>
+      <p>Everything student. One trusted place.</p>
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </div>
+    </div>
+    <div class="container footer-bottom-content">
+      <span>&copy; 2026 CampusAura.Org</span>
+      <span>Made for students, with care.</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/session-timeout.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/pwa.js"></script>
+ 
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Explore student accommodation on CampusAura. Compare rooms, locations, and prices to find a place that suits your campus life.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CampusAura">
+  <meta property="og:title" content="Student Accommodation | CampusAura">
+  <meta property="og:description" content="Explore student rooms and compare locations and prices to find a place that suits your campus life.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Student Accommodation | CampusAura">
+  <meta name="twitter:description" content="Explore student rooms and compare locations and prices to find a place that suits your campus life.">
+  <meta name="theme-color" content="#122033">
+  <title>Student Accommodation | CampusAura</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="manifest" href="icons/site.webmanifest">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/rebuild.css">
+  <link rel="stylesheet" href="css/home.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8P3TYMPQ5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-C8P3TYMPQ5');
+  </script>
+</head>
+
+<body data-page="accommodation" class="accommodation-page">
+  <header class="site-header" id="siteHeader">
+    <div class="container nav-row">
+      <a href="index.html" class="brand" aria-label="CampusAura home"><img src="icons/icon.png" alt="" class="brand-logo"><span class="brand-text">Campus<span class="brand-accent">Aura</span></span></a>
+      <nav class="nav" id="siteNav" aria-label="Primary navigation">
+        <a href="index.html" class="nav-link" data-nav="home">Home</a>
+        <a href="about.html" class="nav-link" data-nav="about">About</a>
+        <div class="nav-dropdown" id="studentHub">
+          <button type="button" class="nav-link nav-dropdown-btn" id="hubBtn" data-hub-toggle aria-haspopup="true" aria-expanded="false" aria-controls="hubMenu">Student Hub <svg class="caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-dropdown-menu" id="hubMenu" role="menu" aria-label="Student Hub" aria-hidden="true">
+            <a href="accommodation.html" class="hub-item" role="menuitem" data-nav="accommodation"><span class="hub-icon">⌂</span><span class="hub-text"><strong class="hub-title">Accommodation</strong><small class="hub-desc">Find a place to live</small></span></a>
+            <a href="marketplace.html" class="hub-item" role="menuitem" data-nav="marketplace"><span class="hub-icon">↗</span><span class="hub-text"><strong class="hub-title">Marketplace</strong><small class="hub-desc">Buy and sell with students</small></span></a>
+            <a href="events.html" class="hub-item" role="menuitem" data-nav="events"><span class="hub-icon">✦</span><span class="hub-text"><strong class="hub-title">Events</strong><small class="hub-desc">See what is happening</small></span></a>
+          </div>
+        </div>
+        <a href="contact.html" class="nav-link" data-nav="contact">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <a id="authNavLink" href="auth.html" class="btn btn-ghost nav-auth-link">Sign in</a>
+        <a href="https://whatsapp.com/channel/00029Vb89OaC2phHQLS9GZq37" class="btn btn-primary nav-cta">Join Community <span>↗</span></a><button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-controls="siteNav" aria-expanded="false"><span></span><span></span><span></span></button></div>
+    </div>
+  </header>
+  <div class="nav-backdrop" id="navBackdrop" aria-hidden="true"></div>
+
+  <main>
+    <section class="accom-hero">
+      <div class="container accom-hero-grid">
+        <div><p class="eyebrow"><span class="eyebrow-dot"></span> Listings reviewed before publication</p><h1>A place that feels <em>right.</em></h1><p>Browse rooms and apartments close to campus, with the details you need to make a confident move.</p><div class="accom-hero-actions"><a href="#browse" class="btn btn-primary">Browse homes <span>↓</span></a><a href="provider.html" class="btn btn-secondary">List a property <span>↗</span></a></div></div>
+        <div class="accom-hero-art"><div class="accom-art-card"><img src="images/room.jpeg" alt="Comfortable student accommodation" loading="eager"></div><div class="accom-art-note"><span>✓</span><strong>Student-friendly stays</strong><small>Near campus. Clear details.</small></div></div>
+      </div>
+    </section>
+
+    <section class="container accom-trust-strip" aria-label="Accommodation benefits">
+      <div><strong id="totalListings">—</strong><span>homes listed</span></div>
+      <div><strong>9am–8pm</strong><span>Mon–Sat support</span></div>
+      <div><strong>Check details</strong><span>before you commit</span></div>
+      <p><span class="live-dot"></span>New places added regularly</p>
+    </section>
+
+    <section class="container accom-help">
+      <div>
+        <p class="eyebrow">A little extra confidence</p>
+        <h2>Moving is a big step.<br><span>We make it simpler.</span></h2>
+      </div>
+      <div class="accom-help-points">
+        <div>
+          <span>01</span>
+          <strong>Clear details</strong>
+          <p>See the essentials before you reach out.</p>
+        </div>
+        <div>
+          <span>02</span>
+          <strong>Campus-minded</strong>
+          <p>Find places that work for student life.</p>
+        </div>
+        <div>
+          <span>03</span>
+          <strong>Community-first</strong>
+          <p>Make your next move with more confidence.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="container accom-browse" id="browse">
+      <div class="accom-browse-heading"><div><p class="eyebrow">Find your next place</p><h2>Browse homes near <span>your campus.</span></h2></div><p>Search by area, compare prices, and save the places you want to come back to.</p></div>
+      <section class="accom-filter-panel" aria-label="Accommodation filters">
+        <div class="accom-filter-top"><div><span class="filter-kicker">Search homes</span><h3>What are you looking for?</h3></div><button id="resetFilters" class="btn btn-ghost">Reset filters</button></div>
+        <div class="accom-filter-fields">
+          <label for="accomSearch"><span>Search</span><input type="text" id="accomSearch" placeholder="Title or location..."></label>
+          <label for="locationFilter"><span>Area</span><select id="locationFilter"><option value="">All locations</option><option>North Campus</option><option>South Campus</option><option>City Center</option></select></label>
+          <label for="priceFilter"><span>Monthly budget</span><select id="priceFilter"><option value="">Any price</option><option value="0-3000">Under K3,000</option><option value="3000-5000">K3,000 - K5,000</option><option value="5000-8000">K5,000 - K8,000</option><option value="8000-100000">K8,000 and above</option></select></label>
+          <button id="accomFilterBtn" class="btn btn-primary">Find homes <span>→</span></button>
+        </div>
+      </section>
+
+      <div class="decision-note"><strong>Before you commit:</strong> CampusAura reviews listings before publication, but does not inspect properties or guarantee a provider, listing, availability, or legal status. Confirm the details independently before paying or sharing documents.</div>
+      <div class="accom-results-bar"><div><strong>Available homes</strong><span>Take your time — your next place is worth it.</span></div><div class="results-controls"><div class="sort-options"><label for="sortBy">Sort by</label><select id="sortBy" class="sort-select"><option value="newest">Newest first</option><option value="price-low">Price: Low to High</option><option value="price-high">Price: High to Low</option><option value="popular">Most Popular</option></select></div><div class="view-toggle"><button class="view-btn active" data-view="grid" title="Grid view">⊞</button><button class="view-btn" data-view="list" title="List view">≡</button></div></div></div>
+      <div id="emptyState" class="empty-state" style="display:none"><div class="empty-icon">⌂</div><h3>No homes found</h3><p>Try adjusting your filters or search terms.</p><button onclick="document.getElementById('resetFilters').click()" class="btn btn-primary">Clear filters</button></div>
+      <div class="grid cards accom-grid" id="accommodationGrid"><div class="feed-loading">Loading homes...</div></div>
+      <div class="load-more-container"><button id="loadMoreBtn" class="btn btn-secondary btn-lg" style="display:none">Load more homes <span>↓</span></button></div>
+    </section>
+
+    
+  </main>
+
+  <!--section class="newsletter-section"><div class="container newsletter-inner"><div><p class="eyebrow">Stay in the loop</p><h2>Good things are happening.</h2><p>Get the latest campus finds and events in your inbox.</p></div><form class="newsletter-form" onsubmit="handleNewsletterSignup(event)"><label class="visually-hidden" for="newsletterEmail">Your email address</label><input id="newsletterEmail" type="email" placeholder="Your student email" required><button class="btn btn-primary" type="submit">Subscribe <span>→</span></button></form></div></section-->
+  <footer class="site-footer home-footer">
+    <div class="container footer-top">
+      <a href="index.html" class="brand" aria-label="CampusAura home">
+        <img src="icons/icon.png" alt="" class="brand-logo">
+        <span class="brand-text">Campus<span class="brand-accent">Aura</span></span>
+      </a>
+      <p>Everything student. One trusted place.</p>
+      
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </div>
+    </div>
+
+    <div class="container footer-bottom-content">
+      <span>&copy; 2026 CampusAura.Org</span>
+      <span>Made for students, with care.</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/session-timeout.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

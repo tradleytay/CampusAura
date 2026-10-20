@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Sign in to your CampusAura account to manage your student activity, listings, and campus events.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#2563eb">
+  <title>Sign in — CampusAura</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="manifest" href="icons/site.webmanifest">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/rebuild.css">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8P3TYMPQ5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-C8P3TYMPQ5');
+  </script>
+</head>
+<body class="auth-page">
+  <main class="auth-shell">
+    <a class="auth-brand" href="index.html">
+      <img src="icons/icon.png" alt="CampusAura logo">
+      <span>Campus<span class="brand-accent">Aura</span></span>
+    </a>
+    <section class="auth-card" aria-labelledby="authTitle">
+      <div class="auth-heading">
+        <span class="events-preview-glow">👋</span>
+        <h1 id="authTitle">Welcome back</h1>
+        <p id="authSubtitle">Sign in to manage your CampusAura activity.</p>
+      </div>
+      <form id="authForm" class="auth-form">
+        <label class="auth-field">
+          <span>Email address</span>
+          <input id="authEmail" type="email" autocomplete="email" required>
+        </label>
+        <label class="auth-field">
+          <span>Password</span>
+          <span class="password-input-wrap">
+            <input id="authPassword" type="password" autocomplete="current-password" minlength="6" required>
+            <button class="password-visibility-toggle" type="button" data-password-toggle aria-label="Show password" aria-controls="authPassword" aria-pressed="false">👁️</button>
+          </span>
+        </label>
+        <button id="forgotPassword" class="auth-forgot-password" type="button">Forgot password?</button>
+        <button id="authSubmit" class="btn btn-primary btn-lg" type="submit">Sign in</button>
+        <p id="authStatus" class="auth-status" role="status" aria-live="polite"></p>
+      </form>
+      <p class="auth-signin-help">New here? Create an account and confirm your email. Students can start right away; providers complete identity review.</p>
+      <a class="auth-toggle" href="register.html">Need an account? Register</a>
+      <a class="auth-back" href="index.html">Return to CampusAura</a>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/password-visibility.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

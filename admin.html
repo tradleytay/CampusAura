@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Manage CampusAura listings, events, user verification, and support requests in the administrator dashboard.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Admin Dashboard — CampusAura</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+  <link rel="manifest" href="icons/site.webmanifest">
+  <meta name="theme-color" content="#2563EB">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/rebuild.css">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8P3TYMPQ5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-C8P3TYMPQ5');
+  </script>
+</head>
+
+<body class="dashboard-page admin-page">
+  <!-- Admin Top Bar -->
+  <header class="admin-topbar">
+    <div class="admin-topbar-inner">
+      <a href="admin.html" class="admin-brand">
+        <img src="icons/icon.png" alt="CampusAura logo" class="admin-brand-logo">
+        <span>CampusAura <em>Admin</em></span>
+      </a>
+      <nav class="admin-topnav" aria-label="Admin navigation">
+        <a href="index.html" class="admin-toplink">View Site</a>
+        <button id="signOutBtn" class="admin-toplink admin-toplink-ghost" type="button">Sign out</button>
+        <span class="admin-chip">Admin access</span>
+      </nav>
+    </div>
+  </header>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="admin-profile luxury-profile">
+        <div class="admin-profile-avatar" id="adminAvatar">AD</div>
+        <div>
+          <div class="admin-profile-name" id="adminName">Administrator</div>
+          <div class="admin-profile-sub">Campus team</div>
+        </div>
+      </div>
+      <button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="adminDashboardNav">
+        <span class="dashboard-nav-toggle-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>Dashboard sections</span>
+      </button>
+      <nav class="admin-tabs" id="adminDashboardNav" role="tablist" aria-label="Admin sections">
+        <button class="admin-tab active" data-tab="dashboard" role="tab" aria-selected="true"><span>Overview</span><small>Platform health</small></button>
+        <button class="admin-tab" data-tab="review" role="tab" aria-selected="false"><span>Review queue</span><small>Needs attention</small></button>
+        <button class="admin-tab" data-tab="users" role="tab" aria-selected="false"><span>Users</span><small>Accounts &amp; roles</small></button>
+        <button class="admin-tab" data-tab="accommodations" role="tab" aria-selected="false"><span>Properties</span><small>Accommodation</small></button>
+        <button class="admin-tab" data-tab="marketplace" role="tab" aria-selected="false"><span>Marketplace</span><small>Products &amp; sellers</small></button>
+        <button class="admin-tab" data-tab="events" role="tab" aria-selected="false"><span>Events</span><small>Campus activity</small></button>
+        <button class="admin-tab" data-tab="messages" role="tab" aria-selected="false"><span>Messages</span><small>Inbox &amp; outbox</small></button>
+        <button class="admin-tab" data-tab="analytics" role="tab" aria-selected="false"><span>Analytics</span><small>Platform trends</small></button>
+        <button class="admin-tab" data-tab="settings" role="tab" aria-selected="false"><span>Settings</span><small>Admin controls</small></button>
+      </nav>
+      <div class="admin-sidebar-foot"></div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <!-- Dashboard -->
+      <section class="admin-panel active" id="panel-dashboard" role="tabpanel">
+        <div class="admin-overview-hero">
+          <div class="admin-overview-hero-copy">
+            <span class="admin-access-label">CampusAura · Operations</span>
+            <h1>Good morning, Administrator</h1>
+            <p>One clear view of your listings, campus activity, and work awaiting review.</p>
+            <div class="admin-hero-actions">
+              <button class="admin-hero-primary" type="button" data-tab-target="review">Open review queue <span aria-hidden="true">↗</span></button>
+              <button class="admin-hero-secondary" type="button" data-tab-target="users">Manage users</button>
+            </div>
+          </div>
+          <div class="admin-hero-queue" aria-live="polite">
+            <span>Items awaiting review</span>
+            <strong id="overviewTotalPending">0</strong>
+            <small>Listings and account applications</small>
+          </div>
+        </div>
+
+        <div class="admin-stats admin-overview-stats">
+          <button class="admin-stat admin-stat-link" type="button" data-tab-target="accommodations"><span class="admin-stat-icon">⌂</span><span class="admin-stat-copy"><strong class="admin-stat-number" id="statAccom">0</strong><span class="admin-stat-label">Properties</span></span><span class="admin-stat-arrow" aria-hidden="true">↗</span></button>
+          <button class="admin-stat admin-stat-link" type="button" data-tab-target="marketplace"><span class="admin-stat-icon admin-stat-icon-cyan">◈</span><span class="admin-stat-copy"><strong class="admin-stat-number" id="statMarket">0</strong><span class="admin-stat-label">Marketplace items</span></span><span class="admin-stat-arrow" aria-hidden="true">↗</span></button>
+          <button class="admin-stat admin-stat-link" type="button" data-tab-target="events"><span class="admin-stat-icon admin-stat-icon-amber">◷</span><span class="admin-stat-copy"><strong class="admin-stat-number" id="statEvents">0</strong><span class="admin-stat-label">Campus events</span></span><span class="admin-stat-arrow" aria-hidden="true">↗</span></button>
+          <button class="admin-stat admin-stat-link" type="button" data-tab-target="messages"><span class="admin-stat-icon admin-stat-icon-violet">✉</span><span class="admin-stat-copy"><strong class="admin-stat-number" id="statMessages">0</strong><span class="admin-stat-label">Support messages</span></span><span class="admin-stat-arrow" aria-hidden="true">↗</span></button>
+        </div>
+
+        <div class="admin-overview-grid">
+          <div class="admin-card admin-priority-card admin-queue-overview">
+            <div class="admin-card-head"><div><span class="admin-card-label">Needs attention</span><h2>Review queue</h2></div><button class="admin-text-link" type="button" data-tab-target="review">View all <span aria-hidden="true">↗</span></button></div>
+            <button class="admin-task" type="button" data-tab-target="accommodations"><span class="admin-task-icon admin-task-icon-warm">⌂</span><span><strong>Property listings</strong><small>Waiting for your decision</small></span><b id="overviewPendingAccom">0</b></button>
+            <button class="admin-task" type="button" data-tab-target="marketplace"><span class="admin-task-icon admin-task-icon-teal">◈</span><span><strong>Marketplace submissions</strong><small>Products and services awaiting review</small></span><b id="overviewPendingMarket">0</b></button>
+            <button class="admin-task" type="button" data-tab-target="users"><span class="admin-task-icon">◎</span><span><strong>Account applications</strong><small>Provider and student ID reviews</small></span><b id="overviewPendingUsers">0</b></button>
+          </div>
+          <div class="admin-card admin-shortcuts-card">
+            <div class="admin-card-head"><div><span class="admin-card-label admin-card-label-teal">Workspace</span><h2>Go to a section</h2></div></div>
+            <div class="admin-shortcut-grid">
+              <button type="button" class="admin-shortcut" data-tab-target="users"><span>◎</span><strong>Users</strong><small>Accounts &amp; verification</small></button>
+              <button type="button" class="admin-shortcut" data-tab-target="accommodations"><span>⌂</span><strong>Properties</strong><small>Accommodation listings</small></button>
+              <button type="button" class="admin-shortcut" data-tab-target="marketplace"><span>◈</span><strong>Marketplace</strong><small>Products &amp; sellers</small></button>
+              <button type="button" class="admin-shortcut" data-tab-target="analytics"><span>⌁</span><strong>Analytics</strong><small>Platform activity</small></button>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <section class="admin-panel" id="panel-review" role="tabpanel">
+        <div class="admin-panel-head"><div><span class="admin-kicker">Moderation</span><h1>Review queue</h1><p class="section-subtitle">Make clear, traceable decisions before content reaches students.</p></div></div>
+        <div class="admin-queue-grid"><div class="admin-queue-card"><span>Properties</span><strong id="reviewAccomCount">0</strong><small>Waiting for review</small><button class="admin-text-link" type="button" data-tab-target="accommodations">Open properties</button></div><div class="admin-queue-card"><span>Marketplace</span><strong id="reviewMarketCount">0</strong><small>Waiting for review</small><button class="admin-text-link" type="button" data-tab-target="marketplace">Open marketplace</button></div><div class="admin-queue-card"><span>Users</span><strong id="reviewUserCount">0</strong><small>Awaiting verification</small><button class="admin-text-link" type="button" data-tab-target="users">Open users</button></div></div>
+        <div class="admin-card"><div class="admin-card-head"><div><span class="admin-card-label">Decision workflow</span><h2>Pending submissions</h2></div></div><p class="admin-empty-copy">Use the category queues above to inspect and review pending provider listings and account applications.</p></div>
+      </section>
+
+      <section class="admin-panel" id="panel-users" role="tabpanel">
+        <div class="admin-panel-head"><div><span class="admin-kicker">People</span><h1>Users and verification</h1><p class="section-subtitle">Review identity documents, check account access, and freeze or reactivate accounts.</p></div></div>
+        <div class="admin-role-grid">
+          <div class="admin-role-card"><span>Students</span><strong id="userCountStudents">0</strong><small>Registered accounts</small></div>
+          <div class="admin-role-card"><span>Providers</span><strong id="userCountProviders">0</strong><small>Approved or pending</small></div>
+          <div class="admin-role-card"><span>Pending review</span><strong id="userCountPending">0</strong><small>Awaiting a decision</small></div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-head"><div><span class="admin-card-label">Account directory</span><h2>Registered users</h2></div></div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead><tr><th>Reference</th><th>User</th><th>Role</th><th>Actions</th></tr></thead>
+              <tbody id="usersTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="admin-panel" id="panel-analytics" role="tabpanel">
+        <div class="admin-panel-head">
+          <div><span class="admin-kicker">Platform intelligence</span><h1>Analytics</h1><p class="section-subtitle">Account growth, listing engagement, and campus activity.</p></div>
+          <div class="admin-quick-actions">
+            <label class="analytics-period-control" for="analyticsPeriod">Period
+              <select id="analyticsPeriod">
+                <option value="7">Last 7 days</option>
+                <option value="30" selected>Last 30 days</option>
+                <option value="90">Last 90 days</option>
+              </select>
+            </label>
+            <button id="refreshAnalytics" class="admin-quick-action" type="button">Refresh</button>
+            <button id="exportAnalytics" class="admin-quick-action" type="button">Export CSV</button>
+          </div>
+        </div>
+        <p id="analyticsStatus" class="analytics-status" role="status" aria-live="polite">Loading analytics…</p>
+        <p class="analytics-definition-note">Listing views count opened listing details; they are not total website page views. Contact clicks count taps on a listing’s contact link.</p>
+        <div class="analytics-primary-grid" aria-live="polite">
+          <article class="analytics-primary-card"><span>New sign-ups</span><strong id="analyticsNewUsers">—</strong><small>In the selected period</small></article>
+          <article class="analytics-primary-card analytics-primary-card-teal"><span>Published listings</span><strong id="analyticsListings">—</strong><small>Available on CampusAura</small></article>
+          <article class="analytics-primary-card analytics-primary-card-warm"><span>Listing views</span><strong id="analyticsViews">—</strong><small>In the selected period</small></article>
+        </div>
+        <div class="analytics-breakdown-grid">
+          <section class="admin-card analytics-breakdown-card" aria-labelledby="analyticsAccountsTitle">
+            <div class="admin-card-head"><div><span class="admin-card-label">Community</span><h2 id="analyticsAccountsTitle">Accounts</h2></div></div>
+            <dl class="analytics-stat-grid">
+              <div><dt>Total accounts</dt><dd id="analyticsTotalUsers">—</dd></div>
+              <div><dt>Students</dt><dd id="analyticsStudents">—</dd></div>
+              <div><dt>Providers</dt><dd id="analyticsProviders">—</dd></div>
+              <div><dt>Pending verification</dt><dd id="analyticsPending">—</dd></div>
+            </dl>
+          </section>
+          <section class="admin-card analytics-breakdown-card" aria-labelledby="analyticsCampusTitle">
+            <div class="admin-card-head"><div><span class="admin-card-label admin-card-label-teal">Activity</span><h2 id="analyticsCampusTitle">Campus activity</h2></div></div>
+            <dl class="analytics-stat-grid">
+              <div><dt>Contact clicks</dt><dd id="analyticsInquiries">—</dd></div>
+              <div><dt>Published events</dt><dd id="analyticsEvents">—</dd></div>
+              <div><dt>Upcoming RSVPs</dt><dd id="analyticsRsvps">—</dd></div>
+            </dl>
+          </section>
+        </div>
+        <div class="analytics-trend-grid">
+          <section class="admin-card analytics-chart-card" aria-labelledby="analyticsSignupsTitle">
+            <div class="admin-card-head"><div><span class="admin-card-label">Account growth</span><h2 id="analyticsSignupsTitle">Sign-ups over time</h2><p class="analytics-chart-hint">Daily totals · grouped by week for 90-day view</p></div></div>
+            <div id="analyticsSignupsTrend" class="analytics-trend" role="img" aria-label="Account sign-ups in the selected period"></div>
+            <p id="analyticsSignupsEmpty" class="admin-empty-copy" hidden>No sign-ups in this period.</p>
+          </section>
+          <section class="admin-card analytics-chart-card" aria-labelledby="analyticsEngagementTitle">
+            <div class="admin-card-head">
+              <div><span class="admin-card-label admin-card-label-teal">Listing engagement</span><h2 id="analyticsEngagementTitle">Views and contact clicks</h2><p class="analytics-chart-hint">Daily totals · grouped by week for 90-day view</p></div>
+              <div class="analytics-legend"><span><i class="analytics-legend-views"></i>Views</span><span><i class="analytics-legend-inquiries"></i>Contact clicks</span></div>
+            </div>
+            <div id="analyticsEngagementTrend" class="analytics-trend" role="img" aria-label="Listing views and contact clicks in the selected period"></div>
+            <p id="analyticsEngagementEmpty" class="admin-empty-copy" hidden>No listing activity in this period.</p>
+          </section>
+        </div>
+        <div class="admin-card analytics-listing-card">
+          <div class="admin-card-head"><div><span class="admin-card-label">Listing performance</span><h2>Most viewed published listings</h2></div></div>
+          <div class="admin-table-wrap">
+            <table class="admin-table analytics-listing-table">
+              <thead><tr><th>Listing</th><th>Type</th><th>Views</th><th>Contact clicks</th></tr></thead>
+              <tbody id="analyticsTopListings"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="admin-panel" id="panel-settings" role="tabpanel">
+        <div class="admin-panel-head"><div><span class="admin-kicker">Configuration</span><h1>Admin settings</h1><p class="section-subtitle">Control the platform rules and the people who can operate it.</p></div></div>
+        <div class="admin-settings-grid"><div class="admin-card"><span class="admin-card-label">Access control</span><h2>Administrator access</h2><div class="admin-health-row"><span>Role protection</span><strong>Enabled</strong></div><div class="admin-health-row"><span>Audit history</span><strong>Coming soon</strong></div><button class="admin-quick-action" type="button" disabled aria-disabled="true">Manage administrators · coming soon</button></div><div class="admin-card"><span class="admin-card-label">Platform setup</span><h2>Campus configuration</h2><div class="admin-health-row"><span>Campuses</span><strong>Configure</strong></div><div class="admin-health-row"><span>Categories</span><strong>Configure</strong></div><button class="admin-quick-action" type="button" disabled aria-disabled="true">Open configuration · coming soon</button></div></div>
+      </section>
+
+      <!-- Accommodations -->
+      <section class="admin-panel" id="panel-accommodations" role="tabpanel">
+        <div class="admin-panel-head">
+          <h1>Accommodations</h1>
+          <p class="section-subtitle">Manage student housing listings.</p>
+        </div>
+
+        <form class="admin-form modern-admin-form" id="formAccom" hidden>
+          <div class="modern-form-header">
+            <div>
+              <span class="admin-card-label">Accommodation</span>
+              <h3>Add a listing</h3>
+            </div>
+            <span class="admin-form-badge">Live</span>
+          </div>
+          <div class="admin-form-grid">
+            <label class="admin-form-field"><span>Title</span><input type="text" id="accomTitle" placeholder="e.g. Cedar House Studio" required></label>
+            <label class="admin-form-field"><span>Location</span><input type="text" id="accomLocation" placeholder="North Campus" required></label>
+            <label class="admin-form-field"><span>Price (K)</span><input type="number" id="accomPrice" placeholder="3200" min="0" required></label>
+            <div class="admin-image-upload admin-span" data-admin-image-picker="accom">
+              <input type="file" id="accomImages" accept="image/jpeg,image/png,image/webp" multiple hidden>
+              <button class="admin-image-dropzone" type="button" aria-controls="accomImages"><strong>Add accommodation photos</strong><span>Choose or drop up to 10 JPG, PNG, or WebP images · 5 MB max each</span></button>
+              <div class="admin-image-previews" id="accomImagePreviews" aria-live="polite"></div>
+            </div>
+            <label class="admin-form-field admin-span"><span>Description</span><input type="text" id="accomDesc" placeholder="Short description for student listings"></label>
+          </div>
+          <div class="admin-form-actions">
+            <button type="submit" class="btn btn-primary">Publish listing</button>
+          </div>
+        </form>
+
+        <div class="admin-card">
+          <h3>All listings</h3>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr><th>Reference</th><th>Title</th><th>Location</th><th>Price</th><th>Status</th><th></th></tr>
+              </thead>
+              <tbody id="accomTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Marketplace -->
+      <section class="admin-panel" id="panel-marketplace" role="tabpanel">
+        <div class="admin-panel-head">
+          <h1>Marketplace</h1>
+          <p class="section-subtitle">Manage buy &amp; sell items.</p>
+        </div>
+
+        <form class="admin-form modern-admin-form" id="formMarket" hidden>
+          <div class="modern-form-header">
+            <div>
+              <span class="admin-card-label admin-card-label-teal">Marketplace</span>
+              <h3>Add an item</h3>
+            </div>
+            <span class="admin-form-badge admin-form-badge-teal">New</span>
+          </div>
+          <div class="admin-form-grid">
+            <label class="admin-form-field"><span>Title</span><input type="text" id="marketTitle" placeholder="e.g. Chemistry 101 notes" required></label>
+            <label class="admin-form-field"><span>Price (K)</span><input type="number" id="marketPrice" placeholder="150" min="0" required></label>
+            <label class="admin-form-field"><span>Seller</span><input type="text" id="marketSeller" placeholder="Seller name" required></label>
+            <label class="admin-form-field"><span>Category</span><select id="marketCategory" required>
+              <option value="" disabled selected>Select a category</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Furniture">Furniture</option>
+              <option value="Books &amp; study supplies">Books &amp; study supplies</option>
+              <option value="Fashion">Fashion</option>
+              <option value="Food &amp; groceries">Food &amp; groceries</option>
+              <option value="Transport">Transport</option>
+              <option value="Health &amp; beauty">Health &amp; beauty</option>
+              <option value="Sports &amp; recreation">Sports &amp; recreation</option>
+              <option value="Services">Services</option>
+              <option value="Other">Other</option>
+            </select></label>
+            <label class="admin-form-field"><span>Listing type</span><select id="marketListingType"><option value="product">Product</option><option value="service">Service</option></select></label>
+            <div class="admin-image-upload admin-span" data-admin-image-picker="market">
+              <input type="file" id="marketImages" accept="image/jpeg,image/png,image/webp" multiple hidden>
+              <button class="admin-image-dropzone" type="button" aria-controls="marketImages"><strong>Add marketplace photos</strong><span>Choose or drop up to 10 JPG, PNG, or WebP images · 5 MB max each</span></button>
+              <div class="admin-image-previews" id="marketImagePreviews" aria-live="polite"></div>
+            </div>
+          </div>
+          <div class="admin-form-actions">
+            <button type="submit" class="btn btn-primary">List item</button>
+          </div>
+        </form>
+
+        <div class="admin-card">
+          <h3>All items</h3>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr><th>Reference</th><th>Title</th><th>Category</th><th>Seller</th><th>Price</th><th>Status</th><th></th></tr>
+              </thead>
+              <tbody id="marketTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Events -->
+      <section class="admin-panel" id="panel-events" role="tabpanel">
+        <div class="admin-panel-head">
+          <h1>Events</h1>
+          <p class="section-subtitle">Manage campus events.</p>
+        </div>
+
+        <form class="admin-form modern-admin-form" id="formEvent" hidden>
+          <div class="modern-form-header">
+            <div>
+              <span class="admin-card-label">Events</span>
+              <h3>Add an event</h3>
+            </div>
+            <span class="admin-form-badge">Featured</span>
+          </div>
+          <div class="admin-form-grid">
+            <label class="admin-form-field"><span>Title</span><input type="text" id="eventTitle" placeholder="e.g. Startup Mixer" required></label>
+            <label class="admin-form-field"><span>Date</span><input type="text" id="eventDate" placeholder="Jun 4" required></label>
+            <label class="admin-form-field"><span>Location</span><input type="text" id="eventLocation" placeholder="Main Hall" required></label>
+            <div class="admin-image-upload admin-span" data-admin-image-picker="event">
+              <input type="file" id="eventImages" accept="image/jpeg,image/png,image/webp" multiple hidden>
+              <button class="admin-image-dropzone" type="button" aria-controls="eventImages"><strong>Add event photos</strong><span>Choose or drop up to 10 JPG, PNG, or WebP images · 5 MB max each</span></button>
+              <div class="admin-image-previews" id="eventImagePreviews" aria-live="polite"></div>
+            </div>
+            <label class="admin-form-field admin-span"><span>Type</span><select id="eventType"><option value="social">Social</option><option value="career">Career</option><option value="academic">Academic</option></select></label>
+          </div>
+          <div class="admin-form-actions">
+            <button type="submit" class="btn btn-primary">Publish event</button>
+          </div>
+        </form>
+
+        <div class="admin-card">
+          <h3>All events</h3>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr><th>Title</th><th>Date</th><th>Location</th><th>Status</th><th>Actions</th></tr>
+              </thead>
+              <tbody id="eventTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Messages -->
+      <section class="admin-panel" id="panel-messages" role="tabpanel">
+        <div class="admin-panel-head">
+          <h1>Messages</h1>
+          <p class="section-subtitle">Review incoming contact requests and track messages sent to users.</p>
+        </div>
+
+        <div class="admin-card">
+          <h3>Inbox <span class="muted small" id="msgCount"></span></h3>
+          <div id="messageList" class="admin-messages"></div>
+        </div>
+        <section class="admin-card admin-email-card" aria-labelledby="adminEmailTitle">
+          <div class="admin-card-head"><div><span class="admin-card-label">Direct communication</span><h2 id="adminEmailTitle">Outbox · Email a student or provider</h2></div></div>
+          <p class="admin-email-note">Send a private, plain-text email to one registered student or provider. Sent messages and administrator review notices appear below.</p>
+          <form id="adminEmailForm" class="admin-email-form">
+            <label class="admin-email-field" for="adminEmailRecipient">Recipient
+              <select id="adminEmailRecipient" name="userId" required>
+                <option value="">Choose a student or provider</option>
+              </select>
+            </label>
+            <label class="admin-email-field" for="adminEmailSubject">Subject
+              <input id="adminEmailSubject" name="subject" type="text" maxlength="180" required>
+            </label>
+            <label class="admin-email-field" for="adminEmailBody">Message
+              <textarea id="adminEmailBody" name="body" rows="7" maxlength="10000" required></textarea>
+            </label>
+            <div class="admin-email-actions">
+              <button class="admin-quick-action" type="submit">Send email</button>
+              <p id="adminEmailStatus" class="admin-email-status" role="status" aria-live="polite"></p>
+            </div>
+          </form>
+          <div class="admin-card-head admin-outbox-heading"><div><h3>Sent messages</h3></div></div>
+          <div id="adminOutbox" class="admin-messages"></div>
+        </section>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="admin-details-modal" id="adminDetailsModal" aria-hidden="true">
+    <div class="admin-details-modal-backdrop" data-close-modal="true"></div>
+    <div class="admin-details-modal-panel" role="dialog" aria-modal="true" aria-labelledby="adminDetailsTitle">
+      <button class="admin-details-close" type="button" data-close-modal="true" aria-label="Close detail view">×</button>
+      <div class="admin-details-header">
+        <span id="adminDetailsKicker" class="admin-card-label">Listing</span>
+        <h3 id="adminDetailsTitle">Title</h3>
+      </div>
+      <div id="adminDetailsMeta" class="admin-details-meta"></div>
+      <p id="adminDetailsDescription" class="admin-details-description"></p>
+      <div id="adminDetailsFooter" class="admin-details-footer"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/email.js"></script>
+  <script src="js/session-timeout.js"></script>
+  <script src="js/dashboard-nav.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

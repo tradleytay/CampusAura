@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#122033">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>You're offline — CampusAura</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+  <link rel="manifest" href="/icons/site.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+  <style>
+    :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+    body { box-sizing: border-box; min-height: 100vh; margin: 0; padding: 2rem; display: grid; place-items: center; background: #07111f; color: #f8fafc; }
+    main { width: min(100%, 32rem); text-align: center; }
+    h1 { margin-bottom: .5rem; font-size: clamp(2rem, 8vw, 3rem); }
+    p { color: #cbd5e1; line-height: 1.6; }
+    button, a { display: inline-block; margin: .75rem .35rem 0; padding: .8rem 1rem; border: 0; border-radius: .6rem; background: #2563eb; color: white; font: inherit; font-weight: 600; text-decoration: none; cursor: pointer; }
+    a { background: #1e293b; }
+    button:focus-visible, a:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
+  </style>
+</head>
+<body>
+  <main>
+    <p>CampusAura</p>
+    <h1>You're offline</h1>
+    <p>This page isn't available offline. Check your internet connection and try again. Previously visited pages may still be available.</p>
+    <button type="button" onclick="window.location.reload()">Try again</button>
+    <a href="/index.html">Go to home</a>
+  </main>
+  <script src="/js/pwa.js"></script>
+</body>
+</html>

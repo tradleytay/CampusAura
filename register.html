@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Create a CampusAura account to explore student services, connect with your campus community, or publish listings as a provider.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Create your account — CampusAura</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+  <link rel="manifest" href="icons/site.webmanifest">
+  <meta name="theme-color" content="#2563EB">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/rebuild.css">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8P3TYMPQ5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-C8P3TYMPQ5');
+  </script>
+</head>
+<body class="auth-page" data-auth-mode="signup">
+  <main class="auth-shell">
+    <a class="auth-brand" href="index.html">
+      <img src="icons/icon.png" alt="CampusAura logo">
+      <span>Campus<span class="brand-accent">Aura</span></span>
+    </a>
+    <section class="auth-card" aria-labelledby="authTitle">
+      <div class="auth-heading" id="registerHeading">
+        <span class="events-preview-glow">✨</span>
+        <h1 id="authTitle">Create your account</h1>
+        <p id="authSubtitle">Students can start after confirming email. Provider accounts require an identity review.</p>
+      </div>
+      <ol class="auth-steps" aria-label="Account setup progress">
+        <li class="is-current"><span>1</span><strong>Account</strong></li>
+        <li><span>2</span><strong>Confirm email</strong></li>
+        <li id="providerVerificationStep" hidden><span>3</span><strong>Provider review</strong></li>
+      </ol>
+      <section id="registrationSuccess" class="registration-success" hidden aria-live="polite" aria-labelledby="registrationSuccessTitle">
+        <div class="success-icon" aria-hidden="true">✓</div>
+        <h2 id="registrationSuccessTitle" tabindex="-1">Check your email</h2>
+        <p id="registrationSuccessMessage">Students can start after confirming email. Providers submit an NRC for review.</p>
+        <div class="success-summary">
+          <span>Account type</span>
+          <strong id="successRole">Student</strong>
+        </div>
+        <a id="registrationNextAction" class="btn btn-primary btn-lg" href="auth.html">Go to sign in</a>
+        <p class="registration-next-steps">Students can optionally submit a student ID after signing in. Providers submit an NRC for review.</p>
+      </section>
+      <form id="registerForm" class="auth-form">
+        <div class="registration-intro">
+          <strong>Choose your account type</strong>
+          <span id="registrationIntroText">Use your UNILUS student email to create a student account. You can submit your student ID for optional verification after signing in.</span>
+        </div>
+        <fieldset class="registration-choice">
+          <legend>Register as</legend>
+          <label class="choice-card">
+            <input type="radio" name="accountType" value="student" checked>
+            <span><strong>Student</strong><small>Use your UNILUS student email to join CampusAura.</small></span>
+          </label>
+          <label class="choice-card">
+            <input type="radio" name="accountType" value="provider">
+            <span><strong>Provider</strong><small>Choose properties or products and services. Contact an administrator to access both sections.</small></span>
+          </label>
+        </fieldset>
+        <label class="auth-field">
+          <span>Full name</span>
+          <input id="registerName" type="text" autocomplete="name" required>
+        </label>
+        <fieldset id="studentRegistrationFields" class="registration-role-fields">
+          <legend>Student details</legend>
+          <label class="auth-field">
+            <span>UNILUS student email</span>
+            <input id="registerEmail" type="email" autocomplete="email" placeholder="studentnumber@stud.unilus.ac.zm" aria-describedby="studentEmailHelp" required>
+            <small id="studentEmailHelp" class="file-help">Your address must end with @stud.unilus.ac.zm. If you do not have one, contact an administrator via <a href="contact.html">CampusAura support</a>.</small>
+          </label>
+          <label class="auth-field">
+            <span>University / campus</span>
+            <select id="registerUniversity" required>
+              <option value="UNILUS, Silverest Campus">UNILUS, Silverest Campus</option>
+              <option value="UNILUS, Pioneer Campus">UNILUS, Pioneer Campus</option>
+              <option value="UNILUS, Leopards Hill Campus">UNILUS, Leopards Hill Campus</option>
+              <option value="other">Others</option>
+            </select>
+          </label>
+          <label id="otherUniversityField" class="auth-field" hidden>
+            <span>Name of university</span>
+            <input id="registerOtherUniversity" type="text" autocomplete="organization" disabled>
+          </label>
+        </fieldset>
+        <fieldset id="providerRegistrationFields" class="registration-role-fields" hidden disabled>
+          <legend>Provider details</legend>
+          <label class="auth-field">
+            <span>Email address</span>
+            <input id="registerProviderEmail" type="email" autocomplete="email" placeholder="you@example.com" required disabled>
+          </label>
+          <label class="auth-field">
+            <span>What would you like to provide?</span>
+            <select id="providerListingType" required disabled>
+              <option value="accommodation">Properties / accommodation</option>
+              <option value="marketplace">Products and services</option>
+            </select>
+            <small class="file-help">Choose one section. To list in both, contact an administrator after registering.</small>
+          </label>
+          <p class="file-help">After confirming your email and signing in, submit your NRC for provider review before publishing listings.</p>
+        </fieldset>
+        <label class="auth-field">
+          <span>Phone number</span>
+          <div class="phone-entry">
+            <select id="registerCountryCode" aria-label="Country calling code" autocomplete="tel-country-code" required>
+              <option value="+260" data-region="ZM">Zambia (+260)</option>
+              <option value="+263" data-region="ZW">Zimbabwe (+263)</option>
+              <option value="+265" data-region="MW">Malawi (+265)</option>
+              <option value="+267" data-region="BW">Botswana (+267)</option>
+              <option value="+264" data-region="NA">Namibia (+264)</option>
+              <option value="+27" data-region="ZA">South Africa (+27)</option>
+              <option value="+255" data-region="TZ">Tanzania (+255)</option>
+              <option value="+254" data-region="KE">Kenya (+254)</option>
+              <option value="+256" data-region="UG">Uganda (+256)</option>
+              <option value="+250" data-region="RW">Rwanda (+250)</option>
+              <option value="+243" data-region="CD">DR Congo (+243)</option>
+              <option value="+258" data-region="MZ">Mozambique (+258)</option>
+              <option value="+234" data-region="NG">Nigeria (+234)</option>
+              <option value="+233" data-region="GH">Ghana (+233)</option>
+              <option value="+44" data-region="GB">United Kingdom (+44)</option>
+              <option value="+1" data-region="US">United States (+1)</option>
+              <option value="+1" data-region="CA">Canada (+1)</option>
+              <option value="+91" data-region="IN">India (+91)</option>
+            </select>
+            <input id="registerPhone" type="tel" autocomplete="tel-national" inputmode="numeric" pattern="[0-9]{9}" minlength="9" maxlength="9" placeholder="971234567" aria-describedby="phoneHelp" required>
+          </div>
+          <small id="phoneHelp" class="file-help">Your browser region selects a default calling code when available; you can change it. Enter exactly 9 digits. Used by interested students to contact you about listings.</small>
+        </label>
+        <label class="auth-field">
+          <span>Password</span>
+          <span class="password-input-wrap">
+            <input id="registerPassword" type="password" autocomplete="new-password" minlength="8" required>
+            <button class="password-visibility-toggle" type="button" data-password-toggle aria-label="Show password" aria-controls="registerPassword" aria-pressed="false">👁️</button>
+          </span>
+        </label>
+        <label class="auth-field">
+          <span>Confirm password</span>
+          <span class="password-input-wrap">
+            <input id="registerPasswordConfirm" type="password" autocomplete="new-password" minlength="8" required>
+            <button class="password-visibility-toggle" type="button" data-password-toggle aria-label="Show password" aria-controls="registerPasswordConfirm" aria-pressed="false">👁️</button>
+          </span>
+        </label>
+        <label class="consent-check">
+          <input id="legalConsent" type="checkbox" required>
+          <span>I agree to the <a href="terms.html" target="_blank" rel="noopener noreferrer">Terms of Service</a> and acknowledge the <a href="privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</span>
+        </label>
+        <button id="registerSubmit" class="btn btn-primary btn-lg" type="submit">Create account</button>
+        <p id="registerStatus" class="auth-status" role="status" aria-live="polite"></p>
+      </form>
+      <a class="auth-toggle" id="registerSignInLink" href="auth.html">Already have an account? Sign in</a>
+      <a class="auth-back" href="index.html">Return to CampusAura</a>
+    </section>
+  </main>
+
+  <footer class="site-footer profile-registration-footer">
+    <!-- Main Footer Content -->
+    <div class="footer-main">
+      <div class="container">
+        <div class="footer-content">
+          <!-- Brand Column -->
+          <div class="footer-column footer-brand">
+            <div class="footer-logo">
+              <span class="brand">CampusAura</span>
+            </div>
+            <p class="footer-description">Connecting students to housing, goods, and events — all in one trusted platform.</p>
+            <div class="footer-socials">
+              <!-- Phone + WhatsApp -->
+              <a href="tel:+260981637085" target="_blank" rel="noopener noreferrer" aria-label="Phone" class="social-link">
+                <!-- Phone icon -->
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M6.62 10.79a15.053 15.053 0 006.79 6.79l2.2-2.2a1 1 0 011.01-.24c1.12.37 2.33.57 3.58.57a1 1 0 011 1V20a1 1 0 01-1 1C10.07 21 3 13.93 3 5a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.46.57 3.58a1 1 0 01-.24 1.01l-2.2 2.2z"/>
+                </svg>
+              </a>
+              <a href="https://wa.me/260981637085" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" class="social-link">
+                <!-- WhatsApp icon -->
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M20.52 3.48A11.86 11.86 0 0012 0C5.37 0 .02 5.35.02 11.98c0 2.1.55 4.15 1.6 5.95L0 24l6.25-1.6a11.95 11.95 0 005.75 1.45c6.63 0 11.98-5.35 11.98-11.98 0-3.17-1.26-6.2-3.46-8.39ZM12 22C6.48 22 2 17.52 2 11.99 2 6.46 6.48 1.98 12 1.98c2.67 0 5.18 1.04 7.07 2.93A9.97 9.97 0 0121.98 11.99C21.98 17.52 17.5 22 12 22Zm5.52-8.63c-.3-.15-1.78-.87-2.05-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.18.2-.35.23-.65.08-.3-.15-1.27-.47-2.42-1.49-.89-.79-1.48-1.77-1.65-2.07-.17-.3-.02-.46.13-.61.14-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.07-.8.35-.27.28-1.05 1.02-1.05 2.49 0 1.47 1.08 2.89 1.23 3.09.15.2 2.1 3.2 5.1 4.49.71.31 1.26.49 1.69.63.71.23 1.35.2 1.86.12.57-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.17-1.43-.08-.13-.27-.2-.57-.35Z"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Product Links -->
+          <div class="footer-column">
+            <h4 class="footer-heading">Product</h4>
+            <nav class="footer-nav">
+              <a href="accommodation.html" class="footer-link">Accommodation</a>
+              <a href="marketplace.html" class="footer-link">Marketplace</a>
+              <a href="events.html" class="footer-link">Events</a>
+              <a href="#" class="footer-link">Browse All</a>
+            </nav>
+          </div>
+
+          <!-- Company Links -->
+          <div class="footer-column">
+            <h4 class="footer-heading">Company</h4>
+            <nav class="footer-nav">
+              <a href="#" class="footer-link">About Us</a>
+              <a href="#" class="footer-link">Blog</a>
+              <a href="#" class="footer-link">Careers</a>
+              <a href="#" class="footer-link">Press Kit</a>
+            </nav>
+          </div>
+
+          <!-- Resources & Support -->
+          <div class="footer-column">
+            <h4 class="footer-heading">Support</h4>
+            <nav class="footer-nav">
+              <a href="#" class="footer-link">Help Center</a>
+              <a href="#" class="footer-link">Contact Us</a>
+              <a href="#" class="footer-link">Safety Tips</a>
+              <a href="#" class="footer-link">Community Guidelines</a>
+            </nav>
+          </div>
+
+          <!-- Legal Links -->
+          <div class="footer-column">
+            <h4 class="footer-heading">Legal</h4>
+            <nav class="footer-nav">
+              <a href="privacy.html" class="footer-link">Privacy Policy</a>
+              <a href="terms.html" class="footer-link">Terms of Service</a>
+              <a href="privacy.html" class="footer-link">Cookie Policy</a>
+              <a href="#" class="footer-link">Accessibility</a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Newsletter Section >
+    <div class="footer-newsletter">
+      <div class="container">
+        <div class="newsletter-content">
+          <div class="newsletter-text">
+            <h3>Stay Updated</h3>
+            <p>Subscribe to get the latest listings, events, and student deals.</p>
+          </div>
+          <form class="newsletter-form" onsubmit="handleNewsletterSignup(event)">
+            <input type="email" placeholder="Enter your email" required aria-label="Email address">
+            <button type="submit" class="btn btn-primary">Subscribe</button>
+          </form>
+        </div>
+      </div>
+    </div-->
+
+    <!-- Bottom Footer -->
+    <div class="footer-bottom">
+      <div class="container">
+        <div class="footer-bottom-content">
+          <div class="copyright">
+            <p>&copy; 2026 CampusAura.Org. All rights reserved.</p>
+          </div>
+          <div class="footer-meta">
+            <span>Made with <span class="heart">❤</span> for students</span>
+            <span class="divider">•</span>
+            <span>v1.0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/email.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/password-visibility.js"></script>
+  <script src="js/register.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

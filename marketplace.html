@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Browse the CampusAura student marketplace for textbooks, electronics, and everyday campus essentials to buy and sell.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CampusAura">
+  <meta property="og:title" content="Student Marketplace | CampusAura">
+  <meta property="og:description" content="Discover textbooks, electronics, and everyday campus essentials in the CampusAura student marketplace.">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Student Marketplace | CampusAura">
+  <meta name="twitter:description" content="Discover textbooks, electronics, and everyday campus essentials in the CampusAura student marketplace.">
+  <meta name="theme-color" content="#122033">
+  <title>Student Marketplace | CampusAura</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="manifest" href="icons/site.webmanifest">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/rebuild.css">
+  <link rel="stylesheet" href="css/home.css">
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8P3TYMPQ5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-C8P3TYMPQ5');
+  </script>
+</head>
+
+<body data-page="marketplace" class="marketplace-page">
+  <header class="site-header" id="siteHeader">
+    <div class="container nav-row">
+      <a href="index.html" class="brand" aria-label="CampusAura home"><img src="icons/icon.png" alt="" class="brand-logo"><span class="brand-text">Campus<span class="brand-accent">Aura</span></span></a>
+      <nav class="nav" id="siteNav" aria-label="Primary navigation">
+        <a href="index.html" class="nav-link" data-nav="home">Home</a><a href="about.html" class="nav-link" data-nav="about">About</a>
+        <div class="nav-dropdown" id="studentHub">
+          <button type="button" class="nav-link nav-dropdown-btn" id="hubBtn" data-hub-toggle aria-haspopup="true" aria-expanded="false" aria-controls="hubMenu">Student Hub <svg class="caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg></button>
+          <div class="nav-dropdown-menu" id="hubMenu" role="menu" aria-label="Student Hub" aria-hidden="true">
+            <a href="accommodation.html" class="hub-item" role="menuitem" data-nav="accommodation"><span class="hub-icon">⌂</span><span class="hub-text"><strong class="hub-title">Accommodation</strong><small class="hub-desc">Find a place to live</small></span></a>
+            <a href="marketplace.html" class="hub-item" role="menuitem" data-nav="marketplace"><span class="hub-icon">↗</span><span class="hub-text"><strong class="hub-title">Marketplace</strong><small class="hub-desc">Buy and sell with students</small></span></a>
+            <a href="events.html" class="hub-item" role="menuitem" data-nav="events"><span class="hub-icon">✦</span><span class="hub-text"><strong class="hub-title">Events</strong><small class="hub-desc">See what is happening</small></span></a>
+          </div>
+        </div>
+        <a href="contact.html" class="nav-link" data-nav="contact">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <a id="authNavLink" href="auth.html" class="btn btn-ghost nav-auth-link">Sign in</a>
+        <a href="https://whatsapp.com/channel/00029Vb89OaC2phHQLS9GZq37" class="btn btn-primary nav-cta">Join Community <span>↗</span></a>
+        <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-controls="siteNav" aria-expanded="false"><span></span><span></span><span></span></button></div>
+    </div>
+  </header>
+  <div class="nav-backdrop" id="navBackdrop" aria-hidden="true"></div>
+
+  <main>
+    <section class="market-hero">
+      <div class="container market-hero-grid">
+        <div><p class="eyebrow"><span class="eyebrow-dot"></span> Products, services, good people</p><h1>Find what you need <em>close to campus.</em></h1><p>Discover products and useful services from students, local businesses, and trusted campus providers.</p><div class="market-hero-actions"><a href="#marketBrowse" class="btn btn-primary">Start browsing <span>↓</span></a><a href="provider.html" class="btn btn-secondary">List a product or service <span>↗</span></a></div></div>
+        <div class="market-hero-art"><div class="market-art-card"><img src="images/market.jpeg" alt="Student marketplace products" loading="eager"></div><div class="market-art-note"><span>↗</span><strong>Campus finds, closer</strong><small>Useful things from your community.</small></div></div>
+      </div>
+    </section>
+
+    <section class="container market-trust-strip" aria-label="Marketplace benefits"><div><strong id="totalMarket">—</strong><span>items listed</span></div><div><strong>Local</strong><span>student sellers</span></div><div><strong>Simple</strong><span>campus exchanges</span></div><p><span class="live-dot"></span>New finds added regularly</p></section>
+
+    <div class="container decision-note"><strong>Buying or selling:</strong> CampusAura helps you discover and contact sellers; it does not collect or hold payments for user-to-user arrangements. Confirm the seller, item condition, and payment details independently before you agree.</div>
+    <section class="container market-browse" id="marketBrowse">
+      <div class="market-browse-heading"><div><p class="eyebrow">Explore the marketplace</p><h2>Find something useful, <span>nearby.</span></h2></div><p>From textbooks to tech, discover good things that fit student life and your budget.</p></div>
+      <div class="market-categories"><div class="market-categories-head"><h3>Browse by category</h3><span>Start with what you need</span></div><div class="categories-grid"><button class="category-chip" onclick="filterByCategory('Electronics', this)">Electronics</button><button class="category-chip" onclick="filterByCategory('Furniture', this)">Furniture</button><button class="category-chip" onclick="filterByCategory('Books &amp; study supplies', this)">Books &amp; study supplies</button><button class="category-chip" onclick="filterByCategory('Fashion', this)">Fashion</button><button class="category-chip" onclick="filterByCategory('Food &amp; groceries', this)">Food &amp; groceries</button><button class="category-chip" onclick="filterByCategory('Transport', this)">Transport</button><button class="category-chip" onclick="filterByCategory('Health &amp; beauty', this)">Health &amp; beauty</button><button class="category-chip" onclick="filterByCategory('Sports &amp; recreation', this)">Sports &amp; recreation</button><button class="category-chip" onclick="filterByCategory('Services', this)">Services</button><button class="category-chip" onclick="filterByCategory('Other', this)">Other</button><button class="category-chip" onclick="filterByCategory('', this)">All items</button></div></div>
+      <section class="market-filter-panel" aria-label="Marketplace filters"><div class="market-filter-top"><div><span class="filter-kicker">Search listings</span><h3>What are you looking for?</h3></div><button id="resetFilters" class="btn btn-ghost">Reset filters</button></div><div class="market-filter-fields"><label for="marketSearch"><span>Search</span><input type="text" id="marketSearch" placeholder="Product or keyword..."></label><label for="categoryFilter"><span>Category</span><select id="categoryFilter"><option value="">All categories</option><option>Electronics</option><option>Furniture</option><option>Books &amp; study supplies</option><option>Fashion</option><option>Food &amp; groceries</option><option>Transport</option><option>Health &amp; beauty</option><option>Sports &amp; recreation</option><option>Services</option><option>Other</option></select></label><label for="priceFilter"><span>Price range</span><select id="priceFilter"><option value="">Any price</option><option value="0-200">Under K200</option><option value="200-1000">K200 - K1,000</option><option value="1000-5000">K1,000 - K5,000</option><option value="5000-100000">K5,000 and above</option></select></label><button id="marketFilterBtn" class="btn btn-primary">Find items <span>→</span></button></div></section>
+      <div class="market-results-bar"><div><strong>Available now</strong><span>Good things deserve a second chance.</span></div><div class="results-controls"><div class="sort-options"><label for="marketSort">Sort by</label><select id="marketSort" class="sort-select"><option value="newest">Newest first</option><option value="price-low">Price: Low to High</option><option value="price-high">Price: High to Low</option><option value="popular">Most Popular</option></select></div><div class="view-toggle"><button class="view-btn active" data-view="grid" title="Grid view">⊞</button><button class="view-btn" data-view="list" title="List view">≡</button></div></div></div>
+      <div id="emptyState" class="empty-state" style="display:none"><div class="empty-icon">↗</div><h3>No items found</h3><p>Try adjusting your filters or search terms.</p><button onclick="document.getElementById('resetFilters').click()" class="btn btn-primary">Clear filters</button></div>
+      <div class="grid cards market-grid" id="marketplaceGrid"><div class="feed-loading">Loading marketplace finds...</div></div>
+    </section>
+
+  </main>
+
+  <!--section class="newsletter-section"><div class="container newsletter-inner"><div><p class="eyebrow">Stay in the loop</p><h2>Good things are happening.</h2><p>Get the latest campus finds and events in your inbox.</p></div><form class="newsletter-form" onsubmit="handleNewsletterSignup(event)"><label class="visually-hidden" for="newsletterEmail">Your email address</label><input id="newsletterEmail" type="email" placeholder="Your student email" required><button class="btn btn-primary" type="submit">Subscribe <span>→</span></button></form></div></section-->
+  <footer class="site-footer home-footer">
+    <div class="container footer-top">
+      <a href="index.html" class="brand" aria-label="CampusAura home">
+        <img src="icons/icon.png" alt="" class="brand-logo">
+        <span class="brand-text">Campus<span class="brand-accent">Aura</span></span>
+      </a>
+      <p>Everything student. One trusted place.</p>
+      
+      <div class="footer-links">
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </div>
+    </div>
+    
+    <div class="container footer-bottom-content">
+      <span>&copy; 2026 CampusAura.Org</span>
+      <span>Made for students, with care.</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/session-timeout.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

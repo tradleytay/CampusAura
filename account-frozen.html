@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#2563EB">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Account access paused — CampusAura</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="manifest" href="icons/site.webmanifest">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/rebuild.css">
+</head>
+<body class="account-frozen-page">
+  <main class="account-frozen-shell">
+    <section class="account-frozen-card" aria-labelledby="frozenTitle">
+      <a class="account-frozen-brand" href="index.html">CampusAura</a>
+      <span class="account-frozen-icon" aria-hidden="true">!</span>
+      <p class="account-frozen-eyebrow">Account access</p>
+      <h1 id="frozenTitle">Your account is frozen</h1>
+      <p class="account-frozen-copy">Your account access has been paused by CampusAura. You can contact the team if you have questions or believe this is a mistake.</p>
+      <div class="account-frozen-reason" id="frozenReasonWrap" hidden>
+        <span>Reason provided</span>
+        <p id="frozenReason"></p>
+      </div>
+      <p class="account-frozen-status" id="frozenStatus" role="status" aria-live="polite">Checking account status…</p>
+      <div class="account-frozen-actions">
+        <a class="account-frozen-contact" href="contact.html">Contact CampusAura</a>
+        <button id="frozenSignOut" type="button">Sign out</button>
+      </div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/account-frozen.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

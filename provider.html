@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Manage your accommodation and marketplace listings, review performance, and track inquiries in your CampusAura provider dashboard.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Provider Dashboard — CampusAura</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+  <link rel="manifest" href="icons/site.webmanifest">
+  <meta name="theme-color" content="#2563EB">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/provider.css">
+  <link rel="stylesheet" href="css/rebuild.css">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8P3TYMPQ5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-C8P3TYMPQ5');
+  </script>
+</head>
+
+<body class="dashboard-page provider-page">
+  <!-- Provider Top Bar -->
+  <header class="admin-topbar">
+    <div class="admin-topbar-inner">
+      <a href="provider.html" class="admin-brand">
+        <img src="icons/icon.png" alt="CampusAura logo" class="admin-brand-logo">
+        <span>CampusAura <em>Provider</em></span>
+      </a>
+      <nav class="admin-topnav" aria-label="Provider navigation">
+        <a href="index.html" class="admin-toplink">View Site</a>
+        <button id="signOutBtn" class="admin-toplink admin-toplink-ghost" type="button">Sign out</button>
+        <span class="admin-chip" id="providerRoleChip">Provider account</span>
+      </nav>
+    </div>
+  </header>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="admin-profile luxury-profile">
+        <div class="admin-profile-avatar" id="providerAvatar">CA</div>
+        <div>
+          <div class="admin-profile-name" id="providerName">Chanda Mulenga</div>
+          <div class="admin-profile-sub" id="providerSub">Provider · Products, services &amp; accommodation</div>
+          <span class="account-verification-badge is-unverified" id="providerVerificationBadge" role="status">Unverified</span>
+        </div>
+      </div>
+      <button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="providerDashboardNav">
+        <span class="dashboard-nav-toggle-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>Dashboard sections</span>
+      </button>
+      <nav class="admin-tabs" id="providerDashboardNav" role="tablist" aria-label="Provider dashboard sections">
+        <button class="admin-tab active" data-tab="overview" role="tab" aria-selected="true"><span>Overview</span><small>Your workspace</small></button>
+        <button class="admin-tab" data-tab="listings" data-feed-target="accommodation" data-provider-section="accommodation" role="tab" aria-selected="false"><span>Properties</span><small>Accommodation</small></button>
+        <button class="admin-tab" data-tab="listings" data-feed-target="marketplace" data-provider-section="marketplace" role="tab" aria-selected="false"><span>Products &amp; services</span><small>Marketplace</small></button>
+        <button class="admin-tab" data-tab="inbox" role="tab" aria-selected="false"><span>Contact activity</span><small>Listing clicks</small></button>
+        <button class="admin-tab" data-tab="analytics" role="tab" aria-selected="false"><span>Analytics</span><small>Performance</small></button>
+        <button class="admin-tab" data-tab="settings" role="tab" aria-selected="false"><span>Settings</span><small>Account details</small></button>
+      </nav>
+      <div class="admin-sidebar-foot"></div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <section class="admin-card provider-approval-banner" id="providerApprovalBanner" hidden aria-live="polite">
+        <span class="provider-kicker">Provider approval</span>
+        <h2 id="providerApprovalTitle">Your dashboard is read-only</h2>
+        <p id="providerApprovalMessage">You can review your workspace, but listing actions unlock after approval.</p>
+        <a class="btn btn-primary" id="providerVerificationAction" href="verify.html">Submit NRC for review</a>
+      </section>
+
+      <!-- Overview -->
+      <section class="admin-panel active" id="panel-overview" role="tabpanel">
+        <div class="admin-panel-head">
+          <div>
+            <span class="provider-kicker">Provider workspace</span>
+            <h1>Welcome back, Chanda</h1>
+            <p class="section-subtitle">Manage accommodation, products, and student services from one place.</p>
+          </div>
+        </div>
+
+        <div class="admin-stats">
+          <div class="admin-stat">
+            <div class="admin-stat-icon">🏠</div>
+            <div>
+              <span class="admin-stat-number" id="statListings">0</span>
+              <span class="admin-stat-label">Total Listings</span>
+            </div>
+          </div>
+          <div class="admin-stat">
+            <div class="admin-stat-icon">✅</div>
+            <div>
+              <span class="admin-stat-number" id="statActive">0</span>
+              <span class="admin-stat-label">Active</span>
+            </div>
+          </div>
+          <div class="admin-stat">
+            <div class="admin-stat-icon">👁️</div>
+            <div>
+              <span class="admin-stat-number" id="statViews">0</span>
+              <span class="admin-stat-label">Total Views</span>
+            </div>
+          </div>
+          <div class="admin-stat">
+            <div class="admin-stat-icon">💼</div>
+            <div>
+              <span class="admin-stat-number" id="statInquiries">0</span>
+              <span class="admin-stat-label">Contact clicks</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="provider-overview-grid">
+          <div class="admin-card provider-summary-card">
+            <div class="provider-card-head"><div><span class="provider-card-label">Property owner</span><h2>Accommodation</h2></div><button class="provider-text-link" type="button" data-tab-target="listings" data-feed-target="accommodation" data-provider-section="accommodation">Manage</button></div>
+            <div class="provider-summary-row"><span>Active properties</span><strong id="overviewAccomCount">0</strong></div>
+            <div class="provider-summary-row"><span>Pending review</span><strong id="overviewAccomPending">0</strong></div>
+            <div class="provider-summary-row"><span>Contact clicks</span><strong id="overviewAccomInquiries">0</strong></div>
+          </div>
+          <div class="admin-card provider-summary-card">
+          <div class="provider-card-head"><div><span class="provider-card-label provider-card-label-teal">Campus seller or service provider</span><h2>Products &amp; services</h2></div><button class="provider-text-link" type="button" data-tab-target="listings" data-feed-target="marketplace" data-provider-section="marketplace">Manage</button></div>
+          <div class="provider-summary-row"><span>Active offers</span><strong id="overviewMarketCount">0</strong></div>
+          <div class="provider-summary-row"><span>Pending review</span><strong id="overviewMarketPending">0</strong></div>
+          <div class="provider-summary-row"><span>Products sold</span><strong id="overviewMarketSold">0</strong></div>
+            <div class="provider-summary-row"><span>Contact clicks</span><strong id="overviewMarketInquiries">0</strong></div>
+          </div>
+        </div>
+
+        <div class="admin-card provider-inquiry-card">
+          <div class="provider-card-head"><div><span class="provider-card-label">Live activity</span><h2>Listing contact clicks</h2></div><button class="provider-text-link" type="button" data-tab-target="analytics">View analytics</button></div>
+          <div id="overviewInquiries" class="admin-recent"></div>
+        </div>
+      </section>
+
+      <!-- My Listings -->
+      <section class="admin-panel" id="panel-listings" role="tabpanel">
+        <div class="admin-panel-head">
+          <h1>My Listings</h1>
+          <p class="section-subtitle">Manage your accommodation and marketplace listings.</p>
+        </div>
+
+        <div class="admin-card provider-tools-locked" id="providerToolsLocked" hidden>
+          <strong>Listing tools are locked until approval</strong>
+          <p>Your dashboard and listing status remain available while your provider application is reviewed.</p>
+        </div>
+
+        <!-- Listing type toggle -->
+        <div class="provider-workspace-head">
+          <div><span class="provider-kicker">Your offers</span><p>List a place to stay, a product, or a service students can book or buy.</p></div>
+          <div class="provider-type-toggle" role="tablist" aria-label="Inventory type">
+            <button class="type-btn active" data-feed="accommodation" data-provider-section="accommodation" role="tab">Properties</button>
+            <button class="type-btn" data-feed="marketplace" data-provider-section="marketplace" role="tab">Products &amp; services</button>
+          </div>
+        </div>
+
+        <!-- Accommodation feed -->
+        <div class="provider-feed" id="feed-accommodation">
+          <div class="provider-scope-notice" id="accommodationScopeNotice" hidden>
+            <strong>Accommodation listing access is not enabled</strong>
+            <p>Your account is approved for a different section. Contact an administrator if you need access to properties.</p>
+            <a href="contact.html">Contact CampusAura</a>
+          </div>
+          <form class="admin-form" id="formAccom">
+            <h3>Add an accommodation</h3>
+            <div class="admin-form-grid">
+              <input type="text" id="accomTitle" placeholder="Title" required>
+              <input type="text" id="accomLocation" placeholder="Location (e.g. North Campus)" required>
+              <input type="number" id="accomPrice" placeholder="Price (K/mo)" min="0" required>
+              <div class="provider-image-picker admin-span" data-image-picker="accom">
+                <input type="file" id="accomImageFile" accept="image/jpeg,image/png,image/webp" multiple hidden>
+                <div class="provider-dropzone" tabindex="0" role="button" aria-controls="accomImageFile">
+                  <strong>Drop or choose accommodation photos</strong>
+                  <span>Up to 10 JPG, PNG, or WebP images · maximum 5 MB each</span>
+                  <button type="button" class="btn btn-ghost provider-image-browse">Choose image</button>
+                </div>
+                <div class="provider-image-preview" id="accomImagePreview" hidden></div>
+              </div>
+              <input type="text" id="accomDesc" placeholder="Short description" class="admin-span">
+            </div>
+            <button type="submit" class="btn btn-primary">+ Add listing</button>
+          </form>
+          <div class="admin-card">
+            <h3>Accommodations</h3>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr><th>Title</th><th>Location</th><th>Price</th><th>Photos</th><th>Status</th><th>Views</th><th></th></tr>
+                </thead>
+                <tbody id="accomTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Marketplace feed -->
+        <div class="provider-feed" id="feed-marketplace" style="display:none">
+          <div class="provider-scope-notice" id="marketplaceScopeNotice" hidden>
+            <strong>Products and services listing access is not enabled</strong>
+            <p>Your account is approved for a different section. Contact an administrator if you need access to products and services.</p>
+            <a href="contact.html">Contact CampusAura</a>
+          </div>
+          <form class="admin-form" id="formMarket">
+            <h3>Add a product or service</h3>
+            <div class="admin-form-grid">
+              <input type="text" id="marketTitle" placeholder="Title" required>
+              <label class="provider-display-name-field admin-span" for="marketDisplayName">Seller / business name shown on the listing
+                <input type="text" id="marketDisplayName" placeholder="Leave blank to use your account name" maxlength="100">
+              </label>
+              <select id="marketOfferType" required>
+                <option value="product">Product</option>
+                <option value="service">Service</option>
+              </select>
+              <input type="number" id="marketPrice" placeholder="Price or starting price (K)" min="0" required>
+              <select id="marketCategory" required>
+                <option value="" disabled selected>Select a category</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Books &amp; study supplies">Books &amp; study supplies</option>
+                <option value="Fashion">Fashion</option>
+                <option value="Food &amp; groceries">Food &amp; groceries</option>
+                <option value="Transport">Transport</option>
+                <option value="Health &amp; beauty">Health &amp; beauty</option>
+                <option value="Sports &amp; recreation">Sports &amp; recreation</option>
+                <option value="Services">Services</option>
+                <option value="Other">Other</option>
+              </select>
+              <input type="text" id="marketLocation" placeholder="Location or service area">
+              <div class="provider-image-picker admin-span" data-image-picker="market">
+                <input type="file" id="marketImageFile" accept="image/jpeg,image/png,image/webp" multiple hidden>
+                <div class="provider-dropzone" tabindex="0" role="button" aria-controls="marketImageFile">
+                  <strong>Drop or choose product/service photos</strong>
+                  <span>Up to 10 JPG, PNG, or WebP images · maximum 5 MB each</span>
+                  <button type="button" class="btn btn-ghost provider-image-browse">Choose image</button>
+                </div>
+                <div class="provider-image-preview" id="marketImagePreview" hidden></div>
+              </div>
+              <textarea id="marketDesc" placeholder="Describe what students will receive, including availability or turnaround time." class="admin-span" rows="3"></textarea>
+            </div>
+            <p class="provider-form-note">Products can be brand new or pre-owned. Services can include laundry, tutoring, repairs, catering, transport, and more.</p>
+            <button type="submit" class="btn btn-primary">+ Add offer</button>
+          </form>
+          <div class="admin-card">
+            <h3>Products &amp; services</h3>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr><th>Title</th><th>Type</th><th>Price</th><th>Photos</th><th>Status</th><th>Views</th><th></th></tr>
+                </thead>
+                <tbody id="marketTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Analytics -->
+      <section class="admin-panel" id="panel-analytics" role="tabpanel">
+        <div class="admin-panel-head">
+          <h1>Analytics</h1>
+          <p class="section-subtitle">Performance overview across your listings.</p>
+        </div>
+
+        <div class="admin-stats">
+          <div class="admin-stat">
+            <div class="admin-stat-icon">📊</div>
+            <div>
+              <span class="admin-stat-number" id="analyticsListings">0</span>
+              <span class="admin-stat-label">Listings</span>
+            </div>
+          </div>
+          <div class="admin-stat">
+            <div class="admin-stat-icon">👁️</div>
+            <div>
+              <span class="admin-stat-number" id="analyticsViews">0</span>
+              <span class="admin-stat-label">Total Views</span>
+            </div>
+          </div>
+          <div class="admin-stat">
+            <div class="admin-stat-icon">💬</div>
+            <div>
+              <span class="admin-stat-number" id="analyticsInquiries">0</span>
+              <span class="admin-stat-label">Contact clicks</span>
+            </div>
+          </div>
+          <div class="admin-stat">
+            <div class="admin-stat-icon">🚀</div>
+            <div>
+              <span class="admin-stat-number" id="analyticsConversion">0%</span>
+              <span class="admin-stat-label">Contact Rate</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <h3>Views by listing</h3>
+          <div id="analyticsBars" class="admin-recent"></div>
+        </div>
+      </section>
+
+      <!-- Inbox -->
+      <section class="admin-panel" id="panel-inbox" role="tabpanel">
+        <div class="admin-panel-head">
+          <h1>Contact activity</h1>
+          <p class="section-subtitle">Direct messages are not available yet. Calls to your listings are counted as contact clicks in Analytics.</p>
+        </div>
+
+        <div class="admin-card">
+          <h3>Contact clicks <span class="muted small" id="inboxCount"></span></h3>
+          <div id="inboxList" class="admin-messages"></div>
+        </div>
+      </section>
+
+      <section class="admin-panel" id="panel-settings" role="tabpanel">
+        <div class="admin-panel-head">
+          <div><span class="provider-kicker">Workspace settings</span><h1>Account details</h1><p class="section-subtitle">Keep your provider profile clear and trustworthy for students.</p></div>
+        </div>
+        <div class="provider-settings-grid">
+          <div class="admin-card"><span class="provider-card-label">Public profile</span><h2>How students see you</h2><div class="provider-setting-row"><span>Display name</span><strong id="settingsName">Provider account</strong></div><div class="provider-setting-row"><span>Email</span><strong id="settingsEmail">Not available</strong></div><div class="provider-setting-row"><span>Account type</span><strong>Property owner and seller</strong></div></div>
+          <div class="admin-card"><span class="provider-card-label">Trust &amp; safety</span><h2>Verification</h2><p class="provider-setting-copy">Complete your provider details so students know who they are contacting.</p><button class="provider-action provider-action-primary" type="button" disabled aria-disabled="true">Profile editing coming soon</button></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div class="provider-gallery-modal" id="providerGalleryModal" aria-hidden="true">
+    <button class="provider-gallery-backdrop" type="button" data-provider-gallery-close aria-label="Close photo gallery"></button>
+    <section class="provider-gallery-dialog" role="dialog" aria-modal="true" aria-labelledby="providerGalleryTitle">
+      <button class="provider-gallery-close" type="button" data-provider-gallery-close aria-label="Close photo gallery">×</button>
+      <h2 id="providerGalleryTitle">Listing photos</h2>
+      <div class="provider-gallery-stage"><img id="providerGalleryMainImage" alt=""></div>
+      <div class="provider-gallery-thumbs" id="providerGalleryThumbs" aria-label="Choose a listing photo"></div>
+    </section>
+  </div>
+
+  <div class="provider-edit-modal" id="providerEditModal" aria-hidden="true">
+    <button class="provider-edit-backdrop" type="button" data-provider-edit-close aria-label="Close listing editor"></button>
+    <section class="provider-edit-dialog" role="dialog" aria-modal="true" aria-labelledby="providerEditTitle">
+      <button class="provider-gallery-close" type="button" data-provider-edit-close aria-label="Close listing editor">×</button>
+      <h2 id="providerEditTitle">Edit listing</h2>
+      <form id="providerEditForm" class="admin-form">
+        <label>Title<input id="providerEditName" type="text" maxlength="180" required></label>
+        <div id="providerEditAccommodationFields">
+          <label>Location<input id="providerEditLocation" type="text" maxlength="180" required></label>
+        </div>
+        <div id="providerEditMarketplaceFields" hidden>
+          <label>Seller / business name<input id="providerEditSeller" type="text" maxlength="100"></label>
+          <label>Category
+            <select id="providerEditCategory" required>
+              <option value="Electronics">Electronics</option>
+              <option value="Furniture">Furniture</option>
+              <option value="Books &amp; study supplies">Books &amp; study supplies</option>
+              <option value="Fashion">Fashion</option>
+              <option value="Food &amp; groceries">Food &amp; groceries</option>
+              <option value="Transport">Transport</option>
+              <option value="Health &amp; beauty">Health &amp; beauty</option>
+              <option value="Sports &amp; recreation">Sports &amp; recreation</option>
+              <option value="Services">Services</option>
+              <option value="Other">Other</option>
+            </select>
+          </label>
+          <label>Listing type
+            <select id="providerEditType">
+              <option value="product">Product</option>
+              <option value="service">Service</option>
+            </select>
+          </label>
+        </div>
+        <label>Price (K)<input id="providerEditPrice" type="number" min="0" step="0.01" required></label>
+        <label>Description<textarea id="providerEditDescription" rows="4" maxlength="5000"></textarea></label>
+        <div class="provider-edit-actions">
+          <button class="btn btn-ghost" type="button" data-provider-edit-close>Cancel</button>
+          <button class="btn btn-primary" type="submit">Save changes</button>
+        </div>
+        <p id="providerEditStatus" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/session-timeout.js"></script>
+  <script src="js/dashboard-nav.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/provider.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>
