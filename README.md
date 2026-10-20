@@ -81,5 +81,6 @@ PWA, offline access, and display
 - Use `http://localhost` or deploy over HTTPS. Opening an HTML file directly can preview the UI, but browsers disable service workers and PWA installation for `file://` pages.
 - The web manifest is at `icons/site.webmanifest`; its launch page and scope resolve to the site root.
 - The service worker caches the site pages, styles, scripts, images, and app icons for offline loading. A network connection is still needed for Supabase-backed sign-in and live data.
+- A dismissible install card presents the CampusAura app icon and install instructions. When publishing a service-worker update, increment `CACHE_NAME` in `sw.js`; the app announces the new version and offers a refresh action.
 - Choose Dark or Light from the theme control; your preference is saved on this device and shared across pages.
 - The layout adapts from narrow mobile screens to desktop dashboards. Tables retain their own horizontal scrolling where required.

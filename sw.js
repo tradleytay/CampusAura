@@ -1,4 +1,4 @@
-const CACHE_NAME = 'campusaura-v1.37.0'
+const CACHE_NAME = 'campusaura-v1.38.0'
 const CACHE_PREFIX = 'campusaura-'
 const ASSETS = [
   './',
@@ -36,7 +36,6 @@ const ASSETS = [
   './js/eventsScroll.js',
   './js/register.js',
   './js/verify.js',
-  './js/session-timeout.js',
   './js/student.js',
   './js/provider.js',
   './js/admin.js',
@@ -110,7 +109,18 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((keys) => Promise.all(
       keys.filter((key) => key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME).map((key) => caches.delete(key))
     )).then(() => self.clients.claim())
+      .then(() => self.clients.matchAll({ type: 'window', includeUncontrolled: true }))
+      .then((clients) => clients.forEach((client) => client.postMessage({
+        type: 'CAMPUSAURA_VERSION',
+        version: CACHE_NAME
+      })))
   )
+})
+
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'CAMPUSAURA_GET_VERSION') {
+    event.source?.postMessage({ type: 'CAMPUSAURA_VERSION', version: CACHE_NAME })
+  }
 })
 
 self.addEventListener('fetch', (event) => {
