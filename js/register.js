@@ -52,7 +52,7 @@
     providerVerificationStep.hidden = !isProvider
     steps.style.gridTemplateColumns = isProvider ? 'repeat(3, minmax(0, 1fr))' : 'repeat(2, minmax(0, 1fr))'
     registrationIntro.textContent = isProvider
-      ? 'Create a provider account with your email. After confirming it and signing in, submit your NRC for review before publishing listings.'
+      ? 'Create an account with your email. After confirming it and signing in, submit your NRC for review before using your selected dashboard tools.'
       : 'Use your UNILUS student email and select your campus. Student ID verification remains optional after you sign in.'
   }
 
@@ -156,13 +156,13 @@
           nextAction.textContent = 'Go to sign in'
         }
       } else if (data.session) {
-        successNextSteps.textContent = 'Your dashboard is available now. Submit your NRC and wait for approval before creating or changing listings.'
+        successNextSteps.textContent = 'Your dashboard is available now. Submit your NRC and wait for approval before creating or changing listings or events.'
         successTitle.textContent = 'Account created'
-        successMessage.textContent = 'Your provider dashboard is ready. Listing actions unlock after your application is approved.'
+        successMessage.textContent = 'Your dashboard is ready. Your selected actions unlock after your application is approved.'
         nextAction.href = 'provider.html'
         nextAction.textContent = 'Open provider dashboard'
       } else {
-        successNextSteps.textContent = 'Confirm your email, then sign in to access your dashboard. Submit your NRC and wait for approval before creating or changing listings.'
+        successNextSteps.textContent = 'Confirm your email, then sign in to access your dashboard. Submit your NRC and wait for approval before creating listings or events.'
         successTitle.textContent = 'Check your email'
         successMessage.textContent = 'If this email can be registered, we will send a confirmation link. After confirming, sign in to access your provider dashboard.'
         nextAction.href = 'auth.html'

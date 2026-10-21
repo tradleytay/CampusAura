@@ -448,6 +448,7 @@
 }
 
 .home-upcoming-location,
+.home-upcoming-organizer,
 .home-upcoming-description {
   overflow: hidden;
   margin: 4px 0 0;

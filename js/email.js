@@ -17,7 +17,7 @@
     }
 
     return new Error(message
-      ? `${message} (HTTP ${response.status})`
+      ? `${message} (email function HTTP ${response.status})`
       : `Email function returned HTTP ${response.status}. Check the Supabase Edge Function logs.`)
   }
 

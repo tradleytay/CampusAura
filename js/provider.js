@@ -1,11 +1,11 @@
 // Provider dashboard backed by Supabase.
 (function () {
   const client = window.campusAuraSupabase
-  const state = { accommodations: [], marketplace: [], services: [], analytics: [] }
+  const state = { accommodations: [], marketplace: [], services: [], events: [], analytics: [] }
   let providerApproved = false
   let providerListingAccess = null
   let providerIsAdmin = false
-  const imageFiles = { accom: [], market: [] }
+  const imageFiles = { accom: [], market: [], event: [] }
   const maxImageSize = 5 * 1024 * 1024
   const maxImageCount = 10
   let providerGalleryReturnFocus = null
@@ -27,7 +27,9 @@
   }
 
   function canManageSection(section) {
-    return providerIsAdmin || providerListingAccess === null || providerListingAccess.includes(section)
+    return providerIsAdmin || (providerListingAccess === null
+      ? section !== 'events'
+      : providerListingAccess.includes(section))
   }
 
   function escapeHtml(value) {
@@ -260,16 +262,18 @@
   }
 
   async function loadData(user) {
-    const [accommodations, marketplace, analytics] = await Promise.all([
+    const [accommodations, marketplace, events, analytics] = await Promise.all([
       client.from('accommodations').select('*').eq('owner_id', user.id).order('created_at', { ascending: false }),
       client.from('marketplace_items').select('*').eq('seller_id', user.id).order('created_at', { ascending: false }),
+      client.from('events').select('*').eq('organizer_id', user.id).order('event_date', { ascending: true }),
       client.rpc('get_provider_listing_analytics')
     ])
-    if (accommodations.error || marketplace.error || analytics.error) {
-      throw accommodations.error || marketplace.error || analytics.error
+    if (accommodations.error || marketplace.error || events.error || analytics.error) {
+      throw accommodations.error || marketplace.error || events.error || analytics.error
     }
     state.accommodations = accommodations.data || []
     state.marketplace = marketplace.data || []
+    state.events = events.data || []
     state.services = []
     state.analytics = analytics.data || []
   }
@@ -351,6 +355,16 @@
       <td>${providerApproved ? `<button class="provider-edit" type="button" data-edit-kind="marketplace" data-id="${escapeHtml(item.id)}">Edit</button><button class="admin-delete" data-kind="marketplace" data-id="${escapeHtml(item.id)}">Delete</button>` : ''}</td></tr>
     `).join('') || '<tr><td colspan="7" class="admin-recent-empty">No products or services yet.</td></tr>'
 
+    document.getElementById('providerEventTable').innerHTML = state.events.map(item => {
+      const eventDate = new Date(item.event_date)
+      const formattedDate = Number.isNaN(eventDate.getTime()) ? 'Date unavailable' : eventDate.toLocaleString()
+      const status = item.status === 'draft' ? 'Pending review' : item.status
+      return `<tr><td><strong>${escapeHtml(item.title)}</strong><br><span class="muted small">${escapeHtml(item.description || '')}</span></td>
+        <td>${escapeHtml(formattedDate)}</td><td>${escapeHtml(item.organizer_name || '')}</td>
+        <td><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(status)}</span></td>
+        <td>${providerApproved ? `<button class="admin-delete" data-kind="event" data-id="${escapeHtml(item.id)}">Delete</button>` : ''}</td></tr>`
+    }).join('') || '<tr><td colspan="5" class="admin-recent-empty">No events yet.</td></tr>'
+
     document.getElementById('overviewInquiries').textContent = totalInquiries
       ? `${totalInquiries.toLocaleString()} contact clicks across your listings.`
       : 'No contact clicks yet. Listing activity updates here in real time.'
@@ -361,6 +375,7 @@
   function setupForms(user) {
     setupImagePicker('accom')
     setupImagePicker('market')
+    setupImagePicker('event')
     document.getElementById('formAccom').addEventListener('submit', async event => {
       event.preventDefault()
       const button = event.target.querySelector('button[type="submit"]')
@@ -427,14 +442,61 @@
         button.disabled = false
       }
     })
+
+    document.getElementById('formEvent').addEventListener('submit', async event => {
+      event.preventDefault()
+      const button = event.target.querySelector('button[type="submit"]')
+      const eventDate = new Date(document.getElementById('providerEventDate').value)
+      if (Number.isNaN(eventDate.getTime())) {
+        setMessage('Enter a valid event date and time.', true)
+        return
+      }
+      let uploads = []
+      button.disabled = true
+      try {
+        uploads = await uploadImages('event', user.id, 'event')
+        const imageUrls = uploads.length ? uploads.map(upload => upload.url) : ['images/event1.jpeg']
+        const { error } = await client.from('events').insert({
+          organizer_id: user.id,
+          organizer_name: document.getElementById('providerEventOrganizer').value.trim(),
+          title: document.getElementById('providerEventTitle').value.trim(),
+          event_date: eventDate.toISOString(),
+          location: document.getElementById('providerEventLocation').value.trim(),
+          description: document.getElementById('providerEventDescription').value.trim(),
+          image_url: imageUrls[0],
+          image_urls: imageUrls,
+          event_type: document.getElementById('providerEventType').value,
+          status: 'draft'
+        })
+        if (error) throw error
+        event.target.reset()
+        clearImageSelection('event')
+        setMessage('Event submitted for administrator review.')
+        try {
+          await loadData(user)
+          render()
+        } catch (refreshError) {
+          setMessage(`Event was submitted, but the dashboard could not refresh: ${refreshError.message}`, true)
+        }
+      } catch (error) {
+        await removeUploadedImages(uploads)
+        setMessage(`Could not submit event: ${error.message}`, true)
+      } finally {
+        button.disabled = false
+      }
+    })
   }
 
   function setupActions(user) {
     document.addEventListener('click', async event => {
       const button = event.target.closest('.admin-delete')
       if (!button) return
-      const table = button.dataset.kind === 'accommodation' ? 'accommodations' : 'marketplace_items'
-      const ownerColumn = button.dataset.kind === 'accommodation' ? 'owner_id' : 'seller_id'
+      const table = button.dataset.kind === 'accommodation'
+        ? 'accommodations'
+        : button.dataset.kind === 'event' ? 'events' : 'marketplace_items'
+      const ownerColumn = button.dataset.kind === 'accommodation'
+        ? 'owner_id'
+        : button.dataset.kind === 'event' ? 'organizer_id' : 'seller_id'
       const { error } = await client.from(table).delete().eq('id', button.dataset.id).eq(ownerColumn, user.id)
       if (error) { setMessage(error.message, true); return }
       await loadData(user); render()
@@ -585,6 +647,12 @@
         filter: `seller_id=eq.${user.id}`
       }, refresh)
       .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'events',
+        filter: `organizer_id=eq.${user.id}`
+      }, refresh)
+      .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
         table: 'analytics_events'
@@ -607,7 +675,7 @@
   }
 
   function showFeed(feedName) {
-    const section = feedName === 'accommodation' ? 'accommodation' : 'marketplace'
+    const section = feedName
     if (!canManageSection(section)) return
     document.querySelectorAll('.provider-feed').forEach(feed => {
       feed.style.display = feed.id === `feed-${feedName}` ? 'block' : 'none'
@@ -623,7 +691,8 @@
     document.querySelectorAll('[data-tab-target]').forEach(button => button.addEventListener('click', () => {
       showPanel(button.dataset.tabTarget, button.dataset.feedTarget)
     }))
-    showFeed(canManageSection('accommodation') ? 'accommodation' : 'marketplace')
+    const initialFeed = ['accommodation', 'marketplace', 'events'].find(canManageSection)
+    if (initialFeed) showFeed(initialFeed)
   }
 
   async function init() {
@@ -688,10 +757,20 @@
     const displayName = name || 'Provider'
     document.getElementById('providerName').textContent = displayName
     document.getElementById('providerSub').textContent = session.user.email
-    document.getElementById('providerRoleChip').textContent = 'Provider account'
+    const isEventOrganizer = providerListingAccess?.length === 1 && providerListingAccess[0] === 'events'
+    document.getElementById('providerRoleChip').textContent = isEventOrganizer ? 'Events organizer' : 'Provider account'
     document.getElementById('providerAvatar').textContent = displayName.slice(0, 2).toUpperCase()
     document.getElementById('settingsName').textContent = displayName
     document.getElementById('settingsEmail').textContent = session.user.email || 'Not available'
+    document.getElementById('settingsAccountType').textContent = isEventOrganizer
+      ? 'Events organizer'
+      : providerListingAccess?.includes('accommodation') && providerListingAccess.includes('marketplace')
+        ? 'Property owner and seller'
+        : providerListingAccess?.includes('accommodation')
+          ? 'Property owner'
+          : providerListingAccess?.includes('marketplace')
+            ? 'Seller / service provider'
+            : 'Administrator'
     const welcomeHeading = document.querySelector('#panel-overview .admin-panel-head h1')
     if (welcomeHeading) {
       welcomeHeading.textContent = `Welcome back, ${displayName.split(' ')[0]} 👋`
@@ -699,8 +778,14 @@
     const sectionsSubtitle = document.querySelector('#panel-overview .admin-panel-head .section-subtitle')
     if (sectionsSubtitle) {
       const availableSections = providerListingAccess || ['accommodation', 'marketplace']
-      const sectionLabels = availableSections.map(section => section === 'accommodation' ? 'properties' : 'products and services')
-      sectionsSubtitle.textContent = `Manage your ${sectionLabels.join(' and ')} listings. Contact an administrator to add another section.`
+      const sectionLabels = availableSections.map(section => ({
+        accommodation: 'properties',
+        marketplace: 'products and services',
+        events: 'events'
+      }[section]))
+      sectionsSubtitle.textContent = isEventOrganizer
+        ? 'Manage your campus events. Event submissions are reviewed before publishing.'
+        : `Manage your ${sectionLabels.join(' and ')} listings. Contact an administrator to add another section.`
     }
     try {
       await loadData(session.user)

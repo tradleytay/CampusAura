@@ -235,13 +235,34 @@ Deno.serve(async request => {
         html
       })
     })
-    if (!resendResponse.ok) {
-      const errorBody = await resendResponse.text()
-      console.error('Resend rejected a CampusAura notification:', resendResponse.status, errorBody)
-      return jsonResponse({ ok: false, error: 'Resend could not deliver the notification. Check the sender domain and Resend logs.' }, 502)
+    const responseBody = await resendResponse.text()
+    let resendResult: Record<string, unknown> = {}
+    if (responseBody) {
+      try {
+        const parsedBody: unknown = JSON.parse(responseBody)
+        if (parsedBody && typeof parsedBody === 'object') {
+          resendResult = parsedBody as Record<string, unknown>
+        }
+      } catch (parseError) {
+        if (!(parseError instanceof SyntaxError)) throw parseError
+      }
     }
 
-    const resendResult = await resendResponse.json()
+    if (!resendResponse.ok) {
+      const providerMessage = typeof resendResult.message === 'string'
+        ? resendResult.message
+        : typeof resendResult.error === 'string'
+          ? resendResult.error
+          : ''
+      console.error('Resend rejected a CampusAura notification:', resendResponse.status, responseBody)
+      return jsonResponse({
+        ok: false,
+        error: `Resend rejected the email request (Resend HTTP ${resendResponse.status}).${providerMessage ? ` ${providerMessage}` : ' Check the Resend sender-domain configuration and email logs.'}`,
+        providerStatus: resendResponse.status
+      }, 502)
+    }
+
+    const resendMessageId = typeof resendResult.id === 'string' ? resendResult.id : null
     let outboxLogged = !outboxRecipient
     if (outboxRecipient) {
       const { error: outboxError } = await serviceClient.from('admin_outbox').insert({
@@ -251,15 +272,15 @@ Deno.serve(async request => {
         subject: message.subject,
         body: message.text,
         sent_by: user.id,
-        provider_message_id: resendResult.id
+        provider_message_id: resendMessageId
       })
       if (outboxError) {
-        console.error('Email was delivered, but the admin outbox could not be updated:', outboxError)
+        console.error('Email was accepted by Resend, but the admin outbox could not be updated:', outboxError)
       } else {
         outboxLogged = true
       }
     }
-    return jsonResponse({ ok: true, id: resendResult.id, outboxLogged })
+    return jsonResponse({ ok: true, id: resendMessageId, outboxLogged, deliveryStatus: 'accepted' })
   } catch (error) {
     console.error('CampusAura email function failed:', error)
     return jsonResponse({ ok: false, error: 'The email notification could not be sent.' }, 500)

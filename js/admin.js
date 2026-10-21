@@ -398,16 +398,18 @@
         <td><strong>${escapeHtml(item.title)}</strong></td>
         <td>${date(item.event_date)}</td>
         <td>${escapeHtml(item.location)}</td>
-        <td><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(item.status)}</span></td>
+        <td>${escapeHtml(item.organizer_name || 'Not provided')}</td>
+        <td><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(item.status === 'draft' ? 'Pending review' : item.status)}</span></td>
         <td>
           <div class="admin-row-actions">
             <button class="admin-link-btn" data-preview-table="events" data-preview-id="${escapeHtml(item.id)}">View</button>
+            ${item.status === 'draft' ? `<button class="admin-approve-btn" data-review-event="${escapeHtml(item.id)}" data-event-status="published">Publish</button><button class="admin-reject-btn" data-review-event="${escapeHtml(item.id)}" data-event-status="cancelled">Reject</button>` : ''}
             ${['published', 'suspended'].includes(item.status) ? `<button class="admin-quick-action" data-suspend-listing="${escapeHtml(item.id)}" data-listing-table="events" data-listing-status="${item.status === 'published' ? 'suspended' : 'published'}">${item.status === 'published' ? 'Suspend' : 'Unsuspend'}</button>` : ''}
             <button class="admin-delete" data-table="events" data-id="${escapeHtml(item.id)}">Delete</button>
           </div>
         </td>
       </tr>
-    `).join('') || '<tr><td colspan="5" class="admin-recent-empty">No events yet.</td></tr>'
+    `).join('') || '<tr><td colspan="6" class="admin-recent-empty">No events yet.</td></tr>'
 
     const messages = state.messages.map(item => `
       <div class="admin-message"><div class="admin-message-head">
@@ -503,15 +505,15 @@
         }
         const result = await window.campusAuraEmail.sendAdminMessageEmail({ userId, subject, body })
         status.textContent = result.outboxLogged === false
-          ? 'Email was delivered, but could not be saved to the outbox. Check the admin outbox migration and function logs.'
-          : 'Email accepted by Resend for delivery.'
+          ? 'Email was accepted by Resend, but could not be saved to the outbox. Check the admin outbox migration and function logs.'
+          : 'Email accepted by Resend. Check Resend email logs for its final delivery status.'
         form.reset()
         try {
           await loadData()
           render()
         } catch (refreshError) {
-          console.error('Email was sent, but the admin dashboard could not refresh:', refreshError)
-          status.textContent = `Email was sent, but the message history could not refresh: ${refreshError.message}`
+          console.error('Email was accepted by Resend, but the admin dashboard could not refresh:', refreshError)
+          status.textContent = `Email was accepted by Resend, but the message history could not refresh: ${refreshError.message}`
           status.classList.add('is-error')
         }
       } catch (error) {
@@ -607,9 +609,10 @@
         uploads = await uploadAdminImages('event', user.id, 'event')
         const imageUrls = uploads.length ? uploads.map(upload => upload.url) : ['images/event1.jpeg']
         const { error } = await client.from('events').insert({
-          organizer_id: user.id, title: eventTitle.value.trim(), event_date: eventDate.toISOString(),
-          location: eventLocation.value.trim(), image_url: imageUrls[0], image_urls: imageUrls,
-          event_type: eventType.value, status: 'published'
+          organizer_id: user.id, organizer_name: document.getElementById('eventOrganizer').value.trim(),
+          title: eventTitle.value.trim(), event_date: eventDate.toISOString(),
+          location: eventLocation.value.trim(), description: document.getElementById('eventDescription').value.trim(),
+          image_url: imageUrls[0], image_urls: imageUrls, event_type: eventType.value, status: 'published'
         })
         if (error) throw error
         event.target.reset()
@@ -632,6 +635,39 @@
         const { error } = await client.from(button.dataset.table).delete().eq('id', button.dataset.id)
         if (error) { setMessage(error.message, true); return }
         await loadData(); render();
+        return
+      }
+
+      const eventReviewButton = event.target.closest('[data-review-event]')
+      if (eventReviewButton) {
+        eventReviewButton.disabled = true
+        const status = eventReviewButton.dataset.eventStatus
+        if (!['published', 'cancelled'].includes(status)) {
+          setMessage('Invalid event review action.', true)
+          eventReviewButton.disabled = false
+          return
+        }
+        const action = status === 'published' ? 'publish' : 'reject'
+        if (!window.confirm(`Are you sure you want to ${action} this event?`)) {
+          eventReviewButton.disabled = false
+          return
+        }
+        const { data, error } = await client.from('events')
+          .update({ status })
+          .eq('id', eventReviewButton.dataset.reviewEvent)
+          .eq('status', 'draft')
+          .select('id')
+          .maybeSingle()
+        if (error) {
+          setMessage(`Could not ${action} the event: ${error.message}`, true)
+        } else if (!data) {
+          setMessage('This event is no longer waiting for review. Refresh and try again.', true)
+        } else {
+          setMessage(`Event ${status === 'published' ? 'published' : 'rejected'}.`)
+          await loadData()
+          render()
+        }
+        eventReviewButton.disabled = false
         return
       }
 
@@ -845,7 +881,7 @@
         })
       } catch (emailError) {
         console.warn('Review decision email could not be sent:', emailError)
-        setMessage(`User ${pastAction} successfully. The decision email was not sent because the email service is not configured.`, false)
+        setMessage(`User ${pastAction} successfully, but the decision email was not sent: ${emailError.message}`, false)
         await loadData()
         render()
         return true
@@ -900,7 +936,7 @@
       meta.innerHTML = `<strong>${escapeHtml(item.location || 'Location unavailable')}</strong><span>•</span><span>${escapeHtml(new Date(item.event_date).toLocaleDateString() || 'Date unavailable')}</span><span>•</span><span>${escapeHtml(item.event_type || 'General')}</span>`
       description.textContent = item.description || 'No event summary provided.'
       footer.innerHTML = `
-        <span class="detail-chip">Organizer: ${escapeHtml(item.organizer_id || 'N/A')}</span>
+        <span class="detail-chip">Organizer: ${escapeHtml(item.organizer_name || item.organizer_id || 'N/A')}</span>
         <span class="detail-chip">Image: ${escapeHtml(item.image_url || 'Not supplied')}</span>
         ${['published', 'suspended'].includes(item.status) ? `<button class="admin-quick-action" data-suspend-listing="${escapeHtml(item.id)}" data-listing-table="events" data-listing-status="${item.status === 'published' ? 'suspended' : 'published'}">${item.status === 'published' ? 'Suspend event' : 'Restore event'}</button>` : ''}
       `
@@ -975,14 +1011,19 @@
             ['Avatar URL', item.avatar_url]
           ])}
           ${isProvider ? renderProfileSection('Provider listing access', [
-            ['Allowed sections', providerAccess ? providerAccess.map(section => section === 'accommodation' ? 'Properties' : 'Products and services').join(', ') : 'Legacy access — both sections']
+            ['Allowed sections', providerAccess ? providerAccess.map(section => ({
+              accommodation: 'Properties',
+              marketplace: 'Products and services',
+              events: 'Events'
+            }[section])).join(', ') : 'Legacy access — both listing sections']
           ]) : ''}
           ${isProvider ? `
             <form class="profile-access-editor" id="providerAccessForm">
               <h4>Manage provider sections</h4>
-              <p>Choose one or both sections. Changes take effect immediately for this provider.</p>
+              <p>Choose one or more sections. Event organizers cannot list properties or marketplace items unless those sections are also explicitly enabled.</p>
               <label><input type="checkbox" name="providerSection" value="accommodation" ${providerAccess === null || providerAccess.includes('accommodation') ? 'checked' : ''}> Properties / accommodation</label>
               <label><input type="checkbox" name="providerSection" value="marketplace" ${providerAccess === null || providerAccess.includes('marketplace') ? 'checked' : ''}> Products and services</label>
+              <label><input type="checkbox" name="providerSection" value="events" ${providerAccess?.includes('events') ? 'checked' : ''}> Events organizer</label>
               <button class="admin-quick-action" type="submit">Save provider access</button>
               <p class="profile-access-status" id="providerAccessStatus" role="status" aria-live="polite"></p>
             </form>

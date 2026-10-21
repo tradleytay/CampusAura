@@ -1,5 +1,5 @@
 -- CampusAura student onboarding update.
--- Run in Supabase SQL Editor after all existing CampusAura schema, upgrade, and hardening scripts.
+-- Run in Supabase SQL Editor after provider-event-organizers.sql.
 -- Students can access CampusAura immediately and may optionally submit a student ID for review.
 -- Provider identity review remains required before provider access.
 
@@ -10,8 +10,22 @@ returns trigger
 language plpgsql
 security definer set search_path = public
 as $$
+declare
+  provider_access text[];
 begin
-  insert into public.profiles (id, full_name, email, phone, requested_role, verification_status)
+  if new.raw_user_meta_data ->> 'requested_role' = 'provider' then
+    provider_access := array[
+      case
+        when new.raw_user_meta_data ->> 'provider_listing_type' = 'marketplace' then 'marketplace'
+        when new.raw_user_meta_data ->> 'provider_listing_type' = 'events' then 'events'
+        else 'accommodation'
+      end
+    ];
+  end if;
+
+  insert into public.profiles (
+    id, full_name, email, phone, requested_role, verification_status, provider_listing_access
+  )
   values (
     new.id,
     coalesce(new.raw_user_meta_data ->> 'full_name', new.email),
@@ -24,7 +38,8 @@ begin
     case
       when new.raw_user_meta_data ->> 'requested_role' = 'provider' then 'pending'
       else 'approved'
-    end
+    end,
+    provider_access
   );
   return new;
 end;

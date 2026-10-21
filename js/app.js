@@ -715,6 +715,7 @@ function createHomeEventCard(event){
       <p class="home-update-date">${escapeHtml(event.type || 'Campus event')}</p>
       <h3>${escapeHtml(event.title)}</h3>
       <p class="home-upcoming-location">${escapeHtml(event.location || 'Campus location to be announced')}</p>
+      ${event.organizerName ? `<p class="home-upcoming-organizer">Organized by ${escapeHtml(event.organizerName)}</p>` : ''}
       <p class="home-upcoming-description">${escapeHtml(event.description || '')}</p>
     </div>
     <button class="rsvp btn btn-primary" type="button" data-event-id="${escapeHtml(event.id)}" aria-pressed="false">RSVP <span aria-hidden="true">→</span></button>
@@ -883,7 +884,7 @@ function setupListingModals(){
     } else {
       kicker.textContent = escapeHtml(item.type || 'Campus event')
       meta.innerHTML = `<span>${escapeHtml(item.date)}</span><span>${escapeHtml(item.location)}</span>`
-      contact.innerHTML = `<span>Open to the CampusAura community</span>`
+      contact.innerHTML = `<span>Organizer: <strong>${escapeHtml(item.organizerName || 'CampusAura event organizer')}</strong></span><span>Open to the CampusAura community</span>`
     }
 
     if(lockedForGuest && type !== 'event'){
@@ -1023,7 +1024,7 @@ async function loadSupabaseData(){
     loadPublishedListings('marketplace_items', 'id, title, price, category, description, image_url, image_urls, seller_id, seller_display_name, created_at'),
     window.campusAuraSupabase
       .from('events')
-      .select('id, title, event_date, location, description, image_url, image_urls, event_type, created_at')
+      .select('id, title, event_date, location, description, organizer_name, image_url, image_urls, event_type, created_at')
       .eq('status', 'published')
       .order('event_date', { ascending: true })
   ])
@@ -1084,6 +1085,7 @@ async function loadSupabaseData(){
       createdAt: item.created_at,
       location: item.location,
       description: item.description || 'Connect with students, learn something new, and make the most of campus life.',
+      organizerName: item.organizer_name || '',
       img: getListingImageUrls(item, 'images/event1.jpeg')[0],
       imageUrls: getListingImageUrls(item, 'images/event1.jpeg'),
       type: item.event_type
