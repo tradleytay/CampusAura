@@ -63,6 +63,7 @@
         <button class="admin-tab active" data-tab="overview" role="tab" aria-selected="true"><span>Overview</span><small>Your workspace</small></button>
         <button class="admin-tab" data-tab="listings" data-feed-target="accommodation" data-provider-section="accommodation" role="tab" aria-selected="false"><span>Properties</span><small>Accommodation</small></button>
         <button class="admin-tab" data-tab="listings" data-feed-target="marketplace" data-provider-section="marketplace" role="tab" aria-selected="false"><span>Products &amp; services</span><small>Marketplace</small></button>
+        <button class="admin-tab" data-tab="listings" data-feed-target="events" data-provider-section="events" role="tab" aria-selected="false"><span>Events</span><small>Organizer tools</small></button>
         <button class="admin-tab" data-tab="inbox" role="tab" aria-selected="false"><span>Contact activity</span><small>Listing clicks</small></button>
         <button class="admin-tab" data-tab="analytics" role="tab" aria-selected="false"><span>Analytics</span><small>Performance</small></button>
         <button class="admin-tab" data-tab="settings" role="tab" aria-selected="false"><span>Settings</span><small>Account details</small></button>
@@ -85,7 +86,7 @@
           <div>
             <span class="provider-kicker">Provider workspace</span>
             <h1>Welcome back, Chanda</h1>
-            <p class="section-subtitle">Manage accommodation, products, and student services from one place.</p>
+            <p class="section-subtitle">Manage the sections enabled for your account.</p>
           </div>
         </div>
 
@@ -156,10 +157,11 @@
 
         <!-- Listing type toggle -->
         <div class="provider-workspace-head">
-          <div><span class="provider-kicker">Your offers</span><p>List a place to stay, a product, or a service students can book or buy.</p></div>
+          <div><span class="provider-kicker">Your listings and events</span><p>Manage only the sections enabled for your account.</p></div>
           <div class="provider-type-toggle" role="tablist" aria-label="Inventory type">
             <button class="type-btn active" data-feed="accommodation" data-provider-section="accommodation" role="tab">Properties</button>
             <button class="type-btn" data-feed="marketplace" data-provider-section="marketplace" role="tab">Products &amp; services</button>
+            <button class="type-btn" data-feed="events" data-provider-section="events" role="tab">Events</button>
           </div>
         </div>
 
@@ -261,6 +263,44 @@
             </div>
           </div>
         </div>
+
+        <div class="provider-feed" id="feed-events" style="display:none">
+          <form class="admin-form" id="formEvent">
+            <h3>Submit a campus event</h3>
+            <div class="admin-form-grid">
+              <input type="text" id="providerEventTitle" maxlength="180" placeholder="Event title" required>
+              <input type="datetime-local" id="providerEventDate" required>
+              <input type="text" id="providerEventLocation" maxlength="180" placeholder="Location" required>
+              <input type="text" id="providerEventOrganizer" maxlength="120" placeholder="Organizer name" required>
+              <select id="providerEventType" required>
+                <option value="social">Social</option>
+                <option value="career">Career</option>
+                <option value="academic">Academic</option>
+              </select>
+              <div class="provider-image-picker admin-span" data-image-picker="event">
+                <input type="file" id="eventImageFile" accept="image/jpeg,image/png,image/webp" multiple hidden>
+                <div class="provider-dropzone" tabindex="0" role="button" aria-controls="eventImageFile">
+                  <strong>Drop or choose event photos</strong>
+                  <span>Up to 10 JPG, PNG, or WebP images · maximum 5 MB each</span>
+                  <button type="button" class="btn btn-ghost provider-image-browse">Choose image</button>
+                </div>
+                <div class="provider-image-preview" id="eventImagePreview" hidden></div>
+              </div>
+              <textarea id="providerEventDescription" class="admin-span" rows="4" maxlength="5000" placeholder="Describe the event for students." required></textarea>
+            </div>
+            <p class="provider-form-note">Events are submitted for administrator review before they appear publicly.</p>
+            <button type="submit" class="btn btn-primary">+ Submit event</button>
+          </form>
+          <div class="admin-card">
+            <h3>My events</h3>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead><tr><th>Event</th><th>Date</th><th>Organizer</th><th>Status</th><th></th></tr></thead>
+                <tbody id="providerEventTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- Analytics -->
@@ -325,7 +365,7 @@
           <div><span class="provider-kicker">Workspace settings</span><h1>Account details</h1><p class="section-subtitle">Keep your provider profile clear and trustworthy for students.</p></div>
         </div>
         <div class="provider-settings-grid">
-          <div class="admin-card"><span class="provider-card-label">Public profile</span><h2>How students see you</h2><div class="provider-setting-row"><span>Display name</span><strong id="settingsName">Provider account</strong></div><div class="provider-setting-row"><span>Email</span><strong id="settingsEmail">Not available</strong></div><div class="provider-setting-row"><span>Account type</span><strong>Property owner and seller</strong></div></div>
+          <div class="admin-card"><span class="provider-card-label">Public profile</span><h2>How students see you</h2><div class="provider-setting-row"><span>Display name</span><strong id="settingsName">Provider account</strong></div><div class="provider-setting-row"><span>Email</span><strong id="settingsEmail">Not available</strong></div>          <div class="provider-setting-row"><span>Account type</span><strong id="settingsAccountType">Provider</strong></div></div>
           <div class="admin-card"><span class="provider-card-label">Trust &amp; safety</span><h2>Verification</h2><p class="provider-setting-copy">Complete your provider details so students know who they are contacting.</p><button class="provider-action provider-action-primary" type="button" disabled aria-disabled="true">Profile editing coming soon</button></div>
         </div>
       </section>

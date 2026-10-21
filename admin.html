@@ -333,14 +333,16 @@
           </div>
           <div class="admin-form-grid">
             <label class="admin-form-field"><span>Title</span><input type="text" id="eventTitle" placeholder="e.g. Startup Mixer" required></label>
-            <label class="admin-form-field"><span>Date</span><input type="text" id="eventDate" placeholder="Jun 4" required></label>
+            <label class="admin-form-field"><span>Date and time</span><input type="datetime-local" id="eventDate" required></label>
             <label class="admin-form-field"><span>Location</span><input type="text" id="eventLocation" placeholder="Main Hall" required></label>
+            <label class="admin-form-field"><span>Organizer name</span><input type="text" id="eventOrganizer" maxlength="120" placeholder="Campus club or organizer" required></label>
             <div class="admin-image-upload admin-span" data-admin-image-picker="event">
               <input type="file" id="eventImages" accept="image/jpeg,image/png,image/webp" multiple hidden>
               <button class="admin-image-dropzone" type="button" aria-controls="eventImages"><strong>Add event photos</strong><span>Choose or drop up to 10 JPG, PNG, or WebP images · 5 MB max each</span></button>
               <div class="admin-image-previews" id="eventImagePreviews" aria-live="polite"></div>
             </div>
-            <label class="admin-form-field admin-span"><span>Type</span><select id="eventType"><option value="social">Social</option><option value="career">Career</option><option value="academic">Academic</option></select></label>
+            <label class="admin-form-field"><span>Type</span><select id="eventType"><option value="social">Social</option><option value="career">Career</option><option value="academic">Academic</option></select></label>
+            <label class="admin-form-field admin-span"><span>Description</span><textarea id="eventDescription" rows="4" maxlength="5000" required placeholder="Describe the event for students"></textarea></label>
           </div>
           <div class="admin-form-actions">
             <button type="submit" class="btn btn-primary">Publish event</button>
@@ -352,7 +354,7 @@
           <div class="admin-table-wrap">
             <table class="admin-table">
               <thead>
-                <tr><th>Title</th><th>Date</th><th>Location</th><th>Status</th><th>Actions</th></tr>
+                <tr><th>Title</th><th>Date</th><th>Location</th><th>Organizer</th><th>Status</th><th>Actions</th></tr>
               </thead>
               <tbody id="eventTable"></tbody>
             </table>
