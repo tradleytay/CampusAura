@@ -16,7 +16,7 @@ const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, character 
 
 function getLocalCalendarDate(value){
   if(!value) return null
-  const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/)
+  const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})$/)
   const date = match
     ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
     : new Date(value)
