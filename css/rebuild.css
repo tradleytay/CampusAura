@@ -864,9 +864,31 @@ body::selection { background: rgba(37, 99, 235, 0.18); }
   .market-art-note { right: 0; }
   .market-hero-actions { flex-direction: column; }
   .market-hero-actions .btn { width: 100%; }
-  .marketplace-page .market-trust-strip { flex-direction: column; gap: 20px; align-items: flex-start; }
-  .marketplace-page .market-trust-strip > div { padding-right: 0; border-right: 0; border-bottom: 1px solid var(--market-line); width: 100%; padding-bottom: 15px; }
-  .marketplace-page .market-trust-strip p { margin: 0; }
+  .marketplace-page .market-hero-grid { gap: 22px; }
+  .marketplace-page .market-hero h1 { font-size: clamp(36px, 10vw, 48px); line-height: 1.05; }
+  .marketplace-page .market-hero-art { max-width: 420px; }
+  .marketplace-page .market-art-card { aspect-ratio: 16 / 10; }
+  .marketplace-page .market-art-note { right: 8px; bottom: 8px; max-width: calc(100% - 16px); }
+  .marketplace-page .market-trust-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 10px;
+    min-height: 0;
+    padding-top: 22px;
+    padding-bottom: 18px;
+  }
+  .marketplace-page .market-trust-strip > div {
+    width: auto;
+    min-width: 0;
+    padding: 0 8px 10px 0;
+    border-right: 1px solid var(--market-line);
+    border-bottom: 1px solid var(--market-line);
+  }
+  .marketplace-page .market-trust-strip > div:last-of-type { border-right: 0; }
+  .marketplace-page .market-trust-strip strong { font-size: clamp(17px, 5vw, 22px); }
+  .marketplace-page .market-trust-strip span:not(.live-dot) { line-height: 1.35; }
+  .marketplace-page .market-trust-strip p { grid-column: 1 / -1; margin: 0; }
   .market-browse { padding-top: 42px; padding-bottom: 42px; }
   .market-browse-heading { flex-direction: column; gap: 10px; }
   .market-filter-fields { grid-template-columns: 1fr; }
@@ -876,6 +898,16 @@ body::selection { background: rgba(37, 99, 235, 0.18); }
   .marketplace-page .market-grid.view-list .card .img-wrap { height: 92px; }
   .market-help { padding: 42px 24px; }
   .market-help h2 { margin-bottom: 28px; }
+}
+
+.load-more-wrap {
+  display: flex;
+  justify-content: center;
+  padding-top: 26px;
+}
+
+.load-more-wrap button[hidden] {
+  display: none;
 }
 
 .admin-brand { letter-spacing: -0.03em; }

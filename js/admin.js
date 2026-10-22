@@ -358,12 +358,12 @@
 
     document.getElementById('accomTable').innerHTML = state.accommodations.map(item => `
       <tr>
-        <td><strong>${escapeHtml(item.reference_code || 'Not assigned')}</strong></td>
-        <td><strong>${escapeHtml(item.title)}</strong><br><span class="muted small">${escapeHtml(item.description || '')}</span></td>
-        <td>${escapeHtml(item.location)}</td>
-        <td>${price(item.price)}</td>
-        <td><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(item.status)}</span></td>
-        <td>
+        <td data-label="Reference"><strong>${escapeHtml(item.reference_code || 'Not assigned')}</strong></td>
+        <td data-label="Title"><strong>${escapeHtml(item.title)}</strong><br><span class="muted small">${escapeHtml(item.description || '')}</span></td>
+        <td data-label="Location">${escapeHtml(item.location)}</td>
+        <td data-label="Price">${price(item.price)}</td>
+        <td data-label="Status"><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(item.status)}</span></td>
+        <td data-label="Actions">
           <div class="admin-row-actions">
             <button class="admin-link-btn" data-preview-table="accommodations" data-preview-id="${escapeHtml(item.id)}">View</button>
             ${item.status === 'pending' ? `<button class="admin-approve-btn" data-review-listing="${escapeHtml(item.id)}" data-listing-status="published">Publish</button><button class="admin-reject-btn" data-review-listing="${escapeHtml(item.id)}" data-listing-status="rejected">Reject</button>` : ''}
@@ -376,13 +376,13 @@
 
     document.getElementById('marketTable').innerHTML = state.marketplace.map(item => `
       <tr>
-        <td><strong>${escapeHtml(item.reference_code || 'Not assigned')}</strong></td>
-        <td><strong>${escapeHtml(item.title)}</strong></td>
-        <td>${escapeHtml(item.category)}</td>
-        <td>${escapeHtml(item.seller_id || 'Student seller')}</td>
-        <td>${price(item.price)}</td>
-        <td><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(item.status)}</span></td>
-        <td>
+        <td data-label="Reference"><strong>${escapeHtml(item.reference_code || 'Not assigned')}</strong></td>
+        <td data-label="Product or service"><strong>${escapeHtml(item.title)}</strong></td>
+        <td data-label="Category">${escapeHtml(item.category)}</td>
+        <td data-label="Seller">${escapeHtml(item.seller_id || 'Student seller')}</td>
+        <td data-label="Price">${price(item.price)}</td>
+        <td data-label="Status"><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(item.status)}</span></td>
+        <td data-label="Actions">
           <div class="admin-row-actions">
             <button class="admin-link-btn" data-preview-table="marketplace_items" data-preview-id="${escapeHtml(item.id)}">View</button>
             ${item.status === 'pending' ? `<button class="admin-approve-btn" data-review-listing="${escapeHtml(item.id)}" data-listing-table="marketplace_items" data-listing-status="published">Publish</button><button class="admin-reject-btn" data-review-listing="${escapeHtml(item.id)}" data-listing-table="marketplace_items" data-listing-status="rejected">Reject</button>` : ''}
@@ -395,12 +395,12 @@
 
     document.getElementById('eventTable').innerHTML = state.events.map(item => `
       <tr>
-        <td><strong>${escapeHtml(item.title)}</strong></td>
-        <td>${date(item.event_date)}</td>
-        <td>${escapeHtml(item.location)}</td>
-        <td>${escapeHtml(item.organizer_name || 'Not provided')}</td>
-        <td><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(item.status === 'draft' ? 'Pending review' : item.status)}</span></td>
-        <td>
+        <td data-label="Event"><strong>${escapeHtml(item.title)}</strong></td>
+        <td data-label="Date">${date(item.event_date)}</td>
+        <td data-label="Location">${escapeHtml(item.location)}</td>
+        <td data-label="Organizer">${escapeHtml(item.organizer_name || 'Not provided')}</td>
+        <td data-label="Status"><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(item.status === 'draft' ? 'Pending review' : item.status)}</span></td>
+        <td data-label="Actions">
           <div class="admin-row-actions">
             <button class="admin-link-btn" data-preview-table="events" data-preview-id="${escapeHtml(item.id)}">View</button>
             ${item.status === 'draft' ? `<button class="admin-approve-btn" data-review-event="${escapeHtml(item.id)}" data-event-status="published">Publish</button><button class="admin-reject-btn" data-review-event="${escapeHtml(item.id)}" data-event-status="cancelled">Reject</button>` : ''}
@@ -453,15 +453,100 @@
     document.getElementById('usersTable').innerHTML = state.profiles.map(profile => {
       return `
         <tr>
-          <td><strong>${escapeHtml(profile.reference_code || 'Not assigned')}</strong></td>
-          <td><strong>${escapeHtml(profile.full_name || 'Unnamed user')}</strong><br><span class="muted small">${escapeHtml(profile.phone || 'No phone provided')}</span></td>
-          <td>${escapeHtml(profile.requested_role || profile.role)}</td>
-          <td><div class="admin-row-actions">
+          <td data-label="Reference"><strong>${escapeHtml(profile.reference_code || 'Not assigned')}</strong></td>
+          <td data-label="User"><strong>${escapeHtml(profile.full_name || 'Unnamed user')}</strong><br><span class="muted small">${escapeHtml(profile.phone || 'No phone provided')}</span></td>
+          <td data-label="Role">${escapeHtml(profile.requested_role || profile.role)}</td>
+          <td data-label="Actions"><div class="admin-row-actions">
             <button class="admin-link-btn" data-preview-table="profiles" data-preview-id="${escapeHtml(profile.id)}">View</button>
           </div></td>
         </tr>
       `
     }).join('') || '<tr><td colspan="4" class="admin-recent-empty">No users found.</td></tr>'
+    renderUserListPreview()
+  }
+
+  const userListColumns = [
+    { key: 'full_name', label: 'Name', value: profile => profile.full_name || '' },
+    { key: 'email', label: 'Email', value: profile => profile.email || '' },
+    { key: 'phone', label: 'Phone', value: profile => profile.phone || '' },
+    { key: 'role', label: 'Account type', value: profile => profile.requested_role || profile.role || '' },
+    { key: 'reference_code', label: 'Reference', value: profile => profile.reference_code || '' },
+    { key: 'verification_status', label: 'Verification', value: profile => profile.verification_status || 'Not provided' },
+    { key: 'account_status', label: 'Account access', value: profile => profile.account_status || 'active' }
+  ]
+
+  function getUserListMatches() {
+    const roleFilter = document.getElementById('userListRole').value
+    const verificationFilter = document.getElementById('userListVerification').value
+    const accountFilter = document.getElementById('userListAccountStatus').value
+    const search = document.getElementById('userListSearch').value.trim().toLocaleLowerCase()
+    return state.profiles.filter(profile => {
+      const role = profile.requested_role || profile.role
+      if (!['student', 'provider'].includes(role)) return false
+      if (roleFilter !== 'all' && role !== roleFilter) return false
+      if (verificationFilter !== 'all' && (profile.verification_status || '').toLowerCase() !== verificationFilter) return false
+      if (accountFilter !== 'all' && (profile.account_status || 'active').toLowerCase() !== accountFilter) return false
+      if (search && ![profile.full_name, profile.email, profile.phone].some(value => String(value || '').toLocaleLowerCase().includes(search))) return false
+      return true
+    })
+  }
+
+  function getSelectedUserListColumns() {
+    const selected = new Set([...document.querySelectorAll('input[name="userListColumn"]:checked')].map(input => input.value))
+    return userListColumns.filter(column => selected.has(column.key))
+  }
+
+  function renderUserListPreview() {
+    const head = document.getElementById('userListPreviewHead')
+    const body = document.getElementById('userListPreviewBody')
+    const count = document.getElementById('userListCount')
+    if (!head || !body || !count) return
+    const matches = getUserListMatches()
+    const columns = getSelectedUserListColumns()
+    count.textContent = `${matches.length.toLocaleString()} matching ${matches.length === 1 ? 'account' : 'accounts'}`
+    document.getElementById('exportUserList').disabled = !matches.length || !columns.length
+    head.innerHTML = columns.length ? `<tr>${columns.map(column => `<th>${escapeHtml(column.label)}</th>`).join('')}</tr>` : ''
+    if (!columns.length) {
+      body.innerHTML = '<tr><td class="admin-recent-empty">Choose at least one detail to preview or download.</td></tr>'
+      return
+    }
+    body.innerHTML = matches.slice(0, 25).map(profile => `<tr>${columns.map(column => `<td>${escapeHtml(column.value(profile) || '—')}</td>`).join('')}</tr>`).join('') ||
+      `<tr><td colspan="${columns.length}" class="admin-recent-empty">No accounts match these filters.</td></tr>`
+    const status = document.getElementById('userListStatus')
+    status.textContent = matches.length > 25 ? 'Showing the first 25 matches in the preview. The CSV will include every match.' : ''
+  }
+
+  function csvCell(value) {
+    let text = String(value ?? '')
+    if (/^[\t\r ]*[=+\-@]/.test(text)) text = `'${text}`
+    return `"${text.replace(/"/g, '""')}"`
+  }
+
+  function exportUserList() {
+    const matches = getUserListMatches()
+    const columns = getSelectedUserListColumns()
+    if (!matches.length || !columns.length) return
+    const rows = [
+      columns.map(column => csvCell(column.label)).join(','),
+      ...matches.map(profile => columns.map(column => csvCell(column.value(profile))).join(','))
+    ]
+    const blob = new Blob([`\uFEFF${rows.join('\r\n')}`], { type: 'text/csv;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `campusaura-users-${new Date().toISOString().slice(0, 10)}.csv`
+    link.click()
+    URL.revokeObjectURL(url)
+    document.getElementById('userListStatus').textContent = `Downloaded ${matches.length.toLocaleString()} accounts.`
+  }
+
+  function setupUserList() {
+    document.querySelectorAll('#userListRole, #userListVerification, #userListAccountStatus, #userListSearch, input[name="userListColumn"]').forEach(control => {
+      control.addEventListener('input', renderUserListPreview)
+      control.addEventListener('change', renderUserListPreview)
+    })
+    document.getElementById('exportUserList').addEventListener('click', exportUserList)
+    renderUserListPreview()
   }
 
   function setupTabs() {
@@ -1119,6 +1204,7 @@
     setupForms(session.user);
     setupAnalytics();
     setupActions();
+    setupUserList();
     setupAdminEmailComposer();
     try {
       await loadData();

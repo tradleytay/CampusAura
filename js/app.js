@@ -5,6 +5,12 @@ const data = {
   events: []
 }
 let publishedAtMigrationWarningShown = false
+let visibleMarketplaceItems = []
+let visibleEventItems = []
+let marketPage = 1
+let eventsPage = 1
+const marketPerPage = 6
+const eventsPerPage = 6
 
 const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, character => ({
   '&': '&amp;',
@@ -1293,31 +1299,66 @@ if(container.querySelector('#eventsGrid')){
 function renderMarketplaceGrid(items){
   const grid = document.getElementById('marketplaceGrid')
   if(!grid) return
+  visibleMarketplaceItems = items.slice()
+  marketPage = 1
   grid.innerHTML=''
   const empty = document.getElementById('newEmptyState') || document.getElementById('emptyState')
   if(empty){
     empty.style.display = items.length ? 'none' : 'block'
   }
-  items.forEach(p=>{
+  items.slice(0, marketPerPage).forEach(p=>{
     grid.appendChild(createHomeListingCard(p, 'marketplace', {
       action: 'View find',
       imageLoading: 'eager'
     }))
   })
+  updateLoadMoreButton('marketplaceLoadMore', items.length, marketPerPage)
 }
 
 function renderEventsGrid(items){
   const grid = document.getElementById('newEventsGrid') || document.getElementById('eventsGrid')
   if(!grid) return
   items = getUpcomingEvents(items)
+  visibleEventItems = items.slice()
+  eventsPage = 1
   grid.innerHTML=''
   const empty = document.getElementById('newEmptyState') || document.getElementById('emptyState')
   if(empty){
     empty.style.display = items.length ? 'none' : 'block'
   }
-  items.forEach(e=>{
+  items.slice(0, eventsPerPage).forEach(e=>{
     grid.appendChild(createHomeEventCard(e))
   })
+  updateLoadMoreButton('eventsLoadMore', items.length, eventsPerPage)
+}
+
+function updateLoadMoreButton(buttonId, total, pageSize){
+  const button = document.getElementById(buttonId)
+  if(!button) return
+  const shown = buttonId === 'marketplaceLoadMore' ? marketPage * pageSize : eventsPage * pageSize
+  button.hidden = shown >= total
+  button.setAttribute('aria-label', `Load more (${Math.max(0, total - shown)} remaining)`)
+}
+
+function loadMoreMarketplaceItems(){
+  const grid = document.getElementById('marketplaceGrid')
+  if(!grid) return
+  marketPage += 1
+  visibleMarketplaceItems.slice((marketPage - 1) * marketPerPage, marketPage * marketPerPage)
+    .forEach(item => grid.appendChild(createHomeListingCard(item, 'marketplace', {
+      action: 'View find',
+      imageLoading: 'lazy'
+    })))
+  updateLoadMoreButton('marketplaceLoadMore', visibleMarketplaceItems.length, marketPerPage)
+}
+
+function loadMoreEventItems(){
+  const grid = document.getElementById('newEventsGrid') || document.getElementById('eventsGrid')
+  if(!grid) return
+  eventsPage += 1
+  visibleEventItems.slice((eventsPage - 1) * eventsPerPage, eventsPage * eventsPerPage)
+    .forEach(item => grid.appendChild(createHomeEventCard(item)))
+  updateLoadMoreButton('eventsLoadMore', visibleEventItems.length, eventsPerPage)
 }
 
 function renderFeaturedEvents(){
@@ -1562,15 +1603,11 @@ function setupSortOptions(){
           if(val==='price-low') items.sort((a,b)=>a.price-b.price)
           if(val==='price-high') items.sort((a,b)=>b.price-a.price)
           renderMarketplaceGrid(items)
-} else if(grid.id === 'eventsGrid'){
+        } else if(grid.id === 'newEventsGrid' || grid.id === 'eventsGrid'){
           let items = data.events.slice()
-          if(val==='date') items.sort((a,b)=>{
-            // sort by month/day lexicographically (date strings like "Jun 4", "Aug 20")
-            const monthOrder = {Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12}
-            return (monthOrder[a.date.slice(0,3)] || 0) - (monthOrder[b.date.slice(0,3)] || 0)
-          })
+          if(val==='date') items.sort((a,b)=>new Date(a.eventDate) - new Date(b.eventDate))
           if(val==='popular' || val==='attendees') items = items.slice().reverse()
-          if(grid.id === 'newEventsGrid' || grid.id === 'eventsGrid') renderEventsGrid(items)
+          renderEventsGrid(items)
         }
       } catch(e) {
         console.warn('Error sorting:', e)
@@ -1581,22 +1618,20 @@ function setupSortOptions(){
 
 // Load more handling
 let accomPage = 1; const accomPerPage = 3
-let marketPage = 1; const marketPerPage = 6
 function setupLoadMore(){
   const loadBtn = document.getElementById('loadMoreBtn')
   const accomGrid = document.getElementById('accommodationGrid')
-  if(!loadBtn || !accomGrid) return
-  // show if more items exist
-  if(data.accommodations.length > accomPerPage){
-    loadBtn.style.display = 'inline-block'
+  if(loadBtn && accomGrid){
+    if(data.accommodations.length > accomPerPage) loadBtn.style.display = 'inline-block'
+    loadBtn.addEventListener('click', ()=>{
+      accomPage++
+      const end = accomPage * accomPerPage
+      renderAccommodations('accommodationGrid', data.accommodations.slice(0,end))
+      if(end >= data.accommodations.length) loadBtn.style.display = 'none'
+    })
   }
-  loadBtn.addEventListener('click', ()=>{
-    accomPage++
-    const start = 0
-    const end = accomPage * accomPerPage
-    renderAccommodations('accommodationGrid', data.accommodations.slice(0,end))
-    if(end >= data.accommodations.length) loadBtn.style.display = 'none'
-  })
+  document.getElementById('marketplaceLoadMore')?.addEventListener('click', loadMoreMarketplaceItems)
+  document.getElementById('eventsLoadMore')?.addEventListener('click', loadMoreEventItems)
 }
 
 // Profile tabs

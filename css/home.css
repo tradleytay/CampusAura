@@ -501,6 +501,10 @@
 }
 
 @media (max-width: 820px) {
+  .home-page .home-search {
+    display: none;
+  }
+
   .home-page .home-hero-grid {
     min-height: 0;
   }
