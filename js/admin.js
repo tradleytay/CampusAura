@@ -359,8 +359,8 @@
     document.getElementById('accomTable').innerHTML = state.accommodations.map(item => `
       <tr>
         <td data-label="Reference"><strong>${escapeHtml(item.reference_code || 'Not assigned')}</strong></td>
-        <td data-label="Title"><strong>${escapeHtml(item.title)}</strong><br><span class="muted small">${escapeHtml(item.description || '')}</span></td>
-        <td data-label="Location">${escapeHtml(item.location)}</td>
+        <td data-label="Title"><strong>${escapeHtml(item.title)}</strong><br><span class="muted small">${escapeHtml([item.room_type, item.description || ''].filter(Boolean).join(' · '))}</span></td>
+        <td data-label="Location">${escapeHtml(item.location)}${item.distance_km != null ? `<br><span class="muted small">${escapeHtml(item.distance_km)} km from campus</span>` : ''}</td>
         <td data-label="Price">${price(item.price)}</td>
         <td data-label="Status"><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(item.status)}</span></td>
         <td data-label="Actions">
@@ -643,7 +643,18 @@
         const { error } = await client.from('accommodations').insert({
           owner_id: user.id, title: accomTitle.value.trim(), location: accomLocation.value.trim(),
           price: Number(accomPrice.value), image_url: imageUrls[0], image_urls: imageUrls,
-          description: accomDesc.value.trim(), status: 'published', verified: true
+          description: accomDesc.value.trim(), status: 'published', verified: true,
+          room_type: document.getElementById('adminAccomRoomType').value,
+          distance_km: document.getElementById('adminAccomDistance').value === '' ? null : Number(document.getElementById('adminAccomDistance').value),
+          deposit: Number(document.getElementById('adminAccomDeposit').value || 0),
+          furnishing: document.getElementById('adminAccomFurnished').value,
+          bathroom_type: document.getElementById('adminAccomBathroom').value,
+          kitchen_type: document.getElementById('adminAccomKitchen').value,
+          available_from: document.getElementById('adminAccomAvailableFrom').value || null,
+          max_occupants: Number(document.getElementById('adminAccomOccupants').value || 1),
+          transport_details: document.getElementById('adminAccomTransport').value.trim(),
+          utilities_included: document.getElementById('adminAccomUtilities').value.split(',').map(value => value.trim()).filter(Boolean),
+          amenities: document.getElementById('adminAccomAmenities').value.split(',').map(value => value.trim()).filter(Boolean)
         })
         if (error) throw error
         event.target.reset()
@@ -998,7 +1009,20 @@
     if (table === 'accommodations') {
       kicker.textContent = 'Accommodation'
       title.textContent = item.title || 'Accommodation listing'
-      meta.innerHTML = `<strong>${escapeHtml(item.location || 'Location unavailable')}</strong><span>•</span><strong>K${Number(item.price || 0).toLocaleString()}</strong><span>•</span><span>${escapeHtml(item.status || 'Published')}</span>`
+      const details = [
+        ['Room type', item.room_type],
+        ['Distance', item.distance_km != null ? `${item.distance_km} km from campus` : ''],
+        ['Deposit', item.deposit != null ? `K${Number(item.deposit).toLocaleString()}` : ''],
+        ['Furnishing', item.furnishing],
+        ['Bathroom', item.bathroom_type],
+        ['Kitchen', item.kitchen_type],
+        ['Utilities included', (item.utilities_included || []).join(', ')],
+        ['Amenities', (item.amenities || []).join(', ')],
+        ['Transport', item.transport_details],
+        ['Available from', item.available_from],
+        ['Maximum occupants', item.max_occupants]
+      ].filter(([, value]) => value !== '' && value !== null && value !== undefined)
+      meta.innerHTML = `<strong>${escapeHtml(item.location || 'Location unavailable')}</strong><span>•</span><strong>K${Number(item.price || 0).toLocaleString()} / month</strong><span>•</span><span>${escapeHtml(item.status || 'Published')}</span><dl class="admin-property-detail-list">${details.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join('')}</dl>`
       description.textContent = item.description || 'No description provided.'
       footer.innerHTML = `
         <span class="detail-chip">Owner: ${escapeHtml(item.owner_id || 'N/A')}</span>

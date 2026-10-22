@@ -48,6 +48,13 @@
   line-height: 1.6;
 }
 .provider-display-name-field { display: grid; gap: 6px; color: var(--ca-ink-soft); font-size: 12px; font-weight: 700; }
+.provider-page .admin-form-grid > label { display: grid; gap: 6px; color: var(--ca-ink-soft); font-size: 12px; font-weight: 700; }
+.provider-page .admin-form-grid > label input,
+.provider-page .admin-form-grid > label select { width: 100%; min-width: 0; }
+.provider-choice-group { display: flex; flex-wrap: wrap; gap: 8px 14px; min-width: 0; margin: 0; padding: 10px 12px; border: 1px solid var(--ca-line); border-radius: 10px; }
+.provider-choice-group legend { padding: 0 5px; color: var(--ca-ink-soft); font-size: 12px; font-weight: 700; }
+.provider-choice-group label { display: inline-flex; align-items: center; gap: 6px; color: var(--ca-muted); font-size: 12px; }
+.provider-edit-accommodation-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .provider-scope-notice {
   margin: 16px 0;
   padding: 18px;
@@ -176,6 +183,7 @@
   .provider-gallery-dialog { padding: 14px; border-radius: 14px; }
   .provider-edit-dialog { padding: 18px; border-radius: 14px; }
   .provider-gallery-stage { min-height: 180px; }
+  .provider-edit-accommodation-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
 .provider-type-toggle{

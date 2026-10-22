@@ -3,13 +3,26 @@
   const storageKey = 'campusaura-theme'
   const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
 
+  function readThemePreference() {
+    try { return localStorage.getItem(storageKey) } catch (error) {
+      console.warn('CampusAura could not read the theme preference:', error)
+      return null
+    }
+  }
+
+  function saveThemePreference(theme) {
+    try { localStorage.setItem(storageKey, theme) } catch (error) {
+      console.warn('CampusAura could not save the theme preference:', error)
+    }
+  }
+
   function setTheme(theme) {
     const nextTheme = theme === 'dark' ? 'dark' : 'light'
     document.documentElement.setAttribute('data-theme', nextTheme)
     document.body?.setAttribute('data-theme', nextTheme)
     const metaTheme = document.querySelector('meta[name="theme-color"]')
     if (metaTheme) metaTheme.setAttribute('content', nextTheme === 'dark' ? '#0f172a' : '#2563eb')
-    localStorage.setItem(storageKey, nextTheme)
+    saveThemePreference(nextTheme)
     return nextTheme
   }
 
@@ -48,7 +61,7 @@
     document.body.appendChild(link)
   }
 
-  const storedTheme = localStorage.getItem(storageKey)
+  const storedTheme = readThemePreference()
   setTheme(storedTheme === 'dark' || storedTheme === 'light'
     ? storedTheme
     : (mediaQuery.matches ? 'dark' : 'light'))
@@ -59,7 +72,7 @@
   })
   if (mediaQuery.addEventListener) {
     mediaQuery.addEventListener('change', (event) => {
-      if (!localStorage.getItem(storageKey)) setTheme(event.matches ? 'dark' : 'light')
+      if (!readThemePreference()) setTheme(event.matches ? 'dark' : 'light')
     })
   }
 }())

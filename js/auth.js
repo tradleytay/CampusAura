@@ -83,7 +83,9 @@
       if (error) throw error
       if (!data.user) throw new Error('Sign-in succeeded but no user account was returned.')
 
-      localStorage.setItem('campusAura:lastActivity', String(Date.now()))
+      try { localStorage.setItem('campusAura:lastActivity', String(Date.now())) } catch (storageError) {
+        console.warn('CampusAura could not save the sign-in activity timestamp:', storageError)
+      }
       await routeAuthenticatedUser(data.user)
     } catch (error) {
       setStatus(`Could not sign in: ${error.message}`, true)

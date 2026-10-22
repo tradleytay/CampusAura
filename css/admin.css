@@ -515,6 +515,11 @@ body {
 .admin-details-footer{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;padding-top:16px;border-top:1px solid var(--luxury-line)}
 .admin-details-footer .detail-chip{padding:7px 10px;border-radius:999px;background:#eef4ff;color:var(--luxury-primary);font-size:12px;font-weight:700}
 .admin-details-modal-panel:has(.profile-detail-sections){width:min(800px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow-y:auto}
+.admin-property-detail-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 18px; width:100%; margin:12px 0 0; text-align:left; }
+.admin-property-detail-list > div { min-width:0; }
+.admin-property-detail-list dt { color:var(--ca-muted); font-size:11px; }
+.admin-property-detail-list dd { margin:2px 0 0; color:var(--ca-ink); font-size:13px; font-weight:600; overflow-wrap:anywhere; }
+@media (max-width:520px) { .admin-property-detail-list { grid-template-columns:minmax(0,1fr); } }
 .admin-details-description[hidden]{display:none}
 .admin-details-footer:has(.profile-detail-sections){display:block}
 .profile-detail-sections{display:grid;gap:18px}
@@ -737,3 +742,127 @@ body {
   .analytics-trend-grid { gap: 10px; }
 }
 .analytics-chart-hint { margin: 4px 0 0; color: var(--ca-muted); font-size: 11px; }
+
+/* Responsive admin navigation, data views, and touch targets. */
+.dashboard-page.admin-page .admin-main,
+.dashboard-page.admin-page .admin-panel,
+.dashboard-page.admin-page .admin-card,
+.dashboard-page.admin-page .admin-table-wrap { min-width: 0; }
+.dashboard-page.admin-page .admin-table-wrap {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+  scrollbar-color: #b8c7db transparent;
+  scrollbar-width: thin;
+}
+.dashboard-page.admin-page :is(.admin-tab, .admin-toplink, .admin-quick-action, .admin-text-link) { min-height: 44px; }
+.dashboard-page.admin-page .admin-row-actions { flex-wrap: wrap; }
+
+@media (max-width: 900px) {
+  .dashboard-page.admin-page .admin-sidebar {
+    position: relative;
+    z-index: 5;
+    padding: 12px 18px;
+  }
+  .dashboard-page.admin-page .dashboard-nav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 12px;
+    border: 1px solid #dce5f1;
+    border-radius: 11px;
+    background: #fff;
+    color: var(--ca-ink);
+    font: 700 13px 'DM Sans', sans-serif;
+    text-align: left;
+    cursor: pointer;
+  }
+  .dashboard-page.admin-page .dashboard-nav-toggle[aria-expanded="true"] {
+    border-color: #b8ccef;
+    border-radius: 11px 11px 0 0;
+  }
+  .dashboard-page.admin-page .admin-tabs,
+  .dashboard-page.admin-page .admin-tabs.is-open {
+    display: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    max-height: min(52vh, 420px);
+    margin: 0;
+    padding: 8px;
+    overflow-y: auto;
+    border: 1px solid #dce5f1;
+    border-top: 0;
+    border-radius: 0 0 11px 11px;
+    background: #fff;
+  }
+  .dashboard-page.admin-page .admin-tabs.is-open { display: grid; }
+  .dashboard-page.admin-page .admin-tab {
+    min-width: 0;
+    min-height: 48px;
+    padding: 9px 10px;
+    overflow-wrap: anywhere;
+  }
+  .dashboard-page.admin-page .admin-tab span { font-size: 13px; }
+  .dashboard-page.admin-page .admin-tab small { font-size: 10px; }
+  .dashboard-page.admin-page .admin-main { padding-right: clamp(18px, 3vw, 32px); padding-left: clamp(18px, 3vw, 32px); }
+}
+
+@media (max-width: 700px) {
+  .dashboard-page.admin-page .admin-overview-hero { border-radius: 15px; }
+  .dashboard-page.admin-page .admin-overview-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dashboard-page.admin-page .admin-overview-grid,
+  .dashboard-page.admin-page .admin-queue-grid,
+  .dashboard-page.admin-page .admin-role-grid,
+  .dashboard-page.admin-page .admin-settings-grid,
+  .dashboard-page.admin-page .analytics-breakdown-grid,
+  .dashboard-page.admin-page .analytics-trend-grid { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-page.admin-page .analytics-primary-grid,
+  .dashboard-page.admin-page .analytics-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dashboard-page.admin-page .admin-card { padding: 17px; }
+  .dashboard-page.admin-page .admin-card-head { flex-wrap: wrap; }
+  .dashboard-page.admin-page .admin-table-wrap { margin-right: -2px; }
+  .dashboard-page.admin-page .admin-listing-table td { grid-template-columns: minmax(82px, 30%) minmax(0, 1fr); }
+}
+
+@media (max-width: 520px) {
+  .dashboard-page.admin-page .admin-topbar-inner {
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    padding: 10px 14px;
+  }
+  .dashboard-page.admin-page .admin-topnav { justify-content: flex-start; }
+  .dashboard-page.admin-page .admin-main { padding: 18px 14px 34px; }
+  .dashboard-page.admin-page .admin-overview-hero { padding: 20px; }
+  .dashboard-page.admin-page .admin-hero-queue { width: 100%; }
+  .dashboard-page.admin-page .admin-stat-link { min-height: 88px; }
+  .dashboard-page.admin-page .admin-shortcut-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dashboard-page.admin-page .admin-shortcut { min-width: 0; }
+  .dashboard-page.admin-page .admin-listing-table td { gap: 7px; padding: 8px 6px; }
+  .dashboard-page.admin-page .admin-row-actions { gap: 6px; }
+  .dashboard-page.admin-page .admin-row-actions :is(button, a) { min-height: 40px; }
+  .dashboard-page.admin-page .analytics-primary-card { padding: 14px; }
+  .dashboard-page.admin-page .analytics-primary-card > span,
+  .dashboard-page.admin-page .analytics-metric > span { font-size: 11px; line-height: 1.35; }
+  .dashboard-page.admin-page .analytics-metric { padding: 13px; }
+  .dashboard-page.admin-page .analytics-stat-grid { grid-template-columns: 1fr; }
+  .dashboard-page.admin-page .admin-details-modal-panel,
+  .dashboard-page.admin-page .admin-details-modal-panel:has(.profile-detail-sections) {
+    width: calc(100vw - 24px);
+    max-height: calc(100dvh - 24px);
+    padding: 18px;
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 360px) {
+  .dashboard-page.admin-page .admin-tabs,
+  .dashboard-page.admin-page .admin-tabs.is-open,
+  .dashboard-page.admin-page .admin-overview-stats,
+  .dashboard-page.admin-page .admin-shortcut-grid,
+  .dashboard-page.admin-page .analytics-primary-grid,
+  .dashboard-page.admin-page .analytics-metrics { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-page.admin-page .admin-brand { font-size: 13px; }
+  .dashboard-page.admin-page .admin-topnav { width: 100%; justify-content: space-between; }
+}

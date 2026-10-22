@@ -46,9 +46,15 @@
 
   function render() {
     document.getElementById('statSaved').textContent = state.saved.length
-    document.getElementById('statRsvps').textContent = state.rsvps.length
     document.getElementById('statMyListings').textContent = state.listings.length
     document.getElementById('statAccom').textContent = state.accommodations.length
+
+    const now = Date.now()
+    const upcomingRsvps = state.rsvps.filter(item => {
+      const date = new Date(item.events?.event_date).getTime()
+      return Number.isFinite(date) && date >= now
+    }).sort((left, right) => new Date(left.events.event_date) - new Date(right.events.event_date))
+    document.getElementById('statRsvps').textContent = upcomingRsvps.length
 
     const savedMarkup = state.saved.map(item => {
       const accommodation = item.accommodations || {}
@@ -56,8 +62,7 @@
     }).join('') || '<div class="admin-recent-empty">You have not saved any listings yet.</div>'
     document.getElementById('overviewSaved').innerHTML = savedMarkup
 
-    const upcomingRsvps = state.rsvps.filter(item => item.events && new Date(item.events.event_date) >= new Date()).slice(0, 3)
-    const rsvpMarkup = upcomingRsvps.map(item => {
+    const rsvpMarkup = upcomingRsvps.slice(0, 3).map(item => {
       const event = item.events
       return `<div class="dashboard-list-item"><span class="dashboard-list-icon">🎟️</span><div><strong>${escapeHtml(event.title || 'Campus event')}</strong><span>${eventDate(event.event_date)} · ${escapeHtml(event.location || 'Location unavailable')}</span></div></div>`
     }).join('') || '<div class="admin-recent-empty">No upcoming events yet. Explore what is happening on campus.</div>'
@@ -71,12 +76,15 @@
       return `<tr><td><strong>${escapeHtml(accommodation.title || 'Accommodation listing')}</strong></td><td>${escapeHtml(accommodation.location || 'Location unavailable')}</td><td>${price(accommodation.price)}/mo</td><td><button class="admin-delete" data-action="unsave" data-id="${escapeHtml(item.id)}">Unsave</button></td></tr>`
     }).join('') || '<tr><td colspan="4" class="admin-recent-empty">No saved listings yet.</td></tr>'
 
-    document.getElementById('rsvpTable').innerHTML = state.rsvps.map(item => {
+    document.getElementById('rsvpTable').innerHTML = upcomingRsvps.map(item => {
       const event = item.events || {}
       return `<tr><td><strong>${escapeHtml(event.title || 'Campus event')}</strong></td><td>${eventDate(event.event_date)}</td><td>${escapeHtml(event.location || 'Location unavailable')}</td><td><button class="admin-delete" data-action="unrsvp" data-id="${escapeHtml(item.id)}">Cancel RSVP</button></td></tr>`
-    }).join('') || '<tr><td colspan="4" class="admin-recent-empty">No RSVPs yet.</td></tr>'
+    }).join('') || '<tr><td colspan="4" class="admin-recent-empty">No upcoming RSVPs. Explore events to find something to attend.</td></tr>'
 
-    document.getElementById('myListingsTable').innerHTML = state.listings.map(item => `<tr><td><strong>${escapeHtml(item.title)}</strong></td><td>${escapeHtml(item.category)}</td><td>${price(item.price)}</td></tr>`).join('') || '<tr><td colspan="3" class="admin-recent-empty">You have not listed any items yet.</td></tr>'
+    document.getElementById('myListingsTable').innerHTML = state.listings.map(item => {
+      const status = item.status === 'draft' ? 'Pending review' : item.status || 'Unknown'
+      return `<tr><td><strong>${escapeHtml(item.title)}</strong></td><td>${escapeHtml(item.category)}</td><td>${price(item.price)}</td><td><span class="status-pill status-${escapeHtml(item.status || 'unknown')}">${escapeHtml(status)}</span></td><td><div class="student-listing-actions"><button class="student-listing-edit-btn" type="button" data-student-listing-edit="${escapeHtml(item.id)}">Edit</button><button class="admin-delete" type="button" data-action="delete-listing" data-id="${escapeHtml(item.id)}">Delete</button></div></td></tr>`
+    }).join('') || '<tr><td colspan="5" class="admin-recent-empty">You have not listed anything yet.</td></tr>'
     renderVerification()
   }
 
@@ -164,10 +172,86 @@
     document.addEventListener('click', async event => {
       const button = event.target.closest('.admin-delete')
       if (!button) return
-      const table = button.dataset.action === 'unsave' ? 'saved_listings' : 'rsvps'
-      const { error } = await client.from(table).delete().eq('id', button.dataset.id).eq('user_id', user.id)
+      const action = button.dataset.action
+      const confirmMessage = action === 'unsave'
+        ? 'Remove this property from your saved listings?'
+        : action === 'unrsvp'
+          ? 'Cancel your RSVP for this event?'
+          : 'Delete this marketplace listing? This cannot be undone.'
+      if (!window.confirm(confirmMessage)) return
+      const table = action === 'unsave' ? 'saved_listings' : action === 'unrsvp' ? 'rsvps' : 'marketplace_items'
+      const ownerColumn = action === 'delete-listing' ? 'seller_id' : 'user_id'
+      const { error } = await client.from(table).delete().eq('id', button.dataset.id).eq(ownerColumn, user.id)
       if (error) { setMessage(error.message, true); return }
       await loadData(user); render()
+    })
+  }
+
+  function setupListingEditor(user) {
+    const modal = document.getElementById('studentListingEditModal')
+    const form = document.getElementById('studentListingEditForm')
+    if (!modal || !form) return
+    let returnFocus = null
+    const close = () => {
+      modal.classList.remove('is-open')
+      modal.setAttribute('aria-hidden', 'true')
+      document.body.classList.remove('modal-open')
+      returnFocus?.focus()
+      returnFocus = null
+    }
+
+    document.addEventListener('click', event => {
+      const editButton = event.target.closest('[data-student-listing-edit]')
+      if (editButton) {
+        const item = state.listings.find(listing => String(listing.id) === editButton.dataset.studentListingEdit)
+        if (!item) return
+        returnFocus = editButton
+        form.dataset.id = item.id
+        document.getElementById('studentListingEditName').value = item.title || ''
+        document.getElementById('studentListingEditCategory').value = item.category || 'Other'
+        document.getElementById('studentListingEditType').value = item.listing_type || 'product'
+        document.getElementById('studentListingEditPrice').value = item.price ?? ''
+        document.getElementById('studentListingEditDescription').value = item.description || ''
+        document.getElementById('studentListingEditStatus').textContent = ''
+        modal.classList.add('is-open')
+        modal.setAttribute('aria-hidden', 'false')
+        document.body.classList.add('modal-open')
+        document.getElementById('studentListingEditName').focus()
+      } else if (event.target.closest('[data-student-edit-close]')) {
+        close()
+      }
+    })
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && modal.classList.contains('is-open')) close()
+    })
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault()
+      const submit = form.querySelector('button[type="submit"]')
+      const status = document.getElementById('studentListingEditStatus')
+      submit.disabled = true
+      status.textContent = 'Saving changes…'
+      try {
+        const { data, error } = await client.from('marketplace_items').update({
+          title: document.getElementById('studentListingEditName').value.trim(),
+          category: document.getElementById('studentListingEditCategory').value,
+          listing_type: document.getElementById('studentListingEditType').value,
+          price: Number(document.getElementById('studentListingEditPrice').value),
+          description: document.getElementById('studentListingEditDescription').value.trim()
+        }).eq('id', form.dataset.id).eq('seller_id', user.id).select('id').maybeSingle()
+        if (error) throw error
+        if (!data) throw new Error('This listing could not be found or is no longer yours to edit.')
+        await loadData(user)
+        render()
+        setMessage('Listing updated.')
+        close()
+      } catch (error) {
+        status.textContent = `Could not save listing: ${error.message}`
+        setMessage(`Could not save listing: ${error.message}`, true)
+      } finally {
+        submit.disabled = false
+      }
     })
   }
 
@@ -181,12 +265,31 @@
   }
 
   function setupTabs() {
-    document.querySelectorAll('.admin-tab').forEach(tab => tab.addEventListener('click', () => {
-      document.querySelectorAll('.admin-tab').forEach(item => { item.classList.remove('active'); item.setAttribute('aria-selected', 'false') })
+    const tabs = [...document.querySelectorAll('.admin-tab[role="tab"]')]
+    const activate = tab => {
+      tabs.forEach(item => {
+        const selected = item === tab
+        item.classList.toggle('active', selected)
+        item.setAttribute('aria-selected', String(selected))
+        item.tabIndex = selected ? 0 : -1
+      })
       document.querySelectorAll('.admin-panel').forEach(panel => panel.classList.remove('active'))
-      tab.classList.add('active'); tab.setAttribute('aria-selected', 'true')
       document.getElementById(`panel-${tab.dataset.tab}`)?.classList.add('active')
-    }))
+    }
+    tabs.forEach(tab => tab.addEventListener('click', () => activate(tab)))
+    document.getElementById('studentDashboardNav')?.addEventListener('keydown', event => {
+      const currentIndex = tabs.indexOf(event.target.closest('[role="tab"]'))
+      if (currentIndex < 0) return
+      let nextIndex = currentIndex
+      if (event.key === 'ArrowDown') nextIndex = (currentIndex + 1) % tabs.length
+      else if (event.key === 'ArrowUp') nextIndex = (currentIndex - 1 + tabs.length) % tabs.length
+      else if (event.key === 'Home') nextIndex = 0
+      else if (event.key === 'End') nextIndex = tabs.length - 1
+      else return
+      event.preventDefault()
+      tabs[nextIndex].focus()
+      activate(tabs[nextIndex])
+    })
     document.querySelectorAll('[data-tab-target]').forEach(button => button.addEventListener('click', () => {
       document.querySelector(`.admin-tab[data-tab="${button.dataset.tabTarget}"]`)?.click()
     }))
@@ -223,7 +326,7 @@
     if (welcomeHeading) {
       welcomeHeading.textContent = `Welcome back, ${displayName.split(' ')[0]} 👋`
     }
-    try { await loadData(session.user); render(); setupTabs(); setupActions(session.user); setupSignOut() }
+    try { await loadData(session.user); render(); setupTabs(); setupActions(session.user); setupListingEditor(session.user); setupSignOut() }
     catch (error) { setMessage(`Could not load student data: ${error.message}`, true) }
   }
 

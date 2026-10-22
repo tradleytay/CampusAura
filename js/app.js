@@ -440,10 +440,15 @@ function setupThemeToggle(){
     if(label) label.textContent = nextTheme === 'dark' ? 'Light' : 'Dark'
     toggle.setAttribute('aria-pressed', String(nextTheme === 'dark'))
     toggle.setAttribute('aria-label', nextTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode')
-    localStorage.setItem('campusaura-theme', nextTheme)
+    try { localStorage.setItem('campusaura-theme', nextTheme) } catch (error) {
+      console.warn('CampusAura could not save the theme preference:', error)
+    }
   }
 
-  const storedTheme = localStorage.getItem('campusaura-theme')
+  let storedTheme = null
+  try { storedTheme = localStorage.getItem('campusaura-theme') } catch (error) {
+    console.warn('CampusAura could not read the theme preference:', error)
+  }
   const preferredTheme = storedTheme === 'dark' || storedTheme === 'light'
     ? storedTheme
     : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
@@ -457,7 +462,11 @@ function setupThemeToggle(){
   const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
   if(mediaQuery.addEventListener){
     mediaQuery.addEventListener('change', (event) => {
-      if(!localStorage.getItem('campusaura-theme')) {
+      let storedPreference = null
+      try { storedPreference = localStorage.getItem('campusaura-theme') } catch (error) {
+        console.warn('CampusAura could not read the theme preference:', error)
+      }
+      if(!storedPreference) {
         applyTheme(event.matches ? 'dark' : 'light')
       }
     })
@@ -672,7 +681,7 @@ function createHomeListingCard(item, type, { action, includeSave = false, imageL
   const isAccommodation = type === 'accommodation'
   const category = isAccommodation ? 'Accommodation' : item.category || 'Marketplace'
   const subtitle = item.subtitle || (isAccommodation
-    ? item.location || 'Student accommodation'
+    ? [item.location || 'Student accommodation', item.roomType, item.distanceKm != null ? `${item.distanceKm} km from campus` : ''].filter(Boolean).join(' · ')
     : item.seller || 'Student marketplace')
   const image = isAccommodation ? item.images : item.img
   const fallbackImage = isAccommodation ? 'images/room.jpeg' : 'images/market.jpeg'
@@ -694,7 +703,7 @@ function createHomeListingCard(item, type, { action, includeSave = false, imageL
         <strong>${item.price ? `K${escapeHtml(item.price)}${isAccommodation ? '<span>/mo</span>' : ''}` : ''}</strong>
         <div class="home-update-actions">
           <button class="home-update-action" type="button" data-listing-open>${escapeHtml(action || 'View details')} <span aria-hidden="true">→</span></button>
-          ${includeSave ? `<button class="home-update-save save-listing" type="button" data-accommodation-id="${escapeHtml(item.id)}" aria-label="Save ${escapeHtml(item.title)}">Save</button>` : ''}
+          ${includeSave ? `<button class="home-update-save save-listing" type="button" data-accommodation-id="${escapeHtml(item.id)}" aria-label="Save ${escapeHtml(item.title)}" aria-pressed="false">Save</button>` : ''}
         </div>
       </div>
     </div>
@@ -724,7 +733,7 @@ function createHomeEventCard(event){
       ${event.organizerName ? `<p class="home-upcoming-organizer">Organized by ${escapeHtml(event.organizerName)}</p>` : ''}
       <p class="home-upcoming-description">${escapeHtml(event.description || '')}</p>
     </div>
-    <button class="rsvp btn btn-primary" type="button" data-event-id="${escapeHtml(event.id)}" aria-pressed="false">RSVP <span aria-hidden="true">→</span></button>
+    ${rsvpButtonMarkup(event.id, 'rsvp btn btn-primary')}
   `
   return card
 }
@@ -814,14 +823,68 @@ function setupListingModals(){
           <div class="listing-modal-contact" id="listingModalContact"></div>
         </div>
       </section>
+      <div class="listing-image-viewer" id="listingImageViewer" aria-hidden="true" aria-label="Expanded listing photo">
+        <button class="listing-image-viewer-close" type="button" aria-label="Close photo viewer" data-image-viewer-close>&times;</button>
+        <button class="listing-image-viewer-nav listing-image-viewer-prev" type="button" aria-label="Previous photo" data-image-viewer-prev>‹</button>
+        <img class="listing-image-viewer-image" alt="">
+        <button class="listing-image-viewer-nav listing-image-viewer-next" type="button" aria-label="Next photo" data-image-viewer-next>›</button>
+        <span class="listing-image-viewer-count" aria-live="polite"></span>
+      </div>
     `
     document.body.appendChild(modal)
   }
 
   let previouslyFocusedElement = null
   let activeGalleryImages = []
+  let activeGalleryIndex = 0
+  let imageViewerReturnFocus = null
+  const imageViewer = modal.querySelector('#listingImageViewer')
+  const imageViewerImage = imageViewer?.querySelector('.listing-image-viewer-image')
+
+  const updateGalleryImage = index => {
+    if(!activeGalleryImages.length) return
+    activeGalleryIndex = (index + activeGalleryImages.length) % activeGalleryImages.length
+    const src = safeImageUrl(activeGalleryImages[activeGalleryIndex], 'images/hero-illustration.svg')
+    const mainImage = modal.querySelector('.listing-modal-main-image')
+    if(mainImage) mainImage.src = src
+    modal.querySelectorAll('[data-gallery-index]').forEach(button => {
+      const active = Number(button.dataset.galleryIndex) === activeGalleryIndex
+      button.classList.toggle('is-active', active)
+      button.setAttribute('aria-current', String(active))
+    })
+    if(imageViewer?.classList.contains('is-open')) showImageViewerImage()
+  }
+
+  const showImageViewerImage = () => {
+    if(!imageViewerImage || !activeGalleryImages.length) return
+    imageViewerImage.src = safeImageUrl(activeGalleryImages[activeGalleryIndex], 'images/hero-illustration.svg')
+    imageViewerImage.alt = `${document.getElementById('listingModalTitle')?.textContent || 'Listing'} photo ${activeGalleryIndex + 1}`
+    const counter = imageViewer.querySelector('.listing-image-viewer-count')
+    if(counter) counter.textContent = `${activeGalleryIndex + 1} of ${activeGalleryImages.length}`
+    imageViewer.querySelector('[data-image-viewer-prev]').hidden = activeGalleryImages.length < 2
+    imageViewer.querySelector('[data-image-viewer-next]').hidden = activeGalleryImages.length < 2
+  }
+
+  const openImageViewer = () => {
+    if(!imageViewer || !activeGalleryImages.length) return
+    imageViewerReturnFocus = modal.querySelector('.listing-modal-gallery-open')
+    showImageViewerImage()
+    imageViewer.classList.add('is-open')
+    imageViewer.setAttribute('aria-hidden', 'false')
+    imageViewer.querySelector('[data-image-viewer-close]')?.focus()
+  }
+
+  const closeImageViewer = () => {
+    if(!imageViewer?.classList.contains('is-open')) return
+    imageViewer.classList.remove('is-open')
+    imageViewer.setAttribute('aria-hidden', 'true')
+    imageViewerReturnFocus?.focus()
+    imageViewerReturnFocus = null
+  }
+
   const closeModal = ()=>{
     if(!modal.classList.contains('is-open')) return
+    closeImageViewer()
     modal.classList.remove('is-open')
     modal.setAttribute('aria-hidden', 'true')
     document.body.classList.remove('modal-open')
@@ -861,9 +924,13 @@ function setupListingModals(){
 
     const fallbackImage = type === 'accommodation' ? 'images/room.jpeg' : type === 'marketplace' ? 'images/market.jpeg' : 'images/event1.jpeg'
     activeGalleryImages = Array.isArray(item.imageUrls) && item.imageUrls.length ? item.imageUrls : [image || fallbackImage]
+    activeGalleryIndex = 0
     media.innerHTML = `
       <div class="listing-modal-gallery-stage">
-        <img class="listing-modal-main-image" src="${escapeHtml(safeImageUrl(activeGalleryImages[0], fallbackImage))}" alt="${escapeHtml(item.title)}">
+        <button class="listing-modal-gallery-open" type="button" data-open-image-viewer aria-label="View ${escapeHtml(item.title)} photo full size">
+          <img class="listing-modal-main-image" src="${escapeHtml(safeImageUrl(activeGalleryImages[0], fallbackImage))}" alt="${escapeHtml(item.title)}">
+          <span class="listing-modal-zoom-hint" aria-hidden="true">View photo</span>
+        </button>
       </div>
       ${activeGalleryImages.length > 1 ? `<div class="listing-modal-gallery-thumbs" aria-label="More listing photos">${activeGalleryImages.map((url, index) => `
         <button class="listing-modal-gallery-thumb${index === 0 ? ' is-active' : ''}" type="button" data-gallery-index="${index}" aria-label="Show photo ${index + 1}" aria-current="${index === 0 ? 'true' : 'false'}">
@@ -875,7 +942,22 @@ function setupListingModals(){
 
     if(type === 'accommodation'){
       kicker.textContent = 'Accommodation'
-      meta.innerHTML = `<span>${escapeHtml(item.location)}</span><strong>K${escapeHtml(item.price)} / month</strong>`
+      const includedUtilities = (item.utilitiesIncluded || []).map(value => value.replace(/^./, letter => letter.toUpperCase())).join(', ')
+      const amenities = (item.amenities || []).map(value => value.replace(/^./, letter => letter.toUpperCase())).join(', ')
+      const details = [
+        ['Room type', item.roomType],
+        ['Distance', item.distanceKm != null ? `${item.distanceKm} km from campus` : ''],
+        ['Deposit', item.deposit != null ? `K${Number(item.deposit).toLocaleString()}` : ''],
+        ['Furnishing', item.furnishing],
+        ['Bathroom', item.bathroomType],
+        ['Kitchen', item.kitchenType],
+        ['Utilities included', includedUtilities],
+        ['Amenities', amenities],
+        ['Transport', item.transportDetails],
+        ['Available from', item.availableFrom],
+        ['Maximum occupants', item.maxOccupants]
+      ].filter(([, value]) => value !== '' && value !== null && value !== undefined)
+      meta.innerHTML = `<span>${escapeHtml(item.location)}</span><strong>K${escapeHtml(item.price)} / month</strong><dl class="listing-detail-list">${details.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join('')}</dl>`
       const phone = String(item.providerPhone || '').replace(/[^\d+]/g, '')
       contact.innerHTML = lockedForGuest
         ? `<span>Provider: <strong>${escapeHtml(item.providerName || 'CampusAura provider')}</strong></span><span>Sign in to unlock contact details.</span><a class="btn btn-primary" href="auth.html">Sign in</a>`
@@ -905,26 +987,18 @@ function setupListingModals(){
 
   modal.addEventListener('click', async event=>{
     if(event.target.closest('[data-modal-close]')) closeModal()
+    if(event.target.closest('[data-image-viewer-close]')) { closeImageViewer(); return }
+    if(event.target.closest('[data-open-image-viewer]')) { openImageViewer(); return }
+    if(event.target.closest('[data-image-viewer-prev]')) { updateGalleryImage(activeGalleryIndex - 1); return }
+    if(event.target.closest('[data-image-viewer-next]')) { updateGalleryImage(activeGalleryIndex + 1); return }
     const galleryButton = event.target.closest('[data-gallery-index]')
     if(galleryButton){
       const index = Number(galleryButton.dataset.galleryIndex)
-      const fallback = 'images/hero-illustration.svg'
-      const image = activeGalleryImages[index]
-      const mainImage = modal.querySelector('.listing-modal-main-image')
-      if(image && mainImage){
-        mainImage.src = safeImageUrl(image, fallback)
-        modal.querySelectorAll('[data-gallery-index]').forEach(button=>{
-          const active = button === galleryButton
-          button.classList.toggle('is-active', active)
-          button.setAttribute('aria-current', String(active))
-        })
-      }
+      if(Number.isInteger(index) && activeGalleryImages[index]) updateGalleryImage(index)
       return
     }
     const contactLink = event.target.closest('[data-listing-contact]')
     if(!contactLink || !window.campusAuraSupabase) return
-    event.preventDefault()
-    const contactUrl = contactLink.href
     try {
       const { error } = await window.campusAuraSupabase.rpc('record_listing_analytics_event', {
         p_event_name: 'listing_inquiry',
@@ -935,7 +1009,6 @@ function setupListingModals(){
     } catch(error) {
       console.warn('Could not record listing contact click:', error)
     }
-    window.location.href = contactUrl
   })
 
   document.addEventListener('click', async event=>{
@@ -952,10 +1025,17 @@ function setupListingModals(){
   })
 
   document.addEventListener('keydown', async event=>{
+    if(imageViewer?.classList.contains('is-open')) {
+      if(event.key === 'Escape') { event.stopPropagation(); closeImageViewer(); return }
+      if(event.key === 'ArrowLeft') { updateGalleryImage(activeGalleryIndex - 1); return }
+      if(event.key === 'ArrowRight') { updateGalleryImage(activeGalleryIndex + 1); return }
+    }
     if(event.key === 'Escape') closeModal()
-    if((event.key === 'Enter' || event.key === ' ') && event.target.closest('.listing-card[data-modal-type]')){
+    const card = event.target.closest('.listing-card[data-modal-type]')
+    // Nested buttons and links keep their native keyboard behavior.
+    if((event.key === 'Enter' || event.key === ' ') && card &&
+      !event.target.closest('button, a, input, select, textarea, [data-listing-open]')){
       event.preventDefault()
-      const card = event.target.closest('.listing-card[data-modal-type]')
       await openModal(card.dataset.modalType, card.dataset.itemId)
     }
   })
@@ -1026,7 +1106,7 @@ async function loadSupabaseData(){
   }
 
   const [accommodationsResult, marketplaceResult, eventsResult] = await Promise.all([
-    loadPublishedListings('accommodations', 'id, title, location, price, description, image_url, image_urls, owner_id, created_at'),
+    loadPublishedListings('accommodations', 'id, title, location, price, description, image_url, image_urls, owner_id, created_at, room_type, distance_km, deposit, furnishing, bathroom_type, kitchen_type, utilities_included, amenities, transport_details, available_from, max_occupants'),
     loadPublishedListings('marketplace_items', 'id, title, price, category, description, image_url, image_urls, seller_id, seller_display_name, created_at'),
     window.campusAuraSupabase
       .from('events')
@@ -1056,6 +1136,17 @@ async function loadSupabaseData(){
       title: item.title,
       location: item.location,
       price: item.price,
+      roomType: item.room_type,
+      distanceKm: item.distance_km,
+      deposit: item.deposit,
+      furnishing: item.furnishing,
+      bathroomType: item.bathroom_type,
+      kitchenType: item.kitchen_type,
+      utilitiesIncluded: item.utilities_included || [],
+      amenities: item.amenities || [],
+      transportDetails: item.transport_details,
+      availableFrom: item.available_from,
+      maxOccupants: item.max_occupants,
       images: getListingImageUrls(item, 'images/room.jpeg')[0],
       imageUrls: getListingImageUrls(item, 'images/room.jpeg'),
       desc: item.description || '',
@@ -1107,6 +1198,7 @@ async function refreshHomeFeeds(){
     await loadSupabaseData()
     renderHomeFreshContent()
     renderHomeUpcomingEvents()
+    await hydrateSavedListingButtons()
     populateCounts()
   } catch(error) {
     console.warn('CampusAura could not refresh homepage content:', error)
@@ -1184,7 +1276,7 @@ if(searchBtn && globalSearch){
             <img src="${escapeHtml(safeImageUrl(e.img, 'images/event1.jpeg'))}" alt="${escapeHtml(e.title)}">
             <h3>${escapeHtml(e.title)}</h3>
             <p class="small">${escapeHtml(e.date)} • ${escapeHtml(e.location)}</p>
-            <div class="meta"><button class="rsvp" data-event-id="${escapeHtml(e.id)}">RSVP</button></div>
+            <div class="meta">${rsvpButtonMarkup(e.id)}</div>
           `
           elist.appendChild(card)
         })
@@ -1379,7 +1471,7 @@ function renderFeaturedEvents(){
       </div>
       <h3 style="color:white">${escapeHtml(e.title)}</h3>
       <p class="small" style="color:rgba(255,255,255,0.9)">${escapeHtml(e.location)}</p>
-      <div class="meta"><button class="rsvp" data-event-id="${escapeHtml(e.id)}">RSVP</button></div>
+      <div class="meta">${rsvpButtonMarkup(e.id)}</div>
     `
     banner.appendChild(card)
   })
@@ -1389,65 +1481,157 @@ async function updateAttendingCount(){
   const el = document.getElementById('attendingCount')
   if(!el) return
   if(window.campusAuraSupabase){
-    const { data: { user } } = await window.campusAuraSupabase.auth.getUser()
-    if(user){
-      const { count } = await window.campusAuraSupabase
-        .from('rsvps')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-      el.textContent = count || 0
-      return
+    try {
+      const { data: { user } } = await window.campusAuraSupabase.auth.getUser()
+      if(user){
+        const { count, error } = await window.campusAuraSupabase
+          .from('rsvps')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+        if(!error){ el.textContent = count || 0; return }
+      }
+    } catch(error) {
+      console.warn('Could not load RSVP count:', error)
     }
   }
-  const rsvps = JSON.parse(localStorage.getItem('campusAuraRsvps') || '[]')
-  el.textContent = rsvps.length
+  el.textContent = readLocalRsvpIds().size
 }
 
-function setupRsvpButtons(){
+const RSVP_STORAGE_KEY = 'campusAuraRsvps'
+let rsvpEventIds = new Set()
+
+function readLocalRsvpIds(){
+  try {
+    const stored = JSON.parse(localStorage.getItem(RSVP_STORAGE_KEY) || '[]')
+    return new Set(Array.isArray(stored) ? stored.filter(id => typeof id === 'string') : [])
+  } catch(error) {
+    console.warn('CampusAura could not read saved RSVPs:', error)
+    return new Set()
+  }
+}
+
+function setRsvpButton(button, isGoing){
+  button.setAttribute('aria-pressed', String(isGoing))
+  button.textContent = isGoing ? '✓ Going' : 'RSVP'
+}
+
+function rsvpButtonMarkup(eventId, classes = 'rsvp'){
+  const isGoing = rsvpEventIds.has(String(eventId))
+  return `<button class="${classes}" type="button" data-event-id="${escapeHtml(eventId)}" aria-pressed="${isGoing}">${isGoing ? '✓ Going' : 'RSVP'}</button>`
+}
+
+async function initializeRsvpState(){
+  rsvpEventIds = readLocalRsvpIds()
+  if(!window.campusAuraSupabase) return
+  try {
+    const { data: { user } } = await window.campusAuraSupabase.auth.getUser()
+    if(!user) return
+    const { data, error } = await window.campusAuraSupabase
+      .from('rsvps')
+      .select('event_id')
+      .eq('user_id', user.id)
+    if(error) throw error
+    rsvpEventIds = new Set((data || []).map(row => String(row.event_id)))
+  } catch(error) {
+    console.warn('Could not load saved RSVPs:', error)
+  }
+}
+
+async function setupRsvpButtons(){
+  await initializeRsvpState()
   document.addEventListener('click', async (e)=>{
     const btn = e.target.closest('.rsvp')
     if(!btn) return
     const eventId = btn.dataset.eventId
-    if(window.campusAuraSupabase && eventId){
-      const { data: { user } } = await window.campusAuraSupabase.auth.getUser()
-      if(!user){ window.location.href = 'auth.html'; return }
-      const isGoing = btn.getAttribute('aria-pressed') === 'true'
-      const result = isGoing
-        ? await window.campusAuraSupabase.from('rsvps').delete().eq('event_id', eventId).eq('user_id', user.id)
-        : await window.campusAuraSupabase.from('rsvps').insert({ event_id: eventId, user_id: user.id })
-      if(result.error){ console.warn('RSVP update failed:', result.error); return }
-      btn.setAttribute('aria-pressed', String(!isGoing))
-      btn.textContent = isGoing ? 'RSVP' : '✓ Going'
+    if(!eventId || btn.disabled) return
+    const isGoing = rsvpEventIds.has(String(eventId))
+    btn.disabled = true
+    btn.setAttribute('aria-busy', 'true')
+    try {
+      if(window.campusAuraSupabase){
+        const { data: { user } } = await window.campusAuraSupabase.auth.getUser()
+        if(!user){ window.location.href = 'auth.html'; return }
+        const result = isGoing
+          ? await window.campusAuraSupabase.from('rsvps').delete().eq('event_id', eventId).eq('user_id', user.id)
+          : await window.campusAuraSupabase.from('rsvps').insert({ event_id: eventId, user_id: user.id })
+        if(result.error) throw result.error
+      }
+      if(isGoing) rsvpEventIds.delete(String(eventId))
+      else rsvpEventIds.add(String(eventId))
+      try { localStorage.setItem(RSVP_STORAGE_KEY, JSON.stringify([...rsvpEventIds])) } catch(error) {
+        console.warn('CampusAura could not save RSVPs on this device:', error)
+      }
+      setRsvpButton(btn, !isGoing)
       await updateAttendingCount()
-      return
+    } catch(error) {
+      console.warn('RSVP update failed:', error)
+      announceAction('RSVP could not be updated. Please try again.')
+    } finally {
+      btn.disabled = false
+      btn.removeAttribute('aria-busy')
     }
-    const isGoing = btn.getAttribute('aria-pressed') === 'true'
-    btn.setAttribute('aria-pressed', String(!isGoing))
-    btn.textContent = isGoing ? 'RSVP' : '✓ Going'
-    const rsvps = JSON.parse(localStorage.getItem('campusAuraRsvps') || '[]')
-    localStorage.setItem('campusAuraRsvps', JSON.stringify(isGoing ? [] : ['going']))
-    updateAttendingCount()
   })
+}
+
+function announceAction(message){
+  let status = document.getElementById('campusAuraActionStatus')
+  if(!status){
+    status = document.createElement('div')
+    status.id = 'campusAuraActionStatus'
+    status.setAttribute('role', 'status')
+    status.setAttribute('aria-live', 'polite')
+    status.className = 'sr-only'
+    status.style.cssText = 'position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0'
+    document.body.appendChild(status)
+  }
+  status.textContent = ''
+  requestAnimationFrame(() => { status.textContent = message })
 }
 
 function setupSavedListingButtons(){
   document.addEventListener('click', async event => {
     const button = event.target.closest('.save-listing')
     if(!button || !window.campusAuraSupabase) return
-    const { data: { user } } = await window.campusAuraSupabase.auth.getUser()
-    if(!user){ window.location.href = 'auth.html'; return }
     button.disabled = true
-    const { error } = await window.campusAuraSupabase
-      .from('saved_listings')
-      .insert({ user_id: user.id, accommodation_id: button.dataset.accommodationId })
-    button.disabled = false
-    if(error && error.code !== '23505'){
+    button.setAttribute('aria-busy', 'true')
+    try {
+      const { data: { user } } = await window.campusAuraSupabase.auth.getUser()
+      if(!user){ window.location.href = 'auth.html'; return }
+      const { error } = await window.campusAuraSupabase
+        .from('saved_listings')
+        .insert({ user_id: user.id, accommodation_id: button.dataset.accommodationId })
+      if(error && error.code !== '23505') throw error
+      button.textContent = 'Saved'
+      button.setAttribute('aria-pressed', 'true')
+      announceAction('Listing saved.')
+    } catch(error) {
       console.warn('Save listing failed:', error)
-      return
+      announceAction('Listing could not be saved. Please try again.')
+    } finally {
+      button.disabled = false
+      button.removeAttribute('aria-busy')
     }
-    button.textContent = 'Saved'
-    button.setAttribute('aria-pressed', 'true')
   })
+}
+
+async function hydrateSavedListingButtons(){
+  const buttons = [...document.querySelectorAll('.save-listing[data-accommodation-id]')]
+  if(!buttons.length || !window.campusAuraSupabase) return
+  try {
+    const { data: { user } } = await window.campusAuraSupabase.auth.getUser()
+    if(!user) return
+    const { data, error } = await window.campusAuraSupabase
+      .from('saved_listings').select('accommodation_id').eq('user_id', user.id)
+    if(error) throw error
+    const savedIds = new Set((data || []).map(row => String(row.accommodation_id)))
+    buttons.forEach(button => {
+      const saved = savedIds.has(String(button.dataset.accommodationId))
+      button.textContent = saved ? 'Saved' : 'Save'
+      button.setAttribute('aria-pressed', String(saved))
+    })
+  } catch(error) {
+    console.warn('Could not load saved listings:', error)
+  }
 }
 
 // Helper: filter marketplace by category (used by category chips)
@@ -1772,7 +1956,7 @@ async function init(){
   try { setupViewToggles() } catch (e) { console.warn('setupViewToggles failed', e) }
   try { setupSortOptions() } catch (e) { console.warn('setupSortOptions failed', e) }
   try { setupLoadMore() } catch (e) { console.warn('setupLoadMore failed', e) }
-  try { setupRsvpButtons() } catch (e) { console.warn('setupRsvpButtons failed', e) }
+  try { await setupRsvpButtons() } catch (e) { console.warn('setupRsvpButtons failed', e) }
   try { setupSavedListingButtons() } catch (e) { console.warn('setupSavedListingButtons failed', e) }
   try { setupListingModals() } catch (e) { console.warn('setupListingModals failed', e) }
 
@@ -1787,6 +1971,7 @@ async function init(){
   if(document.getElementById('newFeaturedEvents') || document.getElementById('featuredEvents')) renderFeaturedEvents()
   renderHomeFreshContent()
   renderHomeUpcomingEvents()
+  await hydrateSavedListingButtons()
   updateAttendingCount()
   populateCounts()
   setupHomeLiveUpdates()
@@ -1816,10 +2001,17 @@ async function handleNewsletterSignup(event){
       return
     }
   } else {
-    const subscribers = JSON.parse(localStorage.getItem('subscribers') || '[]')
-    if(!subscribers.includes(email)) {
-      subscribers.push(email)
-      localStorage.setItem('subscribers', JSON.stringify(subscribers))
+    try {
+      const storedSubscribers = JSON.parse(localStorage.getItem('subscribers') || '[]')
+      const subscribers = Array.isArray(storedSubscribers) ? storedSubscribers : []
+      if(!subscribers.includes(email)) {
+        subscribers.push(email)
+        localStorage.setItem('subscribers', JSON.stringify(subscribers))
+      }
+    } catch(error) {
+      console.warn('Local newsletter signup could not be saved:', error)
+      alert('Newsletter signup is unavailable right now. Please try again later.')
+      return
     }
   }
   
@@ -1922,9 +2114,16 @@ async function handleContactSubmit(event){
       return
     }
   } else {
-    const submissions = JSON.parse(localStorage.getItem('contactSubmissions') || '[]')
-    submissions.push(submission)
-    localStorage.setItem('contactSubmissions', JSON.stringify(submissions))
+    try {
+      const storedSubmissions = JSON.parse(localStorage.getItem('contactSubmissions') || '[]')
+      const submissions = Array.isArray(storedSubmissions) ? storedSubmissions : []
+      submissions.push(submission)
+      localStorage.setItem('contactSubmissions', JSON.stringify(submissions))
+    } catch(error) {
+      console.warn('Local contact submission could not be saved:', error)
+      if(status) status.textContent = 'We could not save your message on this device. Please try again later.'
+      return
+    }
   }
 
   if(status) status.textContent = '✓ Message sent! We will get back to you soon.'

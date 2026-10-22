@@ -340,7 +340,7 @@
     }
 
     document.getElementById('accomTable').innerHTML = state.accommodations.map(item => `
-      <tr><td><strong>${escapeHtml(item.title)}</strong><br><span class="muted small">${escapeHtml(item.description || '')}</span></td>
+      <tr><td><strong>${escapeHtml(item.title)}</strong><br><span class="muted small">${escapeHtml([item.room_type, item.description || ''].filter(Boolean).join(' · '))}</span></td>
       <td>${escapeHtml(item.location)}</td><td>${formatPrice(item.price)}/mo</td><td><button class="provider-gallery-open" type="button" data-provider-gallery="accommodation" data-id="${escapeHtml(item.id)}">View photos (${getProviderImageUrls(item).length})</button></td><td><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(item.status)}</span></td><td>${Number(analyticsById.get(item.id)?.view_count || 0).toLocaleString()}</td>
       <td>${providerApproved ? `<button class="provider-edit" type="button" data-edit-kind="accommodation" data-id="${escapeHtml(item.id)}">Edit</button><button class="admin-delete" data-kind="accommodation" data-id="${escapeHtml(item.id)}">Delete</button>` : ''}</td></tr>
     `).join('') || '<tr><td colspan="7" class="admin-recent-empty">No accommodations yet.</td></tr>'
@@ -389,6 +389,17 @@
           title: document.getElementById('accomTitle').value.trim(),
           location: document.getElementById('accomLocation').value.trim(),
           price: Number(document.getElementById('accomPrice').value),
+          room_type: document.getElementById('accomRoomType').value,
+          distance_km: document.getElementById('accomDistance').value === '' ? null : Number(document.getElementById('accomDistance').value),
+          deposit: Number(document.getElementById('accomDeposit').value || 0),
+          furnishing: document.getElementById('accomFurnished').value,
+          bathroom_type: document.getElementById('accomBathroom').value,
+          kitchen_type: document.getElementById('accomKitchen').value,
+          available_from: document.getElementById('accomAvailableFrom').value || null,
+          max_occupants: Number(document.getElementById('accomOccupants').value || 1),
+          utilities_included: [...document.querySelectorAll('[name="accomUtilities"]:checked')].map(input => input.value),
+          amenities: [...document.querySelectorAll('[name="accomAmenities"]:checked')].map(input => input.value),
+          transport_details: document.getElementById('accomTransport').value.trim(),
           image_url: imageUrls[0],
           image_urls: imageUrls,
           description: document.getElementById('accomDesc').value.trim(),
@@ -535,6 +546,17 @@
         document.getElementById('providerEditTitle').textContent = kind === 'accommodation' ? 'Edit accommodation' : 'Edit product or service'
         document.getElementById('providerEditName').value = item.title || ''
         document.getElementById('providerEditLocation').value = item.location || ''
+        document.getElementById('providerEditRoomType').value = item.room_type || 'Other'
+        document.getElementById('providerEditDistance').value = item.distance_km ?? ''
+        document.getElementById('providerEditDeposit').value = item.deposit ?? 0
+        document.getElementById('providerEditFurnished').value = item.furnishing || 'unfurnished'
+        document.getElementById('providerEditBathroom').value = item.bathroom_type || 'not specified'
+        document.getElementById('providerEditKitchen').value = item.kitchen_type || 'not specified'
+        document.getElementById('providerEditAvailableFrom').value = item.available_from || ''
+        document.getElementById('providerEditOccupants').value = item.max_occupants ?? 1
+        document.getElementById('providerEditTransport').value = item.transport_details || ''
+        document.getElementById('providerEditUtilities').value = (item.utilities_included || []).join(', ')
+        document.getElementById('providerEditAmenities').value = (item.amenities || []).join(', ')
         document.getElementById('providerEditPrice').value = item.price ?? ''
         document.getElementById('providerEditDescription').value = item.description || ''
         document.getElementById('providerEditSeller').value = item.seller_display_name || ''
@@ -571,6 +593,17 @@
       }
       if (kind === 'accommodation') {
         updates.location = document.getElementById('providerEditLocation').value.trim()
+        updates.room_type = document.getElementById('providerEditRoomType').value
+        updates.distance_km = document.getElementById('providerEditDistance').value === '' ? null : Number(document.getElementById('providerEditDistance').value)
+        updates.deposit = Number(document.getElementById('providerEditDeposit').value || 0)
+        updates.furnishing = document.getElementById('providerEditFurnished').value
+        updates.bathroom_type = document.getElementById('providerEditBathroom').value
+        updates.kitchen_type = document.getElementById('providerEditKitchen').value
+        updates.available_from = document.getElementById('providerEditAvailableFrom').value || null
+        updates.max_occupants = Number(document.getElementById('providerEditOccupants').value || 1)
+        updates.transport_details = document.getElementById('providerEditTransport').value.trim()
+        updates.utilities_included = document.getElementById('providerEditUtilities').value.split(',').map(value => value.trim()).filter(Boolean)
+        updates.amenities = document.getElementById('providerEditAmenities').value.split(',').map(value => value.trim()).filter(Boolean)
       } else {
         updates.seller_display_name = document.getElementById('providerEditSeller').value.trim() || null
         updates.category = document.getElementById('providerEditCategory').value
