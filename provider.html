@@ -50,7 +50,7 @@
       <div class="admin-profile luxury-profile">
         <div class="admin-profile-avatar" id="providerAvatar">CA</div>
         <div>
-          <div class="admin-profile-name" id="providerName">Chanda Mulenga</div>
+          <div class="admin-profile-name" id="providerName">Loading your account…</div>
           <div class="admin-profile-sub" id="providerSub">Provider · Products, services &amp; accommodation</div>
           <span class="account-verification-badge is-unverified" id="providerVerificationBadge" role="status">Unverified</span>
         </div>
@@ -85,7 +85,7 @@
         <div class="admin-panel-head">
           <div>
             <span class="provider-kicker">Provider workspace</span>
-            <h1>Welcome back, Chanda</h1>
+            <h1>Welcome to your provider dashboard</h1>
             <p class="section-subtitle">Manage the sections enabled for your account.</p>
           </div>
         </div>
@@ -175,9 +175,20 @@
           <form class="admin-form" id="formAccom">
             <h3>Add an accommodation</h3>
             <div class="admin-form-grid">
-              <input type="text" id="accomTitle" placeholder="Title" required>
-              <input type="text" id="accomLocation" placeholder="Location (e.g. North Campus)" required>
-              <input type="number" id="accomPrice" placeholder="Price (K/mo)" min="0" required>
+              <label>Listing title<input type="text" id="accomTitle" placeholder="e.g. Furnished room near campus" maxlength="180" required></label>
+              <label>Area / location<input type="text" id="accomLocation" placeholder="e.g. North Campus" maxlength="180" required></label>
+              <label>Monthly rent (K)<input type="number" id="accomPrice" min="0" step="0.01" required></label>
+              <label>Room type<select id="accomRoomType" required><option value="" disabled selected>Select room type</option><option>Single room</option><option>Shared room</option><option>Bedsitter</option><option>Studio</option><option>Apartment</option><option>Other</option></select></label>
+              <label>Distance from campus (km)<input type="number" id="accomDistance" min="0" step="0.1" placeholder="Optional"></label>
+              <label>Deposit (K)<input type="number" id="accomDeposit" min="0" step="0.01" placeholder="0 if none"></label>
+              <label>Furnishing<select id="accomFurnished"><option value="unfurnished">Unfurnished</option><option value="partly furnished">Partly furnished</option><option value="furnished">Furnished</option></select></label>
+              <label>Bathroom<select id="accomBathroom"><option value="shared">Shared</option><option value="private">Private</option><option value="not specified">Not specified</option></select></label>
+              <label>Kitchen<select id="accomKitchen"><option value="shared">Shared</option><option value="private">Private</option><option value="not available">Not available</option><option value="not specified">Not specified</option></select></label>
+              <label>Available from<input type="date" id="accomAvailableFrom"></label>
+              <label>Maximum occupants<input type="number" id="accomOccupants" min="1" step="1" value="1"></label>
+              <fieldset class="provider-choice-group"><legend>Utilities included in rent</legend><label><input type="checkbox" name="accomUtilities" value="water"> Water</label><label><input type="checkbox" name="accomUtilities" value="electricity"> Electricity</label><label><input type="checkbox" name="accomUtilities" value="internet"> Internet</label></fieldset>
+              <fieldset class="provider-choice-group"><legend>Amenities</legend><label><input type="checkbox" name="accomAmenities" value="wifi"> Wi-Fi</label><label><input type="checkbox" name="accomAmenities" value="transport"> Transport</label><label><input type="checkbox" name="accomAmenities" value="laundry"> Laundry</label><label><input type="checkbox" name="accomAmenities" value="parking"> Parking</label><label><input type="checkbox" name="accomAmenities" value="security"> Security</label><label><input type="checkbox" name="accomAmenities" value="study space"> Study space</label></fieldset>
+              <label class="admin-span">Transport details (optional)<input type="text" id="accomTransport" maxlength="300" placeholder="Nearby routes, shuttle, or other transport info"></label>
               <div class="provider-image-picker admin-span" data-image-picker="accom">
                 <input type="file" id="accomImageFile" accept="image/jpeg,image/png,image/webp" multiple hidden>
                 <div class="provider-dropzone" tabindex="0" role="button" aria-controls="accomImageFile">
@@ -187,7 +198,7 @@
                 </div>
                 <div class="provider-image-preview" id="accomImagePreview" hidden></div>
               </div>
-              <input type="text" id="accomDesc" placeholder="Short description" class="admin-span">
+              <label class="admin-span">Description<textarea id="accomDesc" placeholder="Describe the property and any important house rules." maxlength="5000" rows="4"></textarea></label>
             </div>
             <button type="submit" class="btn btn-primary">+ Add listing</button>
           </form>
@@ -236,7 +247,6 @@
                 <option value="Services">Services</option>
                 <option value="Other">Other</option>
               </select>
-              <input type="text" id="marketLocation" placeholder="Location or service area">
               <div class="provider-image-picker admin-span" data-image-picker="market">
                 <input type="file" id="marketImageFile" accept="image/jpeg,image/png,image/webp" multiple hidden>
                 <div class="provider-dropzone" tabindex="0" role="button" aria-controls="marketImageFile">
@@ -390,8 +400,19 @@
       <h2 id="providerEditTitle">Edit listing</h2>
       <form id="providerEditForm" class="admin-form">
         <label>Title<input id="providerEditName" type="text" maxlength="180" required></label>
-        <div id="providerEditAccommodationFields">
+        <div id="providerEditAccommodationFields" class="provider-edit-accommodation-grid">
           <label>Location<input id="providerEditLocation" type="text" maxlength="180" required></label>
+          <label>Room type<select id="providerEditRoomType"><option>Single room</option><option>Shared room</option><option>Bedsitter</option><option>Studio</option><option>Apartment</option><option>Other</option></select></label>
+          <label>Distance from campus (km)<input id="providerEditDistance" type="number" min="0" step="0.1"></label>
+          <label>Deposit (K)<input id="providerEditDeposit" type="number" min="0" step="0.01"></label>
+          <label>Furnishing<select id="providerEditFurnished"><option value="unfurnished">Unfurnished</option><option value="partly furnished">Partly furnished</option><option value="furnished">Furnished</option></select></label>
+          <label>Bathroom<select id="providerEditBathroom"><option value="shared">Shared</option><option value="private">Private</option><option value="not specified">Not specified</option></select></label>
+          <label>Kitchen<select id="providerEditKitchen"><option value="shared">Shared</option><option value="private">Private</option><option value="not available">Not available</option><option value="not specified">Not specified</option></select></label>
+          <label>Available from<input id="providerEditAvailableFrom" type="date"></label>
+          <label>Maximum occupants<input id="providerEditOccupants" type="number" min="1" step="1"></label>
+          <label>Transport details<input id="providerEditTransport" type="text" maxlength="300"></label>
+          <label>Utilities included<input id="providerEditUtilities" type="text" placeholder="Water, electricity, internet"></label>
+          <label>Amenities<input id="providerEditAmenities" type="text" placeholder="Wi-Fi, laundry, parking"></label>
         </div>
         <div id="providerEditMarketplaceFields" hidden>
           <label>Seller / business name<input id="providerEditSeller" type="text" maxlength="100"></label>

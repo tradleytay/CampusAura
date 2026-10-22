@@ -279,13 +279,24 @@
           <div class="admin-form-grid">
             <label class="admin-form-field"><span>Title</span><input type="text" id="accomTitle" placeholder="e.g. Cedar House Studio" required></label>
             <label class="admin-form-field"><span>Location</span><input type="text" id="accomLocation" placeholder="North Campus" required></label>
-            <label class="admin-form-field"><span>Price (K)</span><input type="number" id="accomPrice" placeholder="3200" min="0" required></label>
+            <label class="admin-form-field"><span>Monthly rent (K)</span><input type="number" id="accomPrice" placeholder="3200" min="0" step="0.01" required></label>
+            <label class="admin-form-field"><span>Room type</span><select id="adminAccomRoomType" required><option value="" disabled selected>Select room type</option><option>Single room</option><option>Shared room</option><option>Bedsitter</option><option>Studio</option><option>Apartment</option><option>Other</option></select></label>
+            <label class="admin-form-field"><span>Distance from campus (km)</span><input type="number" id="adminAccomDistance" min="0" step="0.1"></label>
+            <label class="admin-form-field"><span>Deposit (K)</span><input type="number" id="adminAccomDeposit" min="0" step="0.01" value="0"></label>
+            <label class="admin-form-field"><span>Furnishing</span><select id="adminAccomFurnished"><option value="unfurnished">Unfurnished</option><option value="partly furnished">Partly furnished</option><option value="furnished">Furnished</option></select></label>
+            <label class="admin-form-field"><span>Bathroom</span><select id="adminAccomBathroom"><option value="shared">Shared</option><option value="private">Private</option><option value="not specified">Not specified</option></select></label>
+            <label class="admin-form-field"><span>Kitchen</span><select id="adminAccomKitchen"><option value="shared">Shared</option><option value="private">Private</option><option value="not available">Not available</option><option value="not specified">Not specified</option></select></label>
+            <label class="admin-form-field"><span>Available from</span><input type="date" id="adminAccomAvailableFrom"></label>
+            <label class="admin-form-field"><span>Maximum occupants</span><input type="number" id="adminAccomOccupants" min="1" step="1" value="1"></label>
+            <label class="admin-form-field"><span>Transport details</span><input type="text" id="adminAccomTransport" maxlength="300" placeholder="Routes, shuttle, etc."></label>
+            <label class="admin-form-field"><span>Utilities included</span><input type="text" id="adminAccomUtilities" placeholder="Water, electricity, internet"></label>
+            <label class="admin-form-field"><span>Amenities</span><input type="text" id="adminAccomAmenities" placeholder="Wi-Fi, laundry, parking"></label>
             <div class="admin-image-upload admin-span" data-admin-image-picker="accom">
               <input type="file" id="accomImages" accept="image/jpeg,image/png,image/webp" multiple hidden>
               <button class="admin-image-dropzone" type="button" aria-controls="accomImages"><strong>Add accommodation photos</strong><span>Choose or drop up to 10 JPG, PNG, or WebP images · 5 MB max each</span></button>
               <div class="admin-image-previews" id="accomImagePreviews" aria-live="polite"></div>
             </div>
-            <label class="admin-form-field admin-span"><span>Description</span><input type="text" id="accomDesc" placeholder="Short description for student listings"></label>
+            <label class="admin-form-field admin-span"><span>Description</span><textarea id="accomDesc" placeholder="Short description and any important house rules" maxlength="5000" rows="4"></textarea></label>
           </div>
           <div class="admin-form-actions">
             <button type="submit" class="btn btn-primary">Publish listing</button>

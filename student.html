@@ -44,7 +44,7 @@
   </header>
 
   <div class="admin-layout">
-        <aside class="admin-sidebar"><div class="admin-profile luxury-profile"><div class="admin-profile-avatar">CA</div><div><div class="admin-profile-name">Student</div><div class="admin-profile-sub">Loading account…</div><span class="account-verification-badge is-unverified" id="studentVerificationBadge" role="status">Unverified</span></div></div><button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="studentDashboardNav"><span class="dashboard-nav-toggle-icon" aria-hidden="true"><span></span><span></span><span></span></span><span>Dashboard sections</span></button><nav class="admin-tabs" id="studentDashboardNav" role="tablist" aria-label="Student dashboard sections"><button class="admin-tab active" id="student-tab-overview" data-tab="overview" role="tab" aria-selected="true" aria-controls="panel-overview"><span>Overview</span><small>Your campus</small></button><button class="admin-tab" id="student-tab-saved" data-tab="saved" role="tab" aria-selected="false" aria-controls="panel-saved"><span>Saved listings</span><small>Your shortlist</small></button><button class="admin-tab" id="student-tab-rsvps" data-tab="rsvps" role="tab" aria-selected="false" aria-controls="panel-rsvps"><span>My RSVPs</span><small>Upcoming events</small></button><button class="admin-tab" id="student-tab-mylistings" data-tab="mylistings" role="tab" aria-selected="false" aria-controls="panel-mylistings"><span>My listings</span><small>Marketplace items</small></button><button class="admin-tab" id="student-tab-verification" data-tab="verification" role="tab" aria-selected="false" aria-controls="panel-verification"><span>Verify student status</span><small>Optional student ID check</small></button></nav><div class="admin-sidebar-foot"></div></aside>
+        <aside class="admin-sidebar"><div class="admin-profile luxury-profile"><div class="admin-profile-avatar">CA</div><div><div class="admin-profile-name">Student</div><div class="admin-profile-sub">Loading account…</div><span class="account-verification-badge is-unverified" id="studentVerificationBadge" role="status">Unverified</span></div></div><button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="studentDashboardNav"><span class="dashboard-nav-toggle-icon" aria-hidden="true"><span></span><span></span><span></span></span><span>Dashboard sections</span></button><nav class="admin-tabs" id="studentDashboardNav" role="tablist" aria-orientation="vertical" aria-label="Student dashboard sections"><button class="admin-tab active" id="student-tab-overview" data-tab="overview" role="tab" tabindex="0" aria-selected="true" aria-controls="panel-overview"><span>Overview</span><small>Your campus</small></button><button class="admin-tab" id="student-tab-saved" data-tab="saved" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-saved"><span>Saved listings</span><small>Your shortlist</small></button><button class="admin-tab" id="student-tab-rsvps" data-tab="rsvps" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-rsvps"><span>My RSVPs</span><small>Upcoming events</small></button><button class="admin-tab" id="student-tab-mylistings" data-tab="mylistings" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-mylistings"><span>My listings</span><small>Marketplace items</small></button><button class="admin-tab" id="student-tab-verification" data-tab="verification" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-verification"><span>Verify student status</span><small>Optional student ID check</small></button></nav><div class="admin-sidebar-foot"></div></aside>
     <!-- Main Content -->
     <main class="admin-main">
 
@@ -53,7 +53,7 @@
         <div class="admin-panel-head">
           <div>
             <span class="dashboard-kicker">Your campus, in one place</span>
-            <h1>Welcome back, Jessica</h1>
+            <h1>Welcome to your student dashboard</h1>
             <p class="section-subtitle">Pick up where you left off or find something new today.</p>
           </div>
           <div class="dashboard-actions" aria-label="Quick actions">
@@ -143,7 +143,7 @@
       <section class="admin-panel" id="panel-rsvps" role="tabpanel" aria-labelledby="student-tab-rsvps" tabindex="0">
         <div class="admin-panel-head">
           <h1>My RSVPs</h1>
-          <p class="section-subtitle">Events you're going to.</p>
+          <p class="section-subtitle">Upcoming events you’ve RSVP’d to.</p>
         </div>
 
         <div class="admin-card">
@@ -169,7 +169,7 @@
           <div class="admin-table-wrap">
             <table class="admin-table">
               <thead>
-                <tr><th>Title</th><th>Category</th><th>Price</th></tr>
+                <tr><th>Title</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr>
               </thead>
               <tbody id="myListingsTable"></tbody>
             </table>
@@ -189,6 +189,23 @@
         </div>
       </section>
     </main>
+  </div>
+
+  <div class="student-listing-edit-modal" id="studentListingEditModal" aria-hidden="true">
+    <button class="student-listing-edit-backdrop" type="button" data-student-edit-close aria-label="Close listing editor"></button>
+    <section class="student-listing-edit-dialog" role="dialog" aria-modal="true" aria-labelledby="studentListingEditTitle">
+      <button class="student-listing-edit-close" type="button" data-student-edit-close aria-label="Close listing editor">×</button>
+      <h2 id="studentListingEditTitle">Edit marketplace listing</h2>
+      <form id="studentListingEditForm" class="admin-form">
+        <label>Title<input id="studentListingEditName" type="text" maxlength="180" required></label>
+        <label>Category<select id="studentListingEditCategory" required><option>Electronics</option><option>Furniture</option><option>Books &amp; study supplies</option><option>Fashion</option><option>Food &amp; groceries</option><option>Transport</option><option>Health &amp; beauty</option><option>Sports &amp; recreation</option><option>Services</option><option>Other</option></select></label>
+        <label>Type<select id="studentListingEditType"><option value="product">Product</option><option value="service">Service</option></select></label>
+        <label>Price (K)<input id="studentListingEditPrice" type="number" min="0" step="0.01" required></label>
+        <label>Description<textarea id="studentListingEditDescription" maxlength="5000" rows="4"></textarea></label>
+        <div class="student-listing-edit-actions"><button type="button" class="btn btn-ghost" data-student-edit-close>Cancel</button><button type="submit" class="btn btn-primary">Save changes</button></div>
+        <p id="studentListingEditStatus" role="status" aria-live="polite"></p>
+      </form>
+    </section>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
