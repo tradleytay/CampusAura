@@ -83,6 +83,7 @@
       <div class="market-results-bar"><div><strong>Available now</strong><span>Good things deserve a second chance.</span></div><div class="results-controls"><div class="sort-options"><label for="marketSort">Sort by</label><select id="marketSort" class="sort-select"><option value="newest">Newest first</option><option value="price-low">Price: Low to High</option><option value="price-high">Price: High to Low</option><option value="popular">Most Popular</option></select></div><div class="view-toggle"><button class="view-btn active" data-view="grid" title="Grid view">⊞</button><button class="view-btn" data-view="list" title="List view">≡</button></div></div></div>
       <div id="emptyState" class="empty-state" style="display:none"><div class="empty-icon">↗</div><h3>No items found</h3><p>Try adjusting your filters or search terms.</p><button onclick="document.getElementById('resetFilters').click()" class="btn btn-primary">Clear filters</button></div>
       <div class="grid cards market-grid" id="marketplaceGrid"><div class="feed-loading">Loading marketplace finds...</div></div>
+      <div class="load-more-wrap"><button class="btn btn-secondary" id="marketplaceLoadMore" type="button" hidden>Load more listings</button></div>
     </section>
 
   </main>

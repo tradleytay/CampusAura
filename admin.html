@@ -132,10 +132,56 @@
           <div class="admin-role-card"><span>Providers</span><strong id="userCountProviders">0</strong><small>Approved or pending</small></div>
           <div class="admin-role-card"><span>Pending review</span><strong id="userCountPending">0</strong><small>Awaiting a decision</small></div>
         </div>
+        <section class="admin-card user-export-card" aria-labelledby="userExportTitle">
+          <div class="admin-card-head"><div><span class="admin-card-label">Custom user list</span><h2 id="userExportTitle">Build a people list</h2></div></div>
+          <p class="admin-email-note">Choose who to include and which details to show. Preview the matching accounts, then download the list as a CSV file.</p>
+          <div class="user-list-filters">
+            <label class="user-list-field">Account type
+              <select id="userListRole">
+                <option value="all">All students and providers</option>
+                <option value="student">Students only</option>
+                <option value="provider">Providers only</option>
+              </select>
+            </label>
+            <label class="user-list-field">Verification
+              <select id="userListVerification">
+                <option value="all">Any status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </label>
+            <label class="user-list-field">Account access
+              <select id="userListAccountStatus">
+                <option value="all">Any access status</option>
+                <option value="active">Active</option>
+                <option value="frozen">Frozen</option>
+              </select>
+            </label>
+            <label class="user-list-field user-list-search">Search users
+              <input id="userListSearch" type="search" placeholder="Name, email, or phone">
+            </label>
+          </div>
+          <fieldset class="user-list-columns">
+            <legend>Details to include</legend>
+            <label><input type="checkbox" name="userListColumn" value="full_name" checked> Name</label>
+            <label><input type="checkbox" name="userListColumn" value="email"> Email</label>
+            <label><input type="checkbox" name="userListColumn" value="phone" checked> Phone</label>
+            <label><input type="checkbox" name="userListColumn" value="role"> Account type</label>
+            <label><input type="checkbox" name="userListColumn" value="reference_code"> Reference</label>
+            <label><input type="checkbox" name="userListColumn" value="verification_status"> Verification</label>
+            <label><input type="checkbox" name="userListColumn" value="account_status"> Account access</label>
+          </fieldset>
+          <div class="user-list-preview-head"><strong id="userListCount" aria-live="polite">0 matching accounts</strong><button class="btn btn-primary" id="exportUserList" type="button">Download CSV</button></div>
+          <p class="user-list-status" id="userListStatus" role="status" aria-live="polite"></p>
+          <div class="admin-table-wrap user-list-preview">
+            <table class="admin-table"><thead id="userListPreviewHead"></thead><tbody id="userListPreviewBody"></tbody></table>
+          </div>
+        </section>
         <div class="admin-card">
           <div class="admin-card-head"><div><span class="admin-card-label">Account directory</span><h2>Registered users</h2></div></div>
           <div class="admin-table-wrap">
-            <table class="admin-table">
+            <table class="admin-table admin-listing-table">
               <thead><tr><th>Reference</th><th>User</th><th>Role</th><th>Actions</th></tr></thead>
               <tbody id="usersTable"></tbody>
             </table>
@@ -249,7 +295,7 @@
         <div class="admin-card">
           <h3>All listings</h3>
           <div class="admin-table-wrap">
-            <table class="admin-table">
+            <table class="admin-table admin-listing-table">
               <thead>
                 <tr><th>Reference</th><th>Title</th><th>Location</th><th>Price</th><th>Status</th><th></th></tr>
               </thead>
@@ -306,7 +352,7 @@
         <div class="admin-card">
           <h3>All items</h3>
           <div class="admin-table-wrap">
-            <table class="admin-table">
+            <table class="admin-table admin-listing-table">
               <thead>
                 <tr><th>Reference</th><th>Title</th><th>Category</th><th>Seller</th><th>Price</th><th>Status</th><th></th></tr>
               </thead>

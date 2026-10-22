@@ -1,4 +1,4 @@
-const CACHE_NAME = 'campusaura-v1.41.0'
+const CACHE_NAME = 'campusaura-v1.43.0'
 const CACHE_PREFIX = 'campusaura-'
 const ASSETS = [
   './',
