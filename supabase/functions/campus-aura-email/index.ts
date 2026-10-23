@@ -3,7 +3,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS'
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
 }
 const htmlEntities: Record<string, string> = {
   '&': '&amp;',
@@ -53,7 +53,7 @@ Deno.serve(async request => {
   if (request.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
-  if (request.method !== 'POST') {
+  if (request.method !== 'POST' && request.method !== 'GET') {
     return jsonResponse({ ok: false, error: 'Method not allowed.' }, 405)
   }
 
@@ -68,7 +68,7 @@ Deno.serve(async request => {
     if (!authorization?.startsWith('Bearer ')) {
       return jsonResponse({ ok: false, error: 'Authentication is required.' }, 401)
     }
-    if (!resendApiKey || !sender || !supabaseUrl || !supabaseAnonKey || !serviceRoleKey) {
+    if (!supabaseUrl || !supabaseAnonKey || !serviceRoleKey) {
       console.error('Email function is missing required server configuration.')
       return jsonResponse({ ok: false, error: 'Email service is not configured.' }, 503)
     }
@@ -86,6 +86,26 @@ Deno.serve(async request => {
     const serviceClient = createClient(supabaseUrl, serviceRoleKey, {
       auth: { persistSession: false, autoRefreshToken: false }
     })
+    if (request.method === 'GET') {
+      const { data: adminProfile, error: adminError } = await serviceClient
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle()
+      if (adminError) throw adminError
+      if (adminProfile?.role !== 'admin') {
+        return jsonResponse({ ok: false, error: 'Administrator access is required.' }, 403)
+      }
+      return jsonResponse({
+        ok: true,
+        resendConfigured: Boolean(resendApiKey),
+        senderConfigured: Boolean(sender)
+      })
+    }
+    if (!resendApiKey || !sender) {
+      console.error('Email function is missing required Resend configuration.')
+      return jsonResponse({ ok: false, error: 'Email service is not configured.' }, 503)
+    }
     const payload = await request.json() as Record<string, unknown>
     let recipient: string
     let name: string

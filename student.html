@@ -44,7 +44,7 @@
   </header>
 
   <div class="admin-layout">
-        <aside class="admin-sidebar"><div class="admin-profile luxury-profile"><div class="admin-profile-avatar">CA</div><div><div class="admin-profile-name">Student</div><div class="admin-profile-sub">Loading account…</div><span class="account-verification-badge is-unverified" id="studentVerificationBadge" role="status">Unverified</span></div></div><button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="studentDashboardNav"><span class="dashboard-nav-toggle-icon" aria-hidden="true"><span></span><span></span><span></span></span><span>Dashboard sections</span></button><nav class="admin-tabs" id="studentDashboardNav" role="tablist" aria-orientation="vertical" aria-label="Student dashboard sections"><button class="admin-tab active" id="student-tab-overview" data-tab="overview" role="tab" tabindex="0" aria-selected="true" aria-controls="panel-overview"><span>Overview</span><small>Your campus</small></button><button class="admin-tab" id="student-tab-saved" data-tab="saved" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-saved"><span>Saved listings</span><small>Your shortlist</small></button><button class="admin-tab" id="student-tab-rsvps" data-tab="rsvps" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-rsvps"><span>My RSVPs</span><small>Upcoming events</small></button><button class="admin-tab" id="student-tab-mylistings" data-tab="mylistings" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-mylistings"><span>My listings</span><small>Marketplace items</small></button><button class="admin-tab" id="student-tab-verification" data-tab="verification" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-verification"><span>Verify student status</span><small>Optional student ID check</small></button></nav><div class="admin-sidebar-foot"></div></aside>
+        <aside class="admin-sidebar"><div class="admin-profile luxury-profile"><div class="admin-profile-avatar">CA</div><div><div class="admin-profile-name">Student</div><div class="admin-profile-sub">Loading account…</div><span class="account-verification-badge is-unverified" id="studentVerificationBadge" role="status">Unverified</span></div></div><button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="studentDashboardNav"><span class="dashboard-nav-toggle-icon" aria-hidden="true"><span></span><span></span><span></span></span><span>Dashboard sections</span></button><nav class="admin-tabs" id="studentDashboardNav" role="tablist" aria-orientation="vertical" aria-label="Student dashboard sections"><button class="admin-tab active" id="student-tab-overview" data-tab="overview" role="tab" tabindex="0" aria-selected="true" aria-controls="panel-overview"><span>Overview</span><small>Your campus</small></button><button class="admin-tab" id="student-tab-saved" data-tab="saved" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-saved"><span>Saved listings</span><small>Your shortlist</small></button><button class="admin-tab" id="student-tab-rsvps" data-tab="rsvps" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-rsvps"><span>My RSVPs</span><small>Upcoming events</small></button><button class="admin-tab" id="student-tab-mylistings" data-tab="mylistings" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-mylistings"><span>My listings</span><small>Marketplace items</small></button><button class="admin-tab" id="student-tab-verification" data-tab="verification" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-verification"><span>Verify student status</span><small>Optional student ID check</small></button><button class="admin-tab" id="student-tab-settings" data-tab="settings" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-settings"><span>Settings</span><small>Account &amp; preferences</small></button></nav><div class="admin-sidebar-foot"></div></aside>
     <!-- Main Content -->
     <main class="admin-main">
 
@@ -188,6 +188,43 @@
           </form>
         </div>
       </section>
+
+      <section class="admin-panel" id="panel-settings" role="tabpanel" aria-labelledby="student-tab-settings" tabindex="0">
+        <div class="admin-panel-head"><div><span class="dashboard-kicker">Your account</span><h1>Student settings</h1><p class="section-subtitle">Update your contact details and choose what you see and hear from CampusAura.</p></div></div>
+        <form id="studentSettingsForm" class="admin-card dashboard-settings-form">
+          <h2>Profile and campus</h2>
+          <div class="dashboard-settings-grid">
+            <label class="admin-form-field"><span>Full name</span><input id="studentSettingsName" type="text" maxlength="120" required></label>
+            <label class="admin-form-field"><span>Phone number</span><input id="studentSettingsPhone" type="tel" maxlength="16" pattern="\+?[0-9]{8,15}" title="Enter a valid phone number, including country code." required></label>
+            <label class="admin-form-field"><span>Account email</span><input id="studentSettingsEmail" type="email" readonly aria-describedby="studentEmailHelp"><small id="studentEmailHelp">To change your sign-in email, contact support.</small></label>
+            <label class="admin-form-field"><span>Campus or university</span><input id="studentSettingsCampus" type="text" maxlength="120" placeholder="Your campus"></label>
+          </div>
+          <fieldset class="dashboard-settings-options"><legend>Campus content preferences</legend>
+            <label><input type="checkbox" name="studentContentPreference" value="accommodation"> Accommodation</label>
+            <label><input type="checkbox" name="studentContentPreference" value="marketplace"> Marketplace</label>
+            <label><input type="checkbox" name="studentContentPreference" value="events"> Campus events</label>
+          </fieldset>
+          <fieldset class="dashboard-settings-options"><legend>Email notification preferences</legend>
+            <label><input type="checkbox" name="studentNotificationPreference" value="announcements"> Campus announcements</label>
+            <label><input type="checkbox" name="studentNotificationPreference" value="marketplace"> Marketplace and listing updates</label>
+            <label><input type="checkbox" name="studentNotificationPreference" value="events"> Event updates</label>
+          </fieldset>
+          <p class="dashboard-settings-note">These preferences are saved to your account. Account security and verification notices may still be sent when needed to manage your account.</p>
+          <button class="btn btn-primary" type="submit">Save settings</button>
+          <p id="studentSettingsStatus" class="dashboard-settings-status" role="status" aria-live="polite"></p>
+        </form>
+        <div class="admin-card dashboard-settings-links">
+          <h2>Password, help and legal</h2>
+          <p>Use the existing sign-in recovery flow to reset your password. Sign out is available in the dashboard header.</p>
+          <div class="admin-quick-actions">
+            <a class="admin-quick-action" href="auth.html">Password and sign-in help</a>
+            <a class="admin-quick-action" href="contact.html">Contact support</a>
+            <a class="admin-quick-action" href="privacy.html">Privacy policy</a>
+            <a class="admin-quick-action" href="terms.html">Terms of service</a>
+            <button class="admin-quick-action" type="button" data-tab-target="verification">Student verification</button>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -210,6 +247,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
+  <script src="js/platform-settings.js"></script>
+  <script src="js/dashboard-settings.js"></script>
   <script src="js/dashboard-nav.js"></script>
   <script src="js/theme.js"></script>
   <script src="js/student.js"></script>

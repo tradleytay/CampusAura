@@ -257,8 +257,76 @@
       </section>
 
       <section class="admin-panel" id="panel-settings" role="tabpanel">
-        <div class="admin-panel-head"><div><span class="admin-kicker">Configuration</span><h1>Admin settings</h1><p class="section-subtitle">Control the platform rules and the people who can operate it.</p></div></div>
-        <div class="admin-settings-grid"><div class="admin-card"><span class="admin-card-label">Access control</span><h2>Administrator access</h2><div class="admin-health-row"><span>Role protection</span><strong>Enabled</strong></div><div class="admin-health-row"><span>Audit history</span><strong>Coming soon</strong></div><button class="admin-quick-action" type="button" disabled aria-disabled="true">Manage administrators · coming soon</button></div><div class="admin-card"><span class="admin-card-label">Platform setup</span><h2>Campus configuration</h2><div class="admin-health-row"><span>Campuses</span><strong>Configure</strong></div><div class="admin-health-row"><span>Categories</span><strong>Configure</strong></div><button class="admin-quick-action" type="button" disabled aria-disabled="true">Open configuration · coming soon</button></div></div>
+        <div class="admin-panel-head"><div><span class="admin-kicker">Configuration</span><h1>Admin settings</h1><p class="section-subtitle">Manage platform details, announcements, maintenance, and security oversight.</p></div></div>
+        <div class="admin-settings-grid">
+          <form id="platformSettingsForm" class="admin-card dashboard-settings-form">
+            <span class="admin-card-label">Platform setup</span><h2>Platform name and contact details</h2>
+            <div class="dashboard-settings-grid">
+              <label class="admin-form-field"><span>Platform name</span><input id="platformName" type="text" maxlength="80" required></label>
+              <label class="admin-form-field"><span>Logo URL</span><input id="platformLogoUrl" type="url" maxlength="500" placeholder="https://example.com/logo.png"><small>Use a publicly accessible HTTPS image URL.</small></label>
+              <label class="admin-form-field"><span>Contact email</span><input id="platformContactEmail" type="email" maxlength="254" required></label>
+              <label class="admin-form-field"><span>Contact phone</span><input id="platformContactPhone" type="tel" maxlength="30"></label>
+              <label class="admin-form-field"><span>Support page URL</span><input id="platformSupportUrl" type="text" maxlength="500" placeholder="contact.html or https://example.com/support" required></label>
+            </div>
+            <fieldset class="dashboard-settings-options">
+              <legend>Maintenance notice</legend>
+              <label><input id="platformMaintenanceMode" type="checkbox"> Show a maintenance notice across the site</label>
+              <label class="admin-form-field"><span>Notice message</span><textarea id="platformMaintenanceMessage" rows="3" maxlength="500" required></textarea></label>
+            </fieldset>
+            <button class="admin-quick-action" type="submit">Save platform settings</button>
+            <p id="platformSettingsStatus" class="dashboard-settings-status" role="status" aria-live="polite"></p>
+          </form>
+          <div class="admin-card dashboard-settings-links">
+            <span class="admin-card-label">Access and moderation</span><h2>Existing admin controls</h2>
+            <p>User accounts and provider listing access are managed in Users. Verification and listing moderation are managed in the review queues.</p>
+            <div class="admin-quick-actions">
+              <button class="admin-quick-action" type="button" data-tab-target="users">Manage users and provider access</button>
+              <button class="admin-quick-action" type="button" data-tab-target="review">Review verification and listings</button>
+            </div>
+          </div>
+          <section class="admin-card dashboard-settings-form">
+            <div class="admin-card-head"><div><span class="admin-card-label">Access control</span><h2>Administrator permissions</h2><p class="section-subtitle">Grant or remove administrator access. The last administrator and your own access are protected.</p></div></div>
+            <form id="adminAccessForm" class="dashboard-settings-grid">
+              <label class="admin-form-field"><span>Grant administrator access to</span><select id="adminAccessUser" required><option value="">Select a user</option></select></label>
+              <button class="admin-quick-action" type="submit">Grant admin access</button>
+            </form>
+            <p id="adminAccessStatus" class="dashboard-settings-status" role="status" aria-live="polite"></p>
+            <div class="admin-table-wrap">
+              <table class="admin-table"><thead><tr><th>Administrator</th><th>Email</th><th>Access</th></tr></thead><tbody id="adminAdministratorsTable"></tbody></table>
+            </div>
+          </section>
+        </div>
+
+        <form id="platformAnnouncementForm" class="admin-card dashboard-settings-form">
+          <div class="admin-card-head"><div><span class="admin-card-label">Communications</span><h2>Platform announcements</h2></div></div>
+          <div class="dashboard-settings-grid">
+            <label class="admin-form-field"><span>Announcement title</span><input id="announcementTitle" type="text" maxlength="120" required></label>
+            <label class="admin-form-field"><span>Starts at (optional)</span><input id="announcementStartsAt" type="datetime-local"></label>
+            <label class="admin-form-field"><span>Ends at (optional)</span><input id="announcementEndsAt" type="datetime-local"></label>
+            <label class="admin-form-field dashboard-settings-span"><span>Message</span><textarea id="announcementMessage" rows="3" maxlength="2000" required></textarea></label>
+          </div>
+          <fieldset class="dashboard-settings-options"><label><input id="announcementPublish" type="checkbox"> Publish immediately (or at the scheduled start time)</label></fieldset>
+          <button class="admin-quick-action" type="submit">Create announcement</button>
+          <p id="announcementStatus" class="dashboard-settings-status" role="status" aria-live="polite"></p>
+          <div class="admin-table-wrap dashboard-settings-table-wrap">
+            <table class="admin-table"><thead><tr><th>Announcement</th><th>Schedule</th><th>Status</th><th>Actions</th></tr></thead><tbody id="platformAnnouncementsTable"></tbody></table>
+          </div>
+        </form>
+
+        <section class="admin-card">
+          <div class="admin-card-head"><div><span class="admin-card-label">Security</span><h2>Audit log</h2><p class="section-subtitle">Recent administrator changes. Sensitive field values are not stored in this log.</p></div></div>
+          <div class="admin-table-wrap">
+            <table class="admin-table"><thead><tr><th>When</th><th>Administrator</th><th>Action</th><th>Area</th><th>Changed fields</th></tr></thead><tbody id="adminAuditLogsTable"></tbody></table>
+          </div>
+        </section>
+
+        <section class="admin-card">
+          <div class="admin-card-head"><div><span class="admin-card-label">Operations</span><h2>Maintenance and integrations</h2><p class="section-subtitle">Check the database connection and Resend sender configuration without exposing credentials.</p></div><button id="checkIntegrationsBtn" class="admin-quick-action" type="button">Check integrations</button></div>
+          <div class="admin-health-row"><span>Supabase database</span><strong id="settingsSupabaseStatus">Checking…</strong></div>
+          <div class="admin-health-row"><span>Resend API</span><strong id="settingsResendStatus">Not checked</strong></div>
+          <div class="admin-health-row"><span>Sender configuration</span><strong id="settingsSenderStatus">Not checked</strong></div>
+          <p id="integrationStatus" class="dashboard-settings-status" role="status" aria-live="polite"></p>
+        </section>
       </section>
 
       <!-- Accommodations -->
@@ -474,6 +542,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
+  <script src="js/platform-settings.js"></script>
+  <script src="js/dashboard-settings.js"></script>
   <script src="js/email.js"></script>
   <script src="js/dashboard-nav.js"></script>
   <script src="js/theme.js"></script>

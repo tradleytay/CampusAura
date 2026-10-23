@@ -645,6 +645,92 @@
     })
   }
 
+  function setupProviderSettings(user, profile) {
+    const profileForm = document.getElementById('providerSettingsForm')
+    const profileStatus = document.getElementById('providerSettingsStatus')
+    const notificationForm = document.getElementById('providerNotificationForm')
+    const notificationStatus = document.getElementById('providerNotificationStatus')
+    const allowedSections = providerIsAdmin
+      ? ['Accommodation', 'Marketplace', 'Events']
+      : (providerListingAccess === null ? ['Accommodation', 'Marketplace'] : providerListingAccess.map(section => ({
+        accommodation: 'Accommodation',
+        marketplace: 'Marketplace',
+        events: 'Events'
+      }[section])))
+    const verificationStatus = profile.verification_status || 'pending'
+    const verificationLabels = { pending: 'Under review', approved: 'Approved', rejected: 'Not approved' }
+
+    document.getElementById('providerSettingsName').value = profile.full_name || user.user_metadata?.full_name || ''
+    document.getElementById('providerSettingsPhone').value = profile.phone || user.user_metadata?.phone || ''
+    document.getElementById('providerSettingsEmail').value = user.email || ''
+    document.getElementById('providerSettingsVerification').textContent = verificationLabels[verificationStatus] || 'Not submitted'
+    document.getElementById('providerSettingsVerificationHelp').textContent = verificationStatus === 'approved'
+      ? 'Your provider account is approved. Keep your contact and listing information up to date.'
+      : verificationStatus === 'rejected'
+        ? `Your application was not approved${profile.rejection_reason ? `: ${profile.rejection_reason}` : ''}. Contact support for next steps.`
+        : 'Submit your National Registration Card (NRC) for review. Listing actions remain locked until approval.'
+    const verificationLink = document.getElementById('providerSettingsVerificationLink')
+    if (verificationStatus === 'rejected') {
+      verificationLink.href = 'contact.html'
+      verificationLink.textContent = 'Contact CampusAura support'
+    } else if (verificationStatus === 'approved') {
+      verificationLink.href = 'verify.html'
+      verificationLink.textContent = 'View verification information'
+    }
+    document.getElementById('providerSettingsEligibility').textContent = allowedSections.join(', ') || 'No sections assigned'
+    document.querySelectorAll('[name="providerNotificationPreference"]').forEach(input => {
+      input.checked = profile.notification_preferences?.[input.value] === true
+    })
+
+    profileForm.addEventListener('submit', async event => {
+      event.preventDefault()
+      if (!profileForm.reportValidity()) return
+      const submit = profileForm.querySelector('[type="submit"]')
+      submit.disabled = true
+      profileStatus.textContent = 'Saving your profile…'
+      profileStatus.classList.remove('is-error')
+      try {
+        const fullName = document.getElementById('providerSettingsName').value.trim()
+        const phone = document.getElementById('providerSettingsPhone').value.trim()
+        const { error } = await client.from('profiles').update({ full_name: fullName, phone }).eq('id', user.id)
+        if (error) throw error
+        document.getElementById('providerName').textContent = fullName
+        document.getElementById('providerSub').textContent = user.email || ''
+        document.getElementById('providerAvatar').textContent = fullName.slice(0, 2).toUpperCase()
+        const welcomeHeading = document.querySelector('#panel-overview .admin-panel-head h1')
+        if (welcomeHeading) welcomeHeading.textContent = `Welcome back, ${fullName.split(' ')[0]}`
+        profileStatus.textContent = 'Your provider profile has been saved.'
+      } catch (error) {
+        profileStatus.textContent = `Could not save your profile: ${error.message}`
+        profileStatus.classList.add('is-error')
+      } finally {
+        submit.disabled = false
+      }
+    })
+
+    notificationForm.addEventListener('submit', async event => {
+      event.preventDefault()
+      const submit = notificationForm.querySelector('[type="submit"]')
+      const preferences = {}
+      document.querySelectorAll('[name="providerNotificationPreference"]').forEach(input => {
+        preferences[input.value] = input.checked
+      })
+      submit.disabled = true
+      notificationStatus.textContent = 'Saving your preferences…'
+      notificationStatus.classList.remove('is-error')
+      try {
+        const { error } = await client.from('profiles').update({ notification_preferences: preferences }).eq('id', user.id)
+        if (error) throw error
+        notificationStatus.textContent = 'Your notification preferences have been saved.'
+      } catch (error) {
+        notificationStatus.textContent = `Could not save preferences: ${error.message}`
+        notificationStatus.classList.add('is-error')
+      } finally {
+        submit.disabled = false
+      }
+    })
+  }
+
   function setupRealtime(user) {
     let refreshing = false
     let refreshAgain = false
@@ -734,7 +820,7 @@
     if (!session) { window.location.href = 'auth.html'; return }
     const { data: profile, error: profileError } = await client
       .from('profiles')
-      .select('full_name, role, requested_role, verification_status, account_status, provider_listing_access')
+      .select('full_name, phone, role, requested_role, verification_status, rejection_reason, account_status, provider_listing_access, notification_preferences')
       .eq('id', session.user.id)
       .single()
     const isAdmin = profile?.role === 'admin'
@@ -793,9 +879,7 @@
     const isEventOrganizer = providerListingAccess?.length === 1 && providerListingAccess[0] === 'events'
     document.getElementById('providerRoleChip').textContent = isEventOrganizer ? 'Events organizer' : 'Provider account'
     document.getElementById('providerAvatar').textContent = displayName.slice(0, 2).toUpperCase()
-    document.getElementById('settingsName').textContent = displayName
-    document.getElementById('settingsEmail').textContent = session.user.email || 'Not available'
-    document.getElementById('settingsAccountType').textContent = isEventOrganizer
+    document.getElementById('settingsAccountType').value = isEventOrganizer
       ? 'Events organizer'
       : providerListingAccess?.includes('accommodation') && providerListingAccess.includes('marketplace')
         ? 'Property owner and seller'
@@ -831,6 +915,7 @@
         setupListingEditor(session.user)
       }
       setupSignOut()
+      setupProviderSettings(session.user, profile)
       setupRealtime(session.user)
     }
     catch (error) { setMessage(`Could not load provider data: ${error.message}`, true) }

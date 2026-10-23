@@ -116,6 +116,62 @@
       form.hidden = false
     }
   }
+
+  function setupSettings(user, profile) {
+    const form = document.getElementById('studentSettingsForm')
+    const status = document.getElementById('studentSettingsStatus')
+    const preferences = profile.notification_preferences || {}
+    const contentPreferences = profile.content_preferences || {}
+    document.getElementById('studentSettingsName').value = profile.full_name || user.user_metadata?.full_name || ''
+    document.getElementById('studentSettingsPhone').value = profile.phone || user.user_metadata?.phone || ''
+    document.getElementById('studentSettingsEmail').value = user.email || ''
+    document.getElementById('studentSettingsCampus').value = profile.campus_preference || user.user_metadata?.university || ''
+    document.querySelectorAll('[name="studentContentPreference"]').forEach(input => {
+      input.checked = contentPreferences[input.value] === true
+    })
+    document.querySelectorAll('[name="studentNotificationPreference"]').forEach(input => {
+      input.checked = preferences[input.value] === true
+    })
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault()
+      if (!form.reportValidity()) return
+      const submit = form.querySelector('[type="submit"]')
+      const notificationPreferences = {}
+      const selectedContent = {}
+      document.querySelectorAll('[name="studentNotificationPreference"]').forEach(input => {
+        notificationPreferences[input.value] = input.checked
+      })
+      document.querySelectorAll('[name="studentContentPreference"]').forEach(input => {
+        selectedContent[input.value] = input.checked
+      })
+      submit.disabled = true
+      status.textContent = 'Saving your settings…'
+      status.classList.remove('is-error')
+      try {
+        const { error } = await client.from('profiles').update({
+          full_name: document.getElementById('studentSettingsName').value.trim(),
+          phone: document.getElementById('studentSettingsPhone').value.trim(),
+          campus_preference: document.getElementById('studentSettingsCampus').value.trim() || null,
+          notification_preferences: notificationPreferences,
+          content_preferences: selectedContent
+        }).eq('id', user.id)
+        if (error) throw error
+        const name = document.getElementById('studentSettingsName').value.trim()
+        document.querySelector('.admin-profile-name').textContent = name
+        document.querySelector('.admin-profile-avatar').textContent = name.slice(0, 2).toUpperCase()
+        const welcomeHeading = document.querySelector('#panel-overview .admin-panel-head h1')
+        if (welcomeHeading) welcomeHeading.textContent = `Welcome back, ${name.split(' ')[0]}`
+        status.textContent = 'Your profile and preferences have been saved.'
+      } catch (error) {
+        status.textContent = `Could not save settings: ${error.message}`
+        status.classList.add('is-error')
+      } finally {
+        submit.disabled = false
+      }
+    })
+  }
+
   function setupActions(user) {
     const verificationForm = document.getElementById('studentVerificationForm')
     verificationForm?.addEventListener('submit', async event => {
@@ -302,7 +358,7 @@
 
     const { data: profile, error: profileError } = await client
       .from('profiles')
-      .select('role, verification_status, account_status')
+      .select('full_name, email, phone, role, verification_status, account_status, campus_preference, notification_preferences, content_preferences')
       .eq('id', session.user.id)
       .single()
 
@@ -316,7 +372,7 @@
       return
     }
 
-    const name = session.user.user_metadata?.full_name || session.user.email
+    const name = profile.full_name || session.user.user_metadata?.full_name || session.user.email
     const displayName = name || 'Student'
     document.querySelector('.admin-profile-name').textContent = displayName
     document.querySelector('.admin-profile-sub').textContent = session.user.email
@@ -326,7 +382,7 @@
     if (welcomeHeading) {
       welcomeHeading.textContent = `Welcome back, ${displayName.split(' ')[0]} 👋`
     }
-    try { await loadData(session.user); render(); setupTabs(); setupActions(session.user); setupListingEditor(session.user); setupSignOut() }
+    try { await loadData(session.user); render(); setupTabs(); setupActions(session.user); setupListingEditor(session.user); setupSettings(session.user, profile); setupSignOut() }
     catch (error) { setMessage(`Could not load student data: ${error.message}`, true) }
   }
 

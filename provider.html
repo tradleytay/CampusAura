@@ -372,11 +372,53 @@
 
       <section class="admin-panel" id="panel-settings" role="tabpanel">
         <div class="admin-panel-head">
-          <div><span class="provider-kicker">Workspace settings</span><h1>Account details</h1><p class="section-subtitle">Keep your provider profile clear and trustworthy for students.</p></div>
+          <div><span class="provider-kicker">Workspace settings</span><h1>Provider settings</h1><p class="section-subtitle">Manage your public contact details, eligibility, and communication preferences.</p></div>
         </div>
         <div class="provider-settings-grid">
-          <div class="admin-card"><span class="provider-card-label">Public profile</span><h2>How students see you</h2><div class="provider-setting-row"><span>Display name</span><strong id="settingsName">Provider account</strong></div><div class="provider-setting-row"><span>Email</span><strong id="settingsEmail">Not available</strong></div>          <div class="provider-setting-row"><span>Account type</span><strong id="settingsAccountType">Provider</strong></div></div>
-          <div class="admin-card"><span class="provider-card-label">Trust &amp; safety</span><h2>Verification</h2><p class="provider-setting-copy">Complete your provider details so students know who they are contacting.</p><button class="provider-action provider-action-primary" type="button" disabled aria-disabled="true">Profile editing coming soon</button></div>
+          <form id="providerSettingsForm" class="admin-card dashboard-settings-form">
+            <span class="provider-card-label">Public profile</span><h2>Profile and contact information</h2>
+            <div class="dashboard-settings-grid">
+              <label class="admin-form-field"><span>Display name</span><input id="providerSettingsName" type="text" maxlength="120" required></label>
+              <label class="admin-form-field"><span>Contact phone</span><input id="providerSettingsPhone" type="tel" maxlength="16" pattern="\+?[0-9]{8,15}" title="Enter a valid phone number, including country code." required></label>
+              <label class="admin-form-field"><span>Account email</span><input id="providerSettingsEmail" type="email" readonly><small>To change your sign-in email, contact support.</small></label>
+              <label class="admin-form-field"><span>Account type</span><input id="settingsAccountType" type="text" readonly></label>
+            </div>
+            <button class="btn btn-primary" type="submit">Save profile</button>
+            <p id="providerSettingsStatus" class="dashboard-settings-status" role="status" aria-live="polite"></p>
+          </form>
+          <div class="admin-card">
+            <span class="provider-card-label">Trust &amp; safety</span><h2>Verification and document requirements</h2>
+            <div class="provider-setting-row"><span>Provider verification</span><strong id="providerSettingsVerification">Loading…</strong></div>
+            <p id="providerSettingsVerificationHelp" class="provider-setting-copy">Provider approval is required before listing.</p>
+            <a class="provider-action provider-action-primary" id="providerSettingsVerificationLink" href="verify.html">Review verification status</a>
+          </div>
+          <div class="admin-card">
+            <span class="provider-card-label">Listing plan</span><h2>Listing eligibility</h2>
+            <div class="provider-setting-row"><span>Eligible sections</span><strong id="providerSettingsEligibility">Loading…</strong></div>
+            <p class="provider-setting-copy">Your approved sections are managed by CampusAura administrators. Contact support to request another section.</p>
+            <button class="provider-action" type="button" data-tab-target="listings">Manage eligible listings</button>
+          </div>
+          <form id="providerNotificationForm" class="admin-card dashboard-settings-form">
+            <span class="provider-card-label">Notifications</span><h2>Listing and enquiry updates</h2>
+            <fieldset class="dashboard-settings-options">
+              <label><input type="checkbox" name="providerNotificationPreference" value="enquiries"> Contact activity and enquiries</label>
+              <label><input type="checkbox" name="providerNotificationPreference" value="listings"> Listing review and status updates</label>
+              <label><input type="checkbox" name="providerNotificationPreference" value="announcements"> Platform announcements</label>
+            </fieldset>
+            <p class="dashboard-settings-note">These preferences are saved to your account. Account security and moderation notices may still be sent when needed to manage your account.</p>
+            <button class="btn btn-primary" type="submit">Save notification preferences</button>
+            <p id="providerNotificationStatus" class="dashboard-settings-status" role="status" aria-live="polite"></p>
+          </form>
+          <div class="admin-card dashboard-settings-links">
+            <span class="provider-card-label">Security and support</span><h2>Account help</h2>
+            <p class="provider-setting-copy">Password recovery and sign-out are available through the existing account controls.</p>
+            <div class="admin-quick-actions">
+              <a class="admin-quick-action" href="auth.html">Password and sign-in help</a>
+              <a class="admin-quick-action" href="contact.html">Contact support</a>
+              <a class="admin-quick-action" href="privacy.html">Privacy policy</a>
+              <a class="admin-quick-action" href="terms.html">Terms of service</a>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -450,6 +492,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
+  <script src="js/platform-settings.js"></script>
+  <script src="js/dashboard-settings.js"></script>
   <script src="js/dashboard-nav.js"></script>
   <script src="js/theme.js"></script>
   <script src="js/provider.js"></script>
