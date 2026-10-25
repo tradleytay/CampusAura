@@ -540,6 +540,42 @@
     </div>
   </div>
 
+  <div class="admin-details-modal admin-accommodation-edit-modal" id="adminAccommodationEditModal" aria-hidden="true">
+    <button class="admin-details-modal-backdrop" type="button" data-close-accommodation-editor aria-label="Close property editor"></button>
+    <section class="admin-details-modal-panel admin-accommodation-edit-panel" role="dialog" aria-modal="true" aria-labelledby="adminAccommodationEditTitle">
+      <button class="admin-details-close" type="button" data-close-accommodation-editor aria-label="Close property editor">×</button>
+      <div class="admin-details-header">
+        <span class="admin-card-label">Property listing</span>
+        <h3 id="adminAccommodationEditTitle">Edit property</h3>
+      </div>
+      <form id="adminAccommodationEditForm" class="admin-form admin-accommodation-edit-form">
+        <div class="admin-form-grid">
+          <label class="admin-form-field"><span>Title</span><input id="adminEditAccomTitle" type="text" maxlength="180" required></label>
+          <label class="admin-form-field"><span>Location</span><input id="adminEditAccomLocation" type="text" maxlength="180" required></label>
+          <label class="admin-form-field"><span>Monthly rent (K)</span><input id="adminEditAccomPrice" type="number" min="0" step="0.01" required></label>
+          <label class="admin-form-field"><span>Room type</span><select id="adminEditAccomRoomType"><option>Single room</option><option>Shared room</option><option>Bedsitter</option><option>Studio</option><option>Apartment</option><option>Other</option></select></label>
+          <label class="admin-form-field"><span>Distance from campus (km)</span><input id="adminEditAccomDistance" type="number" min="0" step="0.1"></label>
+          <label class="admin-form-field"><span>Deposit (K)</span><input id="adminEditAccomDeposit" type="number" min="0" step="0.01"></label>
+          <label class="admin-form-field"><span>Furnishing</span><select id="adminEditAccomFurnished"><option value="unfurnished">Unfurnished</option><option value="partly furnished">Partly furnished</option><option value="furnished">Furnished</option></select></label>
+          <label class="admin-form-field"><span>Bathroom</span><select id="adminEditAccomBathroom"><option value="shared">Shared</option><option value="private">Private</option><option value="not specified">Not specified</option></select></label>
+          <label class="admin-form-field"><span>Kitchen</span><select id="adminEditAccomKitchen"><option value="shared">Shared</option><option value="private">Private</option><option value="not available">Not available</option><option value="not specified">Not specified</option></select></label>
+          <label class="admin-form-field"><span>Available from</span><input id="adminEditAccomAvailableFrom" type="date"></label>
+          <label class="admin-form-field"><span>Maximum occupants</span><input id="adminEditAccomOccupants" type="number" min="1" step="1"></label>
+          <label class="admin-form-field"><span>Transport details</span><input id="adminEditAccomTransport" type="text" maxlength="300"></label>
+          <label class="admin-form-field"><span>Utilities included</span><input id="adminEditAccomUtilities" type="text" placeholder="Water, electricity, internet"></label>
+          <label class="admin-form-field"><span>Amenities</span><input id="adminEditAccomAmenities" type="text" placeholder="Wi-Fi, laundry, parking"></label>
+          <label class="admin-form-field admin-span"><span>Description</span><textarea id="adminEditAccomDescription" rows="4" maxlength="5000"></textarea></label>
+        </div>
+        <p class="admin-accommodation-edit-note">Existing photos are kept unchanged when saving these property details.</p>
+        <div class="admin-form-actions">
+          <button class="admin-quick-action" type="button" data-close-accommodation-editor>Cancel</button>
+          <button class="btn btn-primary" type="submit">Save changes</button>
+        </div>
+        <p id="adminAccommodationEditStatus" class="dashboard-settings-status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
   <script src="js/platform-settings.js"></script>

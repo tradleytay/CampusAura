@@ -1,4 +1,4 @@
-const CACHE_NAME = 'campusaura-v1.48.0'
+const CACHE_NAME = 'campusaura-v1.50.0'
 const CACHE_PREFIX = 'campusaura-'
 const ASSETS = [
   './',
@@ -40,6 +40,8 @@ const ASSETS = [
   './js/provider.js',
   './js/admin.js',
   './js/dashboard-nav.js',
+  './js/dashboard-settings.js',
+  './js/platform-settings.js',
   './js/supabase.js',
   './js/account-frozen.js',
   './images/books.jpeg',
