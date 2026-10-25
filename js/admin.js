@@ -366,6 +366,7 @@
         <td data-label="Actions">
           <div class="admin-row-actions">
             <button class="admin-link-btn" data-preview-table="accommodations" data-preview-id="${escapeHtml(item.id)}">View</button>
+            <button class="admin-quick-action" data-edit-accommodation="${escapeHtml(item.id)}">Edit</button>
             ${item.status === 'pending' ? `<button class="admin-approve-btn" data-review-listing="${escapeHtml(item.id)}" data-listing-status="published">Publish</button><button class="admin-reject-btn" data-review-listing="${escapeHtml(item.id)}" data-listing-status="rejected">Reject</button>` : ''}
             ${['published', 'suspended'].includes(item.status) ? `<button class="admin-quick-action" data-suspend-listing="${escapeHtml(item.id)}" data-listing-table="accommodations" data-listing-status="${item.status === 'published' ? 'suspended' : 'published'}">${item.status === 'published' ? 'Suspend' : 'Unsuspend'}</button>` : ''}
             <button class="admin-delete" data-table="accommodations" data-id="${escapeHtml(item.id)}">Delete</button>
@@ -621,6 +622,7 @@
     setupAdminImagePicker('accom')
     setupAdminImagePicker('market')
     setupAdminImagePicker('event')
+    setupAccommodationEditor()
     const accomTitle = document.getElementById('accomTitle')
     const accomLocation = document.getElementById('accomLocation')
     const accomPrice = document.getElementById('accomPrice')
@@ -720,6 +722,100 @@
         setMessage(`Could not add event: ${error.message}`, true)
       } finally {
         button.disabled = false
+      }
+    })
+  }
+
+  function setupAccommodationEditor() {
+    const modal = document.getElementById('adminAccommodationEditModal')
+    const form = document.getElementById('adminAccommodationEditForm')
+    if (!modal || !form) return
+
+    const close = () => {
+      modal.classList.remove('is-open')
+      modal.setAttribute('aria-hidden', 'true')
+    }
+
+    document.addEventListener('click', event => {
+      const editButton = event.target.closest('[data-edit-accommodation]')
+      if (editButton) {
+        const item = state.accommodations.find(listing => listing.id === editButton.dataset.editAccommodation)
+        if (!item) {
+          setMessage('Could not find that property. Refresh the dashboard and try again.', true)
+          return
+        }
+        closeAdminDetailsModal()
+        form.dataset.id = item.id
+        document.getElementById('adminEditAccomTitle').value = item.title || ''
+        document.getElementById('adminEditAccomLocation').value = item.location || ''
+        document.getElementById('adminEditAccomPrice').value = item.price ?? ''
+        document.getElementById('adminEditAccomRoomType').value = item.room_type || 'Other'
+        document.getElementById('adminEditAccomDistance').value = item.distance_km ?? ''
+        document.getElementById('adminEditAccomDeposit').value = item.deposit ?? 0
+        document.getElementById('adminEditAccomFurnished').value = item.furnishing || 'unfurnished'
+        document.getElementById('adminEditAccomBathroom').value = item.bathroom_type || 'not specified'
+        document.getElementById('adminEditAccomKitchen').value = item.kitchen_type || 'not specified'
+        document.getElementById('adminEditAccomAvailableFrom').value = item.available_from || ''
+        document.getElementById('adminEditAccomOccupants').value = item.max_occupants ?? 1
+        document.getElementById('adminEditAccomTransport').value = item.transport_details || ''
+        document.getElementById('adminEditAccomUtilities').value = (item.utilities_included || []).join(', ')
+        document.getElementById('adminEditAccomAmenities').value = (item.amenities || []).join(', ')
+        document.getElementById('adminEditAccomDescription').value = item.description || ''
+        document.getElementById('adminAccommodationEditStatus').textContent = ''
+        modal.classList.add('is-open')
+        modal.setAttribute('aria-hidden', 'false')
+        document.getElementById('adminEditAccomTitle').focus()
+        return
+      }
+
+      if (event.target.closest('[data-close-accommodation-editor]')) close()
+    })
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && modal.classList.contains('is-open')) close()
+    })
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault()
+      const submit = form.querySelector('button[type="submit"]')
+      const status = document.getElementById('adminAccommodationEditStatus')
+      const updates = {
+        title: document.getElementById('adminEditAccomTitle').value.trim(),
+        location: document.getElementById('adminEditAccomLocation').value.trim(),
+        price: Number(document.getElementById('adminEditAccomPrice').value),
+        room_type: document.getElementById('adminEditAccomRoomType').value,
+        distance_km: document.getElementById('adminEditAccomDistance').value === '' ? null : Number(document.getElementById('adminEditAccomDistance').value),
+        deposit: Number(document.getElementById('adminEditAccomDeposit').value || 0),
+        furnishing: document.getElementById('adminEditAccomFurnished').value,
+        bathroom_type: document.getElementById('adminEditAccomBathroom').value,
+        kitchen_type: document.getElementById('adminEditAccomKitchen').value,
+        available_from: document.getElementById('adminEditAccomAvailableFrom').value || null,
+        max_occupants: Number(document.getElementById('adminEditAccomOccupants').value || 1),
+        transport_details: document.getElementById('adminEditAccomTransport').value.trim(),
+        utilities_included: document.getElementById('adminEditAccomUtilities').value.split(',').map(value => value.trim()).filter(Boolean),
+        amenities: document.getElementById('adminEditAccomAmenities').value.split(',').map(value => value.trim()).filter(Boolean),
+        description: document.getElementById('adminEditAccomDescription').value.trim()
+      }
+
+      submit.disabled = true
+      status.textContent = 'Saving property changes…'
+      try {
+        const { data, error } = await client.from('accommodations')
+          .update(updates)
+          .eq('id', form.dataset.id)
+          .select('id')
+          .maybeSingle()
+        if (error) throw error
+        if (!data) throw new Error('The property was not found or is no longer available to edit.')
+        await loadData()
+        render()
+        close()
+        setMessage('Property changes saved.')
+      } catch (error) {
+        status.textContent = `Could not save property changes: ${error.message}`
+        setMessage(`Could not save property changes: ${error.message}`, true)
+      } finally {
+        submit.disabled = false
       }
     })
   }
@@ -1027,6 +1123,7 @@
       footer.innerHTML = `
         <span class="detail-chip">Owner: ${escapeHtml(item.owner_id || 'N/A')}</span>
         <span class="detail-chip">Image: ${escapeHtml(item.image_url || 'Not supplied')}</span>
+        <button class="admin-quick-action" data-edit-accommodation="${escapeHtml(item.id)}">Edit property</button>
         ${['published', 'suspended'].includes(item.status) ? `<button class="admin-quick-action" data-suspend-listing="${escapeHtml(item.id)}" data-listing-table="accommodations" data-listing-status="${item.status === 'published' ? 'suspended' : 'published'}">${item.status === 'published' ? 'Suspend listing' : 'Restore listing'}</button>` : ''}
       `
     } else if (table === 'marketplace_items') {

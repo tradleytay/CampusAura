@@ -1945,3 +1945,25 @@ to{transform:rotate(360deg)}
 /* Clear safety context for housing and marketplace decisions. */
 .decision-note{margin:20px auto;padding:16px 18px;border:1px solid var(--border);border-left:4px solid var(--warning);border-radius:var(--radius);background:var(--surface-alt);color:var(--text-light);font-size:14px;line-height:1.65}
 .decision-note strong{color:var(--text)}
+
+.dashboard-settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.dashboard-settings-grid .dashboard-settings-span{grid-column:1/-1}
+.dashboard-settings-options{display:flex;flex-wrap:wrap;gap:12px 20px;margin:18px 0;padding:14px;border:1px solid var(--ca-line,#dbe3ef);border-radius:12px}
+.dashboard-settings-options legend{padding:0 6px;color:var(--ca-ink-soft,#475569);font-size:13px;font-weight:700}
+.dashboard-settings-options label{display:flex;align-items:center;gap:8px;color:var(--ca-ink-soft,#475569);font-size:13px}
+.dashboard-settings-options input{accent-color:var(--ca-blue,#2563eb)}
+.dashboard-settings-form h2,.dashboard-settings-links h2{margin:4px 0 16px;color:var(--ca-ink,#122033);font:600 20px 'Space Grotesk',sans-serif}
+.dashboard-settings-form .admin-form-field{display:grid;gap:6px;color:var(--ca-ink-soft,#475569);font-size:12px;font-weight:700}
+.dashboard-settings-form .admin-form-field input,.dashboard-settings-form .admin-form-field select,.dashboard-settings-form .admin-form-field textarea{box-sizing:border-box;width:100%;min-height:42px;padding:10px 12px;border:1px solid var(--ca-line,#dbe3ef);border-radius:9px;background:var(--ca-paper,#fff);color:var(--ca-ink,#122033);font:400 14px 'DM Sans',sans-serif}
+.dashboard-settings-form .admin-form-field textarea{resize:vertical}
+.dashboard-settings-form .admin-form-field small,.dashboard-settings-note{color:var(--ca-muted,#64748b);font-size:11px;line-height:1.5}
+.dashboard-settings-form button[type=submit]{margin-top:14px}
+.dashboard-settings-status{min-height:1.4em;margin:10px 0 0;color:var(--ca-muted,#64748b);font-size:12px}
+.dashboard-settings-status.is-error{color:var(--danger,#dc2626)}
+.dashboard-settings-links p{color:var(--ca-muted,#64748b);font-size:13px;line-height:1.6}
+.dashboard-settings-table-wrap{margin-top:18px}
+.platform-site-notice{position:relative;z-index:1001;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;padding:11px max(18px,calc((100vw - 1200px)/2));background:#eff6ff;color:#122033;border-bottom:1px solid #bfdbfe;font-size:13px;line-height:1.5}
+.platform-site-notice strong{color:#1d4ed8}
+.platform-site-notice-maintenance{background:#fff7ed;border-color:#fed7aa}
+.platform-site-notice-maintenance strong{color:#9a3412}
+@media(max-width:700px){.dashboard-settings-grid{grid-template-columns:1fr}.dashboard-settings-grid .dashboard-settings-span{grid-column:auto}.dashboard-settings-options{align-items:flex-start;flex-direction:column}}

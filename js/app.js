@@ -32,14 +32,50 @@ function getLocalCalendarDate(value){
 }
 
 function getUpcomingEvents(events = data.events){
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  const today = getLocalCalendarDate(new Date())
   return events
     .filter(event => {
       const date = getLocalCalendarDate(event.eventDate)
       return date && date >= today
     })
     .sort((first, second) => getLocalCalendarDate(first.eventDate) - getLocalCalendarDate(second.eventDate))
+}
+
+function getLocalDayKey(date = new Date()){
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+}
+
+function refreshEventViewsForNewDay(){
+  if(document.getElementById('newEventsGrid') || document.getElementById('eventsGrid')){
+    renderEventsGrid(visibleEventItems)
+  }
+  if(document.getElementById('eventList')) renderEvents()
+  renderFeaturedEvents()
+  renderHomeUpcomingEvents()
+  populateCounts()
+}
+
+function scheduleUpcomingEventRefresh(){
+  let displayedDay = getLocalDayKey()
+  const refreshIfDayChanged = () => {
+    const currentDay = getLocalDayKey()
+    if(currentDay !== displayedDay){
+      displayedDay = currentDay
+      refreshEventViewsForNewDay()
+    }
+  }
+  const scheduleMidnightRefresh = () => {
+    const nextDay = new Date()
+    nextDay.setHours(24, 0, 0, 25)
+    window.setTimeout(() => {
+      refreshIfDayChanged()
+      scheduleMidnightRefresh()
+    }, Math.max(1, nextDay.getTime() - Date.now()))
+  }
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible') refreshIfDayChanged()
+  })
+  scheduleMidnightRefresh()
 }
 
 function formatEventDate(value){
@@ -1666,7 +1702,7 @@ function filterEventType(type, chipEl){
   const list = document.getElementById('eventList')
   if(list){
     list.innerHTML=''
-    results.forEach(e=>{
+    getUpcomingEvents(results).forEach(e=>{
       list.appendChild(createHomeEventCard(e))
     })
   }
@@ -1975,6 +2011,7 @@ async function init(){
   updateAttendingCount()
   populateCounts()
   setupHomeLiveUpdates()
+  scheduleUpcomingEventRefresh()
 }
 
 // Newsletter signup handler

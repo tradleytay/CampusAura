@@ -17,6 +17,39 @@
 
   function price(value) { return `K${Number(value || 0).toLocaleString()}` }
   function eventDate(value) { return new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) }
+  function localCalendarDay(value) {
+    if (!value) return null
+    const dateText = String(value).match(/^(\d{4})-(\d{2})-(\d{2})$/)
+    const date = dateText
+      ? new Date(Number(dateText[1]), Number(dateText[2]) - 1, Number(dateText[3]))
+      : new Date(value)
+    if (!Number.isFinite(date.getTime())) return null
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
+  }
+
+  function scheduleUpcomingRsvpRefresh() {
+    let displayedDay = localCalendarDay(new Date())
+    const refreshIfDayChanged = () => {
+      const currentDay = localCalendarDay(new Date())
+      if (currentDay !== displayedDay) {
+        displayedDay = currentDay
+        render()
+      }
+    }
+    const scheduleMidnightRefresh = () => {
+      const nextDay = new Date()
+      nextDay.setHours(24, 0, 0, 25)
+      window.setTimeout(() => {
+        refreshIfDayChanged()
+        scheduleMidnightRefresh()
+      }, Math.max(1, nextDay.getTime() - Date.now()))
+    }
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') refreshIfDayChanged()
+    })
+    scheduleMidnightRefresh()
+  }
+
   function escapeHtml(value) {
     return String(value ?? '').replace(/[&<>"']/g, character => ({
       '&': '&amp;',
@@ -49,11 +82,11 @@
     document.getElementById('statMyListings').textContent = state.listings.length
     document.getElementById('statAccom').textContent = state.accommodations.length
 
-    const now = Date.now()
+    const today = localCalendarDay(new Date())
     const upcomingRsvps = state.rsvps.filter(item => {
-      const date = new Date(item.events?.event_date).getTime()
-      return Number.isFinite(date) && date >= now
-    }).sort((left, right) => new Date(left.events.event_date) - new Date(right.events.event_date))
+      const date = localCalendarDay(item.events?.event_date)
+      return date !== null && date >= today
+    }).sort((left, right) => localCalendarDay(left.events?.event_date) - localCalendarDay(right.events?.event_date))
     document.getElementById('statRsvps').textContent = upcomingRsvps.length
 
     const savedMarkup = state.saved.map(item => {
@@ -382,7 +415,7 @@
     if (welcomeHeading) {
       welcomeHeading.textContent = `Welcome back, ${displayName.split(' ')[0]} 👋`
     }
-    try { await loadData(session.user); render(); setupTabs(); setupActions(session.user); setupListingEditor(session.user); setupSettings(session.user, profile); setupSignOut() }
+    try { await loadData(session.user); render(); setupTabs(); setupActions(session.user); setupListingEditor(session.user); setupSettings(session.user, profile); setupSignOut(); scheduleUpcomingRsvpRefresh() }
     catch (error) { setMessage(`Could not load student data: ${error.message}`, true) }
   }
 

@@ -504,7 +504,7 @@ body {
 .admin-image-preview button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 .admin-details-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:2000}
 .admin-details-modal.is-open{display:flex}
-.admin-details-modal-backdrop{position:absolute;inset:0;background:rgba(15,23,42,0.6)}
+.admin-details-modal-backdrop{position:absolute;inset:0;border:0;background:rgba(15,23,42,0.6);cursor:pointer}
 .admin-details-modal-panel{position:relative;z-index:1;width:min(560px,calc(100vw - 32px));background:#fff;border:1px solid var(--luxury-line);border-radius:18px;box-shadow:0 30px 60px rgba(15,23,42,0.18);padding:22px}
 .admin-details-close{position:absolute;top:14px;right:14px;width:34px;height:34px;border:1px solid var(--luxury-line);border-radius:50%;background:#fff;color:var(--luxury-ink);font-size:24px;cursor:pointer}
 .admin-details-header{padding-right:36px}
@@ -515,6 +515,9 @@ body {
 .admin-details-footer{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;padding-top:16px;border-top:1px solid var(--luxury-line)}
 .admin-details-footer .detail-chip{padding:7px 10px;border-radius:999px;background:#eef4ff;color:var(--luxury-primary);font-size:12px;font-weight:700}
 .admin-details-modal-panel:has(.profile-detail-sections){width:min(800px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow-y:auto}
+.admin-accommodation-edit-panel{width:min(820px,calc(100vw - 32px));max-height:calc(100vh - 32px);overflow-y:auto}
+.admin-accommodation-edit-form{margin-top:18px}
+.admin-accommodation-edit-note{margin:0;color:var(--luxury-muted);font-size:12px}
 .admin-property-detail-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 18px; width:100%; margin:12px 0 0; text-align:left; }
 .admin-property-detail-list > div { min-width:0; }
 .admin-property-detail-list dt { color:var(--ca-muted); font-size:11px; }
