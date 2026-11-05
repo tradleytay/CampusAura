@@ -38,38 +38,43 @@
       </a>
       <nav class="admin-topnav" aria-label="Provider navigation">
         <a href="index.html" class="admin-toplink">View Site</a>
-        <button id="signOutBtn" class="admin-toplink admin-toplink-ghost" type="button">Sign out</button>
         <span class="admin-chip" id="providerRoleChip">Provider account</span>
+        <button class="dashboard-menu-toggle" id="dashboardMenuToggle" type="button" aria-expanded="false" aria-controls="providerDashboardDrawer" aria-label="Open dashboard sections">
+          <span class="dashboard-nav-toggle-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
       </nav>
     </div>
   </header>
 
   <div class="admin-layout">
     <!-- Sidebar -->
-    <aside class="admin-sidebar">
+    <aside class="admin-sidebar provider-dashboard-drawer" id="providerDashboardDrawer" aria-labelledby="providerDrawerHeading" aria-hidden="true" inert>
       <div class="admin-profile luxury-profile">
         <div class="admin-profile-avatar" id="providerAvatar">CA</div>
         <div>
           <div class="admin-profile-name" id="providerName">Loading your account…</div>
           <div class="admin-profile-sub" id="providerSub">Provider · Products, services &amp; accommodation</div>
-          <span class="account-verification-badge is-unverified" id="providerVerificationBadge" role="status">Unverified</span>
+          <span class="account-verification-badge is-unverified" id="providerVerificationBadge" role="status">Checking approval status…</span>
         </div>
       </div>
-      <button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="providerDashboardNav">
-        <span class="dashboard-nav-toggle-icon" aria-hidden="true"><span></span><span></span><span></span></span>
-        <span>Dashboard sections</span>
-      </button>
+      <div class="provider-drawer-heading">
+        <h2 id="providerDrawerHeading">Dashboard sections</h2>
+        <button class="provider-drawer-close" id="providerDrawerClose" type="button" aria-label="Close dashboard sections">×</button>
+      </div>
       <nav class="admin-tabs" id="providerDashboardNav" role="tablist" aria-label="Provider dashboard sections">
-        <button class="admin-tab active" data-tab="overview" role="tab" aria-selected="true"><span>Overview</span><small>Your workspace</small></button>
-        <button class="admin-tab" data-tab="listings" data-feed-target="accommodation" data-provider-section="accommodation" role="tab" aria-selected="false"><span>Properties</span><small>Accommodation</small></button>
-        <button class="admin-tab" data-tab="listings" data-feed-target="marketplace" data-provider-section="marketplace" role="tab" aria-selected="false"><span>Products &amp; services</span><small>Marketplace</small></button>
-        <button class="admin-tab" data-tab="listings" data-feed-target="events" data-provider-section="events" role="tab" aria-selected="false"><span>Events</span><small>Organizer tools</small></button>
-        <button class="admin-tab" data-tab="inbox" role="tab" aria-selected="false"><span>Contact activity</span><small>Listing clicks</small></button>
-        <button class="admin-tab" data-tab="analytics" role="tab" aria-selected="false"><span>Analytics</span><small>Performance</small></button>
-        <button class="admin-tab" data-tab="settings" role="tab" aria-selected="false"><span>Settings</span><small>Account details</small></button>
+        <button class="admin-tab active" id="provider-tab-overview" data-tab="overview" role="tab" tabindex="0" aria-selected="true" aria-controls="panel-overview"><span>Overview</span><small>Your workspace</small></button>
+        <button class="admin-tab" id="provider-tab-accommodation" data-tab="listings" data-feed-target="accommodation" data-provider-section="accommodation" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-listings"><span>Properties</span><small>Accommodation</small></button>
+        <button class="admin-tab" id="provider-tab-marketplace" data-tab="listings" data-feed-target="marketplace" data-provider-section="marketplace" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-listings"><span>Products &amp; services</span><small>Marketplace</small></button>
+        <button class="admin-tab" id="provider-tab-events" data-tab="listings" data-feed-target="events" data-provider-section="events" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-listings"><span>Events</span><small>Organizer tools</small></button>
+        <button class="admin-tab" id="provider-tab-inbox" data-tab="inbox" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-inbox"><span>Contact activity</span><small>Listing clicks</small></button>
+        <button class="admin-tab" id="provider-tab-analytics" data-tab="analytics" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-analytics"><span>Analytics</span><small>Performance</small></button>
+        <button class="admin-tab" id="provider-tab-settings" data-tab="settings" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-settings"><span>Settings</span><small>Account details</small></button>
       </nav>
-      <div class="admin-sidebar-foot"></div>
+      <div class="provider-drawer-footer">
+        <button id="signOutBtn" class="admin-toplink admin-toplink-ghost" type="button">Sign out</button>
+      </div>
     </aside>
+    <button class="provider-drawer-backdrop" id="providerDrawerBackdrop" type="button" aria-label="Close dashboard sections" hidden></button>
 
     <!-- Main Content -->
     <main class="admin-main">
@@ -77,11 +82,11 @@
         <span class="provider-kicker">Provider approval</span>
         <h2 id="providerApprovalTitle">Your dashboard is read-only</h2>
         <p id="providerApprovalMessage">You can review your workspace, but listing actions unlock after approval.</p>
-        <a class="btn btn-primary" id="providerVerificationAction" href="verify.html">Submit NRC for review</a>
+        <a class="btn btn-primary" id="providerVerificationAction" href="verify.html">Upload National Registration Card</a>
       </section>
 
       <!-- Overview -->
-      <section class="admin-panel active" id="panel-overview" role="tabpanel">
+      <section class="admin-panel active" id="panel-overview" role="tabpanel" aria-labelledby="provider-tab-overview" aria-hidden="false" tabindex="0">
         <div class="admin-panel-head">
           <div>
             <span class="provider-kicker">Provider workspace</span>
@@ -89,6 +94,18 @@
             <p class="section-subtitle">Manage the sections enabled for your account.</p>
           </div>
         </div>
+
+        <details class="provider-guide">
+          <summary>New to CampusAura? See your first steps</summary>
+          <div class="provider-guide-content">
+            <ol>
+              <li><strong>Complete approval:</strong> upload your National Registration Card (NRC), a photo ID used for identity review. You can explore your dashboard while CampusAura reviews it.</li>
+              <li><strong>Add your offer:</strong> choose Properties, Products &amp; services, or Events, then fill in the form. You can only use the sections enabled for your account.</li>
+              <li><strong>Wait for listing review:</strong> new listings and events are checked before they appear to students.</li>
+              <li><strong>Check activity:</strong> Analytics shows views and contact clicks. Students contact you using the details on your listing; this is not a direct-message inbox.</li>
+            </ol>
+          </div>
+        </details>
 
         <div class="admin-stats">
           <div class="admin-stat">
@@ -122,19 +139,24 @@
         </div>
 
         <div class="provider-overview-grid">
-          <div class="admin-card provider-summary-card">
+          <div class="admin-card provider-summary-card" data-provider-section="accommodation">
             <div class="provider-card-head"><div><span class="provider-card-label">Property owner</span><h2>Accommodation</h2></div><button class="provider-text-link" type="button" data-tab-target="listings" data-feed-target="accommodation" data-provider-section="accommodation">Manage</button></div>
             <div class="provider-summary-row"><span>Active properties</span><strong id="overviewAccomCount">0</strong></div>
             <div class="provider-summary-row"><span>Pending review</span><strong id="overviewAccomPending">0</strong></div>
             <div class="provider-summary-row"><span>Contact clicks</span><strong id="overviewAccomInquiries">0</strong></div>
           </div>
-          <div class="admin-card provider-summary-card">
+          <div class="admin-card provider-summary-card" data-provider-section="marketplace">
           <div class="provider-card-head"><div><span class="provider-card-label provider-card-label-teal">Campus seller or service provider</span><h2>Products &amp; services</h2></div><button class="provider-text-link" type="button" data-tab-target="listings" data-feed-target="marketplace" data-provider-section="marketplace">Manage</button></div>
           <div class="provider-summary-row"><span>Active offers</span><strong id="overviewMarketCount">0</strong></div>
           <div class="provider-summary-row"><span>Pending review</span><strong id="overviewMarketPending">0</strong></div>
           <div class="provider-summary-row"><span>Products sold</span><strong id="overviewMarketSold">0</strong></div>
             <div class="provider-summary-row"><span>Contact clicks</span><strong id="overviewMarketInquiries">0</strong></div>
           </div>
+            <div class="admin-card provider-summary-card" data-provider-section="events">
+              <div class="provider-card-head"><div><span class="provider-card-label provider-card-label-teal">Event organizer</span><h2>Events</h2></div><button class="provider-text-link" type="button" data-tab-target="listings" data-feed-target="events" data-provider-section="events">Manage</button></div>
+              <div class="provider-summary-row"><span>Upcoming events</span><strong id="overviewEventUpcoming">0</strong></div>
+              <div class="provider-summary-row"><span>Pending review</span><strong id="overviewEventPending">0</strong></div>
+            </div>
         </div>
 
         <div class="admin-card provider-inquiry-card">
@@ -144,7 +166,7 @@
       </section>
 
       <!-- My Listings -->
-      <section class="admin-panel" id="panel-listings" role="tabpanel">
+      <section class="admin-panel" id="panel-listings" role="tabpanel" aria-labelledby="provider-tab-accommodation" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head">
           <h1>My Listings</h1>
           <p class="section-subtitle">Manage your accommodation and marketplace listings.</p>
@@ -314,7 +336,7 @@
       </section>
 
       <!-- Analytics -->
-      <section class="admin-panel" id="panel-analytics" role="tabpanel">
+      <section class="admin-panel" id="panel-analytics" role="tabpanel" aria-labelledby="provider-tab-analytics" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head">
           <h1>Analytics</h1>
           <p class="section-subtitle">Performance overview across your listings.</p>
@@ -358,7 +380,7 @@
       </section>
 
       <!-- Inbox -->
-      <section class="admin-panel" id="panel-inbox" role="tabpanel">
+      <section class="admin-panel" id="panel-inbox" role="tabpanel" aria-labelledby="provider-tab-inbox" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head">
           <h1>Contact activity</h1>
           <p class="section-subtitle">Direct messages are not available yet. Calls to your listings are counted as contact clicks in Analytics.</p>
@@ -370,7 +392,7 @@
         </div>
       </section>
 
-      <section class="admin-panel" id="panel-settings" role="tabpanel">
+      <section class="admin-panel" id="panel-settings" role="tabpanel" aria-labelledby="provider-tab-settings" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head">
           <div><span class="provider-kicker">Workspace settings</span><h1>Provider settings</h1><p class="section-subtitle">Manage your public contact details, eligibility, and communication preferences.</p></div>
         </div>
@@ -390,7 +412,7 @@
             <span class="provider-card-label">Trust &amp; safety</span><h2>Verification and document requirements</h2>
             <div class="provider-setting-row"><span>Provider verification</span><strong id="providerSettingsVerification">Loading…</strong></div>
             <p id="providerSettingsVerificationHelp" class="provider-setting-copy">Provider approval is required before listing.</p>
-            <a class="provider-action provider-action-primary" id="providerSettingsVerificationLink" href="verify.html">Review verification status</a>
+            <a class="provider-action provider-action-primary" id="providerSettingsVerificationLink" href="verify.html">Review identity check</a>
           </div>
           <div class="admin-card">
             <span class="provider-card-label">Listing plan</span><h2>Listing eligibility</h2>

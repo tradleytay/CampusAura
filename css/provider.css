@@ -36,6 +36,13 @@
 .provider-analytics-fill { height: 100%; border-radius: inherit; background: var(--ca-blue); transition: width .25s ease; }
 .provider-analytics-row strong { min-width: 30px; color: var(--ca-ink); font-size: 13px; text-align: right; }
 .provider-inquiry-card { min-height: 180px; }
+.provider-guide { margin: 0 0 22px; padding: 14px 18px; border: 1px solid var(--ca-line); border-radius: 14px; background: var(--ca-paper); }
+.provider-guide summary { color: var(--ca-blue); font-size: 14px; font-weight: 700; cursor: pointer; }
+.provider-guide summary:focus-visible { outline: 2px solid var(--ca-blue); outline-offset: 4px; border-radius: 3px; }
+.provider-guide-content { color: var(--ca-muted); font-size: 14px; line-height: 1.65; }
+.provider-guide-content ol { margin: 12px 0 0; padding-left: 22px; }
+.provider-guide-content li + li { margin-top: 6px; }
+.provider-guide-content strong { color: var(--ca-ink); }
 .provider-workspace-head { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin: 20px 0 6px; }
 .provider-workspace-head p { margin: 5px 0 0; color: var(--ca-muted); font-size: 13px; }
 .provider-workspace-head .provider-type-toggle { margin: 0; }

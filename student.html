@@ -37,19 +37,46 @@
       </a>
       <nav class="admin-topnav" aria-label="Student dashboard navigation">
         <a href="index.html" class="admin-toplink">View Site</a>
-        <button id="signOutBtn" class="admin-toplink admin-toplink-ghost" type="button">Sign out</button>
         <span class="admin-chip">Student account</span>
+        <button class="dashboard-menu-toggle" id="dashboardMenuToggle" type="button" aria-expanded="false" aria-controls="studentDashboardDrawer" aria-label="Open dashboard sections">
+          <span class="dashboard-nav-toggle-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
       </nav>
     </div>
   </header>
 
+  <button class="student-drawer-backdrop" id="studentDrawerBackdrop" type="button" aria-label="Close dashboard sections" hidden></button>
   <div class="admin-layout">
-        <aside class="admin-sidebar"><div class="admin-profile luxury-profile"><div class="admin-profile-avatar">CA</div><div><div class="admin-profile-name">Student</div><div class="admin-profile-sub">Loading account…</div><span class="account-verification-badge is-unverified" id="studentVerificationBadge" role="status">Unverified</span></div></div><button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="studentDashboardNav"><span class="dashboard-nav-toggle-icon" aria-hidden="true"><span></span><span></span><span></span></span><span>Dashboard sections</span></button><nav class="admin-tabs" id="studentDashboardNav" role="tablist" aria-orientation="vertical" aria-label="Student dashboard sections"><button class="admin-tab active" id="student-tab-overview" data-tab="overview" role="tab" tabindex="0" aria-selected="true" aria-controls="panel-overview"><span>Overview</span><small>Your campus</small></button><button class="admin-tab" id="student-tab-saved" data-tab="saved" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-saved"><span>Saved listings</span><small>Your shortlist</small></button><button class="admin-tab" id="student-tab-rsvps" data-tab="rsvps" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-rsvps"><span>My RSVPs</span><small>Upcoming events</small></button><button class="admin-tab" id="student-tab-mylistings" data-tab="mylistings" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-mylistings"><span>My listings</span><small>Marketplace items</small></button><button class="admin-tab" id="student-tab-verification" data-tab="verification" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-verification"><span>Verify student status</span><small>Optional student ID check</small></button><button class="admin-tab" id="student-tab-settings" data-tab="settings" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-settings"><span>Settings</span><small>Account &amp; preferences</small></button></nav><div class="admin-sidebar-foot"></div></aside>
+    <aside class="student-dashboard-drawer" id="studentDashboardDrawer" aria-labelledby="studentDrawerHeading" aria-hidden="true" inert>
+      <div class="admin-profile luxury-profile">
+        <div class="admin-profile-avatar">CA</div>
+        <div class="admin-profile-copy">
+          <div class="admin-profile-name">Student</div>
+          <div class="admin-profile-sub">Loading account…</div>
+          <span class="account-verification-badge is-unverified" id="studentVerificationBadge" role="status">Checking student ID status…</span>
+        </div>
+      </div>
+      <div class="student-drawer-heading">
+        <h2 id="studentDrawerHeading">Dashboard sections</h2>
+        <button class="student-drawer-close" id="studentDrawerClose" type="button" aria-label="Close dashboard sections">×</button>
+      </div>
+      <nav class="admin-tabs" id="studentDashboardNav" role="tablist" aria-orientation="vertical" aria-label="Student dashboard sections">
+        <button class="admin-tab active" id="student-tab-overview" data-tab="overview" role="tab" tabindex="0" aria-selected="true" aria-controls="panel-overview"><span>Overview</span><small>Your campus</small></button>
+        <button class="admin-tab" id="student-tab-saved" data-tab="saved" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-saved"><span>Saved places</span><small>Your shortlist</small></button>
+        <button class="admin-tab" id="student-tab-rsvps" data-tab="rsvps" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-rsvps"><span>Event bookings</span><small>Events you plan to attend</small></button>
+        <button class="admin-tab" id="student-tab-mylistings" data-tab="mylistings" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-mylistings"><span>My listings</span><small>Marketplace items</small></button>
+        <button class="admin-tab" id="student-tab-verification" data-tab="verification" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-verification"><span>Verify student status</span><small>Optional student ID check</small></button>
+        <button class="admin-tab" id="student-tab-settings" data-tab="settings" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-settings"><span>Settings</span><small>Account &amp; preferences</small></button>
+      </nav>
+      <div class="student-drawer-footer">
+        <button id="signOutBtn" class="admin-toplink admin-toplink-ghost" type="button">Sign out</button>
+      </div>
+    </aside>
     <!-- Main Content -->
     <main class="admin-main">
 
       <!-- Overview -->
-      <section class="admin-panel active" id="panel-overview" role="tabpanel" aria-labelledby="student-tab-overview" tabindex="0">
+      <section class="admin-panel active" id="panel-overview" role="tabpanel" aria-labelledby="student-tab-overview" aria-hidden="false" tabindex="0">
         <div class="admin-panel-head">
           <div>
             <span class="dashboard-kicker">Your campus, in one place</span>
@@ -59,45 +86,63 @@
           <div class="dashboard-actions" aria-label="Quick actions">
             <a class="dashboard-action dashboard-action-primary" href="accommodation.html">Find accommodation</a>
             <a class="dashboard-action" href="events.html">Explore events</a>
-            <button class="dashboard-action" type="button" data-tab-target="verification">Verify student status</button>
           </div>
         </div>
 
-        <div class="admin-stats">
-          <div class="admin-stat">
-            <div class="admin-stat-icon">🔖</div>
-            <div>
-              <span class="admin-stat-number" id="statSaved">0</span>
-              <span class="admin-stat-label">Saved Listings</span>
-            </div>
+        <details class="dashboard-guide">
+          <summary><span>New to CampusAura? Start here</span><span class="dashboard-guide-hint">A quick guide</span></summary>
+          <div class="dashboard-guide-content">
+            <p>There’s no setup you have to finish before exploring. Try any of these when you’re ready:</p>
+            <ul>
+              <li><a href="accommodation.html">Browse places to stay</a> and save ones you want to compare.</li>
+              <li><a href="events.html">Explore campus events</a>. “Event booking” means telling the organizer you plan to attend.</li>
+              <li><a href="marketplace.html">Browse student items</a> or manage items you’re selling.</li>
+              <li>Student ID verification is optional; your account works without it.</li>
+            </ul>
           </div>
-          <div class="admin-stat">
-            <div class="admin-stat-icon">🎟️</div>
-            <div>
-              <span class="admin-stat-number" id="statRsvps">0</span>
-              <span class="admin-stat-label">Event RSVPs</span>
-            </div>
-          </div>
-          <div class="admin-stat">
-            <div class="admin-stat-icon">📦</div>
-            <div>
-              <span class="admin-stat-number" id="statMyListings">0</span>
-              <span class="admin-stat-label">My Marketplace Items</span>
-            </div>
-          </div>
-          <div class="admin-stat admin-stat-accent">
-            <div class="admin-stat-icon">🏠</div>
-            <div>
-              <span class="admin-stat-number" id="statAccom">0</span>
-              <span class="admin-stat-label">Places available</span>
-            </div>
-          </div>
-        </div>
+        </details>
 
-        <div class="dashboard-grid">
+        <section class="student-overview-section" aria-labelledby="studentOverviewStatsHeading">
+          <div class="student-section-heading">
+            <h2 id="studentOverviewStatsHeading">At a glance</h2>
+            <p>Your saved places, bookings, marketplace items, and campus options.</p>
+          </div>
+          <div class="admin-stats">
+            <div class="admin-stat">
+              <div class="admin-stat-icon" aria-hidden="true">🔖</div>
+              <div>
+                <span class="admin-stat-number" id="statSaved">0</span>
+                <span class="admin-stat-label">Saved places</span>
+              </div>
+            </div>
+            <div class="admin-stat">
+              <div class="admin-stat-icon" aria-hidden="true">🎟️</div>
+              <div>
+                <span class="admin-stat-number" id="statRsvps">0</span>
+                <span class="admin-stat-label">Upcoming event bookings</span>
+              </div>
+            </div>
+            <div class="admin-stat">
+              <div class="admin-stat-icon" aria-hidden="true">📦</div>
+              <div>
+                <span class="admin-stat-number" id="statMyListings">0</span>
+                <span class="admin-stat-label">Marketplace items</span>
+              </div>
+            </div>
+            <div class="admin-stat admin-stat-accent">
+              <div class="admin-stat-icon" aria-hidden="true">🏠</div>
+              <div>
+                <span class="admin-stat-number" id="statAccom">0</span>
+                <span class="admin-stat-label">Places available</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="dashboard-grid" aria-label="Your recent activity">
           <div class="admin-card dashboard-feature-card">
             <div class="dashboard-card-head">
-              <div><span class="dashboard-card-label">Next up</span><h2>Your upcoming events</h2></div>
+              <div><span class="dashboard-card-label">Next up</span><h2>Your event bookings</h2></div>
               <button class="dashboard-text-link" type="button" data-tab-target="rsvps">View all</button>
             </div>
             <div id="overviewRsvps" class="admin-recent"></div>
@@ -109,22 +154,22 @@
             </div>
             <div id="overviewSaved" class="admin-recent"></div>
           </div>
-        </div>
+        </section>
 
-        <div class="admin-card dashboard-marketplace-card">
+        <section class="admin-card dashboard-marketplace-card" aria-labelledby="studentMarketplaceOverviewHeading">
           <div class="dashboard-card-head">
-            <div><span class="dashboard-card-label">Marketplace</span><h2>Your recent items</h2></div>
+            <div><span class="dashboard-card-label">Marketplace</span><h2 id="studentMarketplaceOverviewHeading">Your recent items</h2></div>
             <button class="dashboard-text-link" type="button" data-tab-target="mylistings">Manage items</button>
           </div>
           <div id="overviewListings" class="dashboard-listing-strip"></div>
-        </div>
+        </section>
       </section>
 
       <!-- Saved Listings -->
-      <section class="admin-panel" id="panel-saved" role="tabpanel" aria-labelledby="student-tab-saved" tabindex="0">
+      <section class="admin-panel" id="panel-saved" role="tabpanel" aria-labelledby="student-tab-saved" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head">
-          <h1>Saved Listings</h1>
-          <p class="section-subtitle">Accommodations you've bookmarked.</p>
+          <h1>Saved places</h1>
+          <p class="section-subtitle">Places you’ve saved so you can find and compare them later.</p>
         </div>
 
         <div class="admin-card">
@@ -140,10 +185,10 @@
       </section>
 
       <!-- RSVPs -->
-      <section class="admin-panel" id="panel-rsvps" role="tabpanel" aria-labelledby="student-tab-rsvps" tabindex="0">
+      <section class="admin-panel" id="panel-rsvps" role="tabpanel" aria-labelledby="student-tab-rsvps" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head">
-          <h1>My RSVPs</h1>
-          <p class="section-subtitle">Upcoming events you’ve RSVP’d to.</p>
+          <h1>Event bookings</h1>
+          <p class="section-subtitle">Events you’ve said you plan to attend.</p>
         </div>
 
         <div class="admin-card">
@@ -159,9 +204,9 @@
       </section>
 
       <!-- My Listings -->
-      <section class="admin-panel" id="panel-mylistings" role="tabpanel" aria-labelledby="student-tab-mylistings" tabindex="0">
+      <section class="admin-panel" id="panel-mylistings" role="tabpanel" aria-labelledby="student-tab-mylistings" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head">
-          <h1>My Marketplace Items</h1>
+          <h1>My marketplace items</h1>
           <p class="section-subtitle">Items you're selling.</p>
         </div>
 
@@ -177,7 +222,7 @@
         </div>
       </section>
 
-      <section class="admin-panel" id="panel-verification" role="tabpanel" aria-labelledby="student-tab-verification" tabindex="0">
+      <section class="admin-panel" id="panel-verification" role="tabpanel" aria-labelledby="student-tab-verification" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head"><div><span class="dashboard-kicker">Optional student check</span><h1>Verify your student status</h1><p class="section-subtitle">Upload a student ID for CampusAura review. Your account stays usable while we review it.</p></div></div>
         <div class="admin-card">
           <p id="studentVerificationStatus" class="auth-status" role="status" aria-live="polite">Student verification is optional. Submit a current student ID if you want a verified student status.</p>
@@ -189,7 +234,7 @@
         </div>
       </section>
 
-      <section class="admin-panel" id="panel-settings" role="tabpanel" aria-labelledby="student-tab-settings" tabindex="0">
+      <section class="admin-panel" id="panel-settings" role="tabpanel" aria-labelledby="student-tab-settings" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head"><div><span class="dashboard-kicker">Your account</span><h1>Student settings</h1><p class="section-subtitle">Update your contact details and choose what you see and hear from CampusAura.</p></div></div>
         <form id="studentSettingsForm" class="admin-card dashboard-settings-form">
           <h2>Profile and campus</h2>
@@ -215,7 +260,7 @@
         </form>
         <div class="admin-card dashboard-settings-links">
           <h2>Password, help and legal</h2>
-          <p>Use the existing sign-in recovery flow to reset your password. Sign out is available in the dashboard header.</p>
+          <p>Use the existing sign-in recovery flow to reset your password. Sign out is available in the dashboard sections menu.</p>
           <div class="admin-quick-actions">
             <a class="admin-quick-action" href="auth.html">Password and sign-in help</a>
             <a class="admin-quick-action" href="contact.html">Contact support</a>

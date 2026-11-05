@@ -289,6 +289,12 @@
     const activeMarketplace = state.marketplace.filter(item => item.status === 'published').length + state.services.filter(item => item.status === 'published').length
     const pendingMarketplace = state.marketplace.filter(item => item.status === 'pending').length + state.services.filter(item => item.status === 'pending').length
     const soldMarketplace = state.marketplace.filter(item => item.status === 'sold').length
+    const now = Date.now()
+    const upcomingEvents = state.events.filter(item => {
+      const eventDate = new Date(item.event_date).getTime()
+      return item.status === 'published' && Number.isFinite(eventDate) && eventDate >= now
+    }).length
+    const pendingEvents = state.events.filter(item => item.status === 'draft' || item.status === 'pending').length
     const accommodationInquiries = state.accommodations.reduce((total, item) => total + Number(analyticsById.get(item.id)?.inquiry_count || 0), 0)
     const marketplaceInquiries = state.marketplace.reduce((total, item) => total + Number(analyticsById.get(item.id)?.inquiry_count || 0), 0)
     document.getElementById('statListings').textContent = all.length
@@ -306,6 +312,8 @@
     document.getElementById('overviewMarketPending').textContent = pendingMarketplace
     document.getElementById('overviewMarketSold').textContent = soldMarketplace
     document.getElementById('overviewMarketInquiries').textContent = marketplaceInquiries.toLocaleString()
+    document.getElementById('overviewEventUpcoming').textContent = upcomingEvents.toLocaleString()
+    document.getElementById('overviewEventPending').textContent = pendingEvents.toLocaleString()
 
     const analyticsBars = document.getElementById('analyticsBars')
     analyticsBars.replaceChildren()
@@ -343,7 +351,7 @@
       <tr><td><strong>${escapeHtml(item.title)}</strong><br><span class="muted small">${escapeHtml([item.room_type, item.description || ''].filter(Boolean).join(' · '))}</span></td>
       <td>${escapeHtml(item.location)}</td><td>${formatPrice(item.price)}/mo</td><td><button class="provider-gallery-open" type="button" data-provider-gallery="accommodation" data-id="${escapeHtml(item.id)}">View photos (${getProviderImageUrls(item).length})</button></td><td><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(item.status)}</span></td><td>${Number(analyticsById.get(item.id)?.view_count || 0).toLocaleString()}</td>
       <td>${providerApproved ? `<button class="provider-edit" type="button" data-edit-kind="accommodation" data-id="${escapeHtml(item.id)}">Edit</button><button class="admin-delete" data-kind="accommodation" data-id="${escapeHtml(item.id)}">Delete</button>` : ''}</td></tr>
-    `).join('') || '<tr><td colspan="7" class="admin-recent-empty">No accommodations yet.</td></tr>'
+    `).join('') || '<tr><td colspan="7" class="admin-recent-empty">Your properties will appear here. Use the form above to add one.</td></tr>'
 
     const offers = state.marketplace.map(item => ({
       ...item,
@@ -353,7 +361,7 @@
       <tr><td><strong>${escapeHtml(item.title)}</strong></td><td>${escapeHtml(item.offerType || 'Product')}</td>
       <td>${formatPrice(item.price)}</td><td><button class="provider-gallery-open" type="button" data-provider-gallery="marketplace" data-id="${escapeHtml(item.id)}">View photos (${getProviderImageUrls(item).length})</button></td><td><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(item.status)}</span></td><td>${Number(analyticsById.get(item.id)?.view_count || 0).toLocaleString()}</td>
       <td>${providerApproved ? `<button class="provider-edit" type="button" data-edit-kind="marketplace" data-id="${escapeHtml(item.id)}">Edit</button><button class="admin-delete" data-kind="marketplace" data-id="${escapeHtml(item.id)}">Delete</button>` : ''}</td></tr>
-    `).join('') || '<tr><td colspan="7" class="admin-recent-empty">No products or services yet.</td></tr>'
+    `).join('') || '<tr><td colspan="7" class="admin-recent-empty">Your products and services will appear here. Use the form above to add one.</td></tr>'
 
     document.getElementById('providerEventTable').innerHTML = state.events.map(item => {
       const eventDate = new Date(item.event_date)
@@ -363,7 +371,7 @@
         <td>${escapeHtml(formattedDate)}</td><td>${escapeHtml(item.organizer_name || '')}</td>
         <td><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(status)}</span></td>
         <td>${providerApproved ? `<button class="admin-delete" data-kind="event" data-id="${escapeHtml(item.id)}">Delete</button>` : ''}</td></tr>`
-    }).join('') || '<tr><td colspan="5" class="admin-recent-empty">No events yet.</td></tr>'
+    }).join('') || '<tr><td colspan="5" class="admin-recent-empty">Your events will appear here. Use the form above to submit one.</td></tr>'
 
     document.getElementById('overviewInquiries').textContent = totalInquiries
       ? `${totalInquiries.toLocaleString()} contact clicks across your listings.`
@@ -784,12 +792,21 @@
   }
 
   function showPanel(tabName, feedName) {
+    const activeTab = [...document.querySelectorAll('.admin-tab')].find(tab =>
+      feedName ? tab.dataset.tab === tabName && tab.dataset.feedTarget === feedName : tab.dataset.tab === tabName
+    )
     document.querySelectorAll('.admin-tab').forEach(tab => {
-      const isActive = tab.dataset.tab === tabName && (!feedName || tab.dataset.feedTarget === feedName || tab.dataset.tab === 'overview')
+      const isActive = tab === activeTab
       tab.classList.toggle('active', isActive)
       tab.setAttribute('aria-selected', String(isActive))
+      tab.tabIndex = isActive ? 0 : -1
     })
-    document.querySelectorAll('.admin-panel').forEach(panel => panel.classList.toggle('active', panel.id === `panel-${tabName}`))
+    document.querySelectorAll('.admin-panel').forEach(panel => {
+      const isActive = panel.id === `panel-${tabName}`
+      panel.classList.toggle('active', isActive)
+      panel.setAttribute('aria-hidden', String(!isActive))
+      if (isActive && activeTab) panel.setAttribute('aria-labelledby', activeTab.id)
+    })
     if (tabName === 'listings' && feedName) showFeed(feedName)
   }
 
@@ -853,7 +870,13 @@
     document.getElementById('formMarket').hidden = !canManageMarketplace
     document.getElementById('marketplaceScopeNotice').hidden = canManageMarketplace
     const verificationBadge = document.getElementById('providerVerificationBadge')
-    verificationBadge.textContent = providerApproved ? 'Verified' : 'Unverified'
+    verificationBadge.textContent = providerApproved
+      ? 'Approved'
+      : profile.verification_status === 'pending'
+        ? 'Under review'
+        : profile.verification_status === 'rejected'
+          ? 'Review needed'
+          : 'Approval needed'
     verificationBadge.classList.toggle('is-verified', providerApproved)
     verificationBadge.classList.toggle('is-unverified', !providerApproved)
     verificationBadge.title = providerApproved ? 'Your provider account has been approved.' : 'Provider approval is required to verify this account.'
@@ -865,7 +888,7 @@
       document.getElementById('providerApprovalTitle').textContent = status === 'rejected' ? 'Provider approval not granted' : 'Your dashboard is available while we review your application'
       document.getElementById('providerApprovalMessage').textContent = status === 'rejected'
         ? 'Your provider application was not approved. Contact CampusAura support for next steps. Listing actions remain locked.'
-        : 'You can view your dashboard and listing status. Submit your NRC if you have not already; creating or changing listings unlocks after approval.'
+        : 'You can explore your dashboard while we review your application. If you have not already, upload your National Registration Card (NRC). Creating or changing listings unlocks after approval.'
       if (status === 'rejected') {
         const action = document.getElementById('providerVerificationAction')
         action.href = 'contact.html'

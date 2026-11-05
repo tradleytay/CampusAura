@@ -52,8 +52,8 @@
     providerVerificationStep.hidden = !isProvider
     steps.style.gridTemplateColumns = isProvider ? 'repeat(3, minmax(0, 1fr))' : 'repeat(2, minmax(0, 1fr))'
     registrationIntro.textContent = isProvider
-      ? 'Create an account with your email. After confirming it and signing in, submit your NRC for review before using your selected dashboard tools.'
-      : 'Use your UNILUS student email and select your campus. Student ID verification remains optional after you sign in.'
+      ? 'Create an account with your email. After confirming it and signing in, upload your National Registration Card (NRC). CampusAura reviews it before you can publish.'
+      : 'Use your UNILUS student email and select your campus. You can start after confirming your email; checking your student ID later is optional.'
   }
 
   document.querySelectorAll('input[name=accountType]').forEach(input => input.addEventListener('change', updateRoleFlow))
@@ -156,13 +156,13 @@
           nextAction.textContent = 'Go to sign in'
         }
       } else if (data.session) {
-        successNextSteps.textContent = 'Your dashboard is available now. Submit your NRC and wait for approval before creating or changing listings or events.'
+        successNextSteps.textContent = 'Your dashboard is available now. Upload your National Registration Card (NRC) and wait for approval before creating or changing listings or events.'
         successTitle.textContent = 'Account created'
         successMessage.textContent = 'Your dashboard is ready. Your selected actions unlock after your application is approved.'
         nextAction.href = 'provider.html'
         nextAction.textContent = 'Open provider dashboard'
       } else {
-        successNextSteps.textContent = 'Confirm your email, then sign in to access your dashboard. Submit your NRC and wait for approval before creating listings or events.'
+        successNextSteps.textContent = 'Confirm your email, then sign in to access your dashboard. Upload your National Registration Card (NRC) and wait for approval before creating listings or events.'
         successTitle.textContent = 'Check your email'
         successMessage.textContent = 'If this email can be registered, we will send a confirmation link. After confirming, sign in to access your provider dashboard.'
         nextAction.href = 'auth.html'

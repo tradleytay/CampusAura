@@ -92,27 +92,27 @@
     const savedMarkup = state.saved.map(item => {
       const accommodation = item.accommodations || {}
       return `<div class="admin-message"><div class="admin-message-head"><span class="admin-message-name">${escapeHtml(accommodation.title || 'Accommodation listing')}</span><span class="admin-message-meta">${escapeHtml(accommodation.location || 'Location unavailable')} · ${price(accommodation.price)}/mo</span></div><p class="admin-message-body">${escapeHtml(accommodation.description || '')}</p></div>`
-    }).join('') || '<div class="admin-recent-empty">You have not saved any listings yet.</div>'
+    }).join('') || '<div class="admin-recent-empty">Saved places will appear here. <a href="accommodation.html">Browse places to stay</a> and use Save to keep a shortlist.</div>'
     document.getElementById('overviewSaved').innerHTML = savedMarkup
 
     const rsvpMarkup = upcomingRsvps.slice(0, 3).map(item => {
       const event = item.events
       return `<div class="dashboard-list-item"><span class="dashboard-list-icon">🎟️</span><div><strong>${escapeHtml(event.title || 'Campus event')}</strong><span>${eventDate(event.event_date)} · ${escapeHtml(event.location || 'Location unavailable')}</span></div></div>`
-    }).join('') || '<div class="admin-recent-empty">No upcoming events yet. Explore what is happening on campus.</div>'
+    }).join('') || '<div class="admin-recent-empty">Events you plan to attend will appear here. <a href="events.html">Explore campus events</a> to find one.</div>'
     document.getElementById('overviewRsvps').innerHTML = rsvpMarkup
 
-    const listingMarkup = state.listings.slice(0, 4).map(item => `<div class="dashboard-market-item"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.category)} · ${price(item.price)}</span></div>`).join('') || '<div class="admin-recent-empty">You have not listed anything yet.</div>'
+    const listingMarkup = state.listings.slice(0, 4).map(item => `<div class="dashboard-market-item"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.category)} · ${price(item.price)}</span></div>`).join('') || '<div class="admin-recent-empty">Items you’re selling will appear here. <a href="marketplace.html">Browse the marketplace</a> or open My listings to add an item.</div>'
     document.getElementById('overviewListings').innerHTML = listingMarkup
 
     document.getElementById('savedTable').innerHTML = state.saved.map(item => {
       const accommodation = item.accommodations || {}
       return `<tr><td><strong>${escapeHtml(accommodation.title || 'Accommodation listing')}</strong></td><td>${escapeHtml(accommodation.location || 'Location unavailable')}</td><td>${price(accommodation.price)}/mo</td><td><button class="admin-delete" data-action="unsave" data-id="${escapeHtml(item.id)}">Unsave</button></td></tr>`
-    }).join('') || '<tr><td colspan="4" class="admin-recent-empty">No saved listings yet.</td></tr>'
+    }).join('') || '<tr><td colspan="4" class="admin-recent-empty">No saved places yet. <a href="accommodation.html">Browse places to stay</a> and use Save to keep a shortlist.</td></tr>'
 
     document.getElementById('rsvpTable').innerHTML = upcomingRsvps.map(item => {
       const event = item.events || {}
-      return `<tr><td><strong>${escapeHtml(event.title || 'Campus event')}</strong></td><td>${eventDate(event.event_date)}</td><td>${escapeHtml(event.location || 'Location unavailable')}</td><td><button class="admin-delete" data-action="unrsvp" data-id="${escapeHtml(item.id)}">Cancel RSVP</button></td></tr>`
-    }).join('') || '<tr><td colspan="4" class="admin-recent-empty">No upcoming RSVPs. Explore events to find something to attend.</td></tr>'
+      return `<tr><td><strong>${escapeHtml(event.title || 'Campus event')}</strong></td><td>${eventDate(event.event_date)}</td><td>${escapeHtml(event.location || 'Location unavailable')}</td><td><button class="admin-delete" data-action="unrsvp" data-id="${escapeHtml(item.id)}">Cancel booking</button></td></tr>`
+    }).join('') || '<tr><td colspan="4" class="admin-recent-empty">No upcoming event bookings. <a href="events.html">Explore campus events</a> to find one.</td></tr>'
 
     document.getElementById('myListingsTable').innerHTML = state.listings.map(item => {
       const status = item.status === 'draft' ? 'Pending review' : item.status || 'Unknown'
@@ -128,10 +128,16 @@
     const badge = document.getElementById('studentVerificationBadge')
     const isVerified = record?.status === 'approved'
     if (badge) {
-      badge.textContent = isVerified ? 'Verified' : 'Unverified'
+      badge.textContent = isVerified
+        ? 'ID checked'
+        : record?.status === 'pending'
+          ? 'ID being checked'
+          : record?.status === 'rejected'
+            ? 'ID check needed'
+            : 'ID not checked'
       badge.classList.toggle('is-verified', isVerified)
       badge.classList.toggle('is-unverified', !isVerified)
-      badge.title = record?.status === 'pending' ? 'Your student ID is awaiting review.' : isVerified ? 'Your student ID was approved.' : 'Submit a student ID to request verification.'
+      badge.title = record?.status === 'pending' ? 'Your student ID is awaiting review.' : isVerified ? 'Your student ID was approved.' : record?.status === 'rejected' ? 'Your student ID was not approved. You can submit another file.' : 'Student ID checks are optional. Your account works without one.'
     }
     status.classList.remove('is-error')
     if (record?.status === 'approved') {
@@ -265,7 +271,7 @@
       const confirmMessage = action === 'unsave'
         ? 'Remove this property from your saved listings?'
         : action === 'unrsvp'
-          ? 'Cancel your RSVP for this event?'
+          ? 'Cancel your plan to attend this event?'
           : 'Delete this marketplace listing? This cannot be undone.'
       if (!window.confirm(confirmMessage)) return
       const table = action === 'unsave' ? 'saved_listings' : action === 'unrsvp' ? 'rsvps' : 'marketplace_items'
@@ -363,7 +369,14 @@
         item.tabIndex = selected ? 0 : -1
       })
       document.querySelectorAll('.admin-panel').forEach(panel => panel.classList.remove('active'))
-      document.getElementById(`panel-${tab.dataset.tab}`)?.classList.add('active')
+      const panel = document.getElementById(`panel-${tab.dataset.tab}`)
+      if (panel) {
+        panel.classList.add('active')
+        panel.setAttribute('aria-hidden', 'false')
+      }
+      document.querySelectorAll('.admin-panel').forEach(item => {
+        if (item !== panel) item.setAttribute('aria-hidden', 'true')
+      })
     }
     tabs.forEach(tab => tab.addEventListener('click', () => activate(tab)))
     document.getElementById('studentDashboardNav')?.addEventListener('keydown', event => {

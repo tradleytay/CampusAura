@@ -27,14 +27,16 @@
   }
 
   function createStandaloneToggle() {
-    if (document.querySelector('.nav-actions') || document.getElementById('themeToggle')) return
+    if (document.body.classList.contains('student-page') || document.querySelector('.nav-actions') || document.getElementById('themeToggle')) return
     const button = document.createElement('button')
     button.type = 'button'
     button.className = 'standalone-theme-toggle'
     button.id = 'themeToggle'
     button.setAttribute('aria-pressed', 'false')
     button.setAttribute('aria-label', 'Switch to dark mode')
-    document.body.appendChild(button)
+    const dashboardNav = document.querySelector('.student-page .admin-topnav')
+    if (dashboardNav) dashboardNav.append(button)
+    else document.body.appendChild(button)
 
     const updateLabel = () => {
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark'
@@ -50,7 +52,7 @@
   }
 
   function createWhatsappButton() {
-    if (document.querySelector('.whatsapp-fab')) return
+    if (document.body.classList.contains('student-page') || document.querySelector('.whatsapp-fab')) return
     const link = document.createElement('a')
     link.className = 'whatsapp-fab'
     link.href = 'https://wa.me/260981637085'

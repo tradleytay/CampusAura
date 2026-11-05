@@ -7,7 +7,7 @@
   <meta name="description" content="Manage CampusAura listings, events, user verification, and support requests in the administrator dashboard.">
   <meta name="robots" content="noindex, nofollow">
   <title>Admin Dashboard — CampusAura</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Inter:wght@300;400;600&family=Poppins:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
@@ -37,15 +37,17 @@
       </a>
       <nav class="admin-topnav" aria-label="Admin navigation">
         <a href="index.html" class="admin-toplink">View Site</a>
-        <button id="signOutBtn" class="admin-toplink admin-toplink-ghost" type="button">Sign out</button>
         <span class="admin-chip">Admin access</span>
+        <button class="dashboard-menu-toggle" id="dashboardMenuToggle" type="button" aria-expanded="false" aria-controls="adminDashboardDrawer" aria-label="Open dashboard sections">
+          <span class="dashboard-nav-toggle-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
       </nav>
     </div>
   </header>
 
   <div class="admin-layout">
     <!-- Sidebar -->
-    <aside class="admin-sidebar">
+    <aside class="admin-sidebar" id="adminDashboardDrawer" aria-labelledby="adminDrawerHeading" aria-hidden="true" inert>
       <div class="admin-profile luxury-profile">
         <div class="admin-profile-avatar" id="adminAvatar">AD</div>
         <div>
@@ -53,28 +55,31 @@
           <div class="admin-profile-sub">Campus team</div>
         </div>
       </div>
-      <button class="dashboard-nav-toggle" type="button" aria-expanded="false" aria-controls="adminDashboardNav">
-        <span class="dashboard-nav-toggle-icon" aria-hidden="true"><span></span><span></span><span></span></span>
-        <span>Dashboard sections</span>
-      </button>
+      <div class="admin-drawer-heading">
+        <h2 id="adminDrawerHeading">Dashboard sections</h2>
+        <button class="admin-drawer-close" id="adminDrawerClose" type="button" aria-label="Close dashboard sections">×</button>
+      </div>
       <nav class="admin-tabs" id="adminDashboardNav" role="tablist" aria-label="Admin sections">
-        <button class="admin-tab active" data-tab="dashboard" role="tab" aria-selected="true"><span>Overview</span><small>Platform health</small></button>
-        <button class="admin-tab" data-tab="review" role="tab" aria-selected="false"><span>Review queue</span><small>Needs attention</small></button>
-        <button class="admin-tab" data-tab="users" role="tab" aria-selected="false"><span>Users</span><small>Accounts &amp; roles</small></button>
-        <button class="admin-tab" data-tab="accommodations" role="tab" aria-selected="false"><span>Properties</span><small>Accommodation</small></button>
-        <button class="admin-tab" data-tab="marketplace" role="tab" aria-selected="false"><span>Marketplace</span><small>Products &amp; sellers</small></button>
-        <button class="admin-tab" data-tab="events" role="tab" aria-selected="false"><span>Events</span><small>Campus activity</small></button>
-        <button class="admin-tab" data-tab="messages" role="tab" aria-selected="false"><span>Messages</span><small>Inbox &amp; outbox</small></button>
-        <button class="admin-tab" data-tab="analytics" role="tab" aria-selected="false"><span>Analytics</span><small>Platform trends</small></button>
-        <button class="admin-tab" data-tab="settings" role="tab" aria-selected="false"><span>Settings</span><small>Admin controls</small></button>
+        <button class="admin-tab active" id="admin-tab-dashboard" data-tab="dashboard" role="tab" tabindex="0" aria-selected="true" aria-controls="panel-dashboard"><span>Overview</span><small>Platform health</small></button>
+        <button class="admin-tab" id="admin-tab-review" data-tab="review" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-review"><span>Review queue</span><small>Needs attention</small></button>
+        <button class="admin-tab" id="admin-tab-users" data-tab="users" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-users"><span>Users</span><small>Accounts &amp; roles</small></button>
+        <button class="admin-tab" id="admin-tab-accommodations" data-tab="accommodations" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-accommodations"><span>Properties</span><small>Accommodation</small></button>
+        <button class="admin-tab" id="admin-tab-marketplace" data-tab="marketplace" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-marketplace"><span>Marketplace</span><small>Products &amp; sellers</small></button>
+        <button class="admin-tab" id="admin-tab-events" data-tab="events" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-events"><span>Events</span><small>Campus activity</small></button>
+        <button class="admin-tab" id="admin-tab-messages" data-tab="messages" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-messages"><span>Messages</span><small>Inbox &amp; outbox</small></button>
+        <button class="admin-tab" id="admin-tab-analytics" data-tab="analytics" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-analytics"><span>Analytics</span><small>Platform trends</small></button>
+        <button class="admin-tab" id="admin-tab-settings" data-tab="settings" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-settings"><span>Settings</span><small>Admin controls</small></button>
       </nav>
-      <div class="admin-sidebar-foot"></div>
+      <div class="admin-drawer-footer">
+        <button id="signOutBtn" class="admin-toplink admin-toplink-ghost" type="button">Sign out</button>
+      </div>
     </aside>
+    <button class="admin-drawer-backdrop" id="adminDrawerBackdrop" type="button" aria-label="Close dashboard sections" hidden></button>
 
     <!-- Main Content -->
     <main class="admin-main">
       <!-- Dashboard -->
-      <section class="admin-panel active" id="panel-dashboard" role="tabpanel">
+      <section class="admin-panel active" id="panel-dashboard" role="tabpanel" aria-labelledby="admin-tab-dashboard" aria-hidden="false" tabindex="0">
         <div class="admin-overview-hero">
           <div class="admin-overview-hero-copy">
             <span class="admin-access-label">CampusAura · Operations</span>
@@ -119,13 +124,13 @@
 
       </section>
 
-      <section class="admin-panel" id="panel-review" role="tabpanel">
+      <section class="admin-panel" id="panel-review" role="tabpanel" aria-labelledby="admin-tab-review" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head"><div><span class="admin-kicker">Moderation</span><h1>Review queue</h1><p class="section-subtitle">Make clear, traceable decisions before content reaches students.</p></div></div>
         <div class="admin-queue-grid"><div class="admin-queue-card"><span>Properties</span><strong id="reviewAccomCount">0</strong><small>Waiting for review</small><button class="admin-text-link" type="button" data-tab-target="accommodations">Open properties</button></div><div class="admin-queue-card"><span>Marketplace</span><strong id="reviewMarketCount">0</strong><small>Waiting for review</small><button class="admin-text-link" type="button" data-tab-target="marketplace">Open marketplace</button></div><div class="admin-queue-card"><span>Users</span><strong id="reviewUserCount">0</strong><small>Awaiting verification</small><button class="admin-text-link" type="button" data-tab-target="users">Open users</button></div></div>
         <div class="admin-card"><div class="admin-card-head"><div><span class="admin-card-label">Decision workflow</span><h2>Pending submissions</h2></div></div><p class="admin-empty-copy">Use the category queues above to inspect and review pending provider listings and account applications.</p></div>
       </section>
 
-      <section class="admin-panel" id="panel-users" role="tabpanel">
+      <section class="admin-panel" id="panel-users" role="tabpanel" aria-labelledby="admin-tab-users" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head"><div><span class="admin-kicker">People</span><h1>Users and verification</h1><p class="section-subtitle">Review identity documents, check account access, and freeze or reactivate accounts.</p></div></div>
         <div class="admin-role-grid">
           <div class="admin-role-card"><span>Students</span><strong id="userCountStudents">0</strong><small>Registered accounts</small></div>
@@ -189,7 +194,7 @@
         </div>
       </section>
 
-      <section class="admin-panel" id="panel-analytics" role="tabpanel">
+      <section class="admin-panel" id="panel-analytics" role="tabpanel" aria-labelledby="admin-tab-analytics" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head">
           <div><span class="admin-kicker">Platform intelligence</span><h1>Analytics</h1><p class="section-subtitle">Account growth, listing engagement, and campus activity.</p></div>
           <div class="admin-quick-actions">
@@ -256,7 +261,7 @@
         </div>
       </section>
 
-      <section class="admin-panel" id="panel-settings" role="tabpanel">
+      <section class="admin-panel" id="panel-settings" role="tabpanel" aria-labelledby="admin-tab-settings" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head"><div><span class="admin-kicker">Configuration</span><h1>Admin settings</h1><p class="section-subtitle">Manage platform details, announcements, maintenance, and security oversight.</p></div></div>
         <div class="admin-settings-grid">
           <form id="platformSettingsForm" class="admin-card dashboard-settings-form">
@@ -330,7 +335,7 @@
       </section>
 
       <!-- Accommodations -->
-      <section class="admin-panel" id="panel-accommodations" role="tabpanel">
+      <section class="admin-panel" id="panel-accommodations" role="tabpanel" aria-labelledby="admin-tab-accommodations" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head">
           <h1>Accommodations</h1>
           <p class="section-subtitle">Manage student housing listings.</p>
@@ -385,7 +390,7 @@
       </section>
 
       <!-- Marketplace -->
-      <section class="admin-panel" id="panel-marketplace" role="tabpanel">
+      <section class="admin-panel" id="panel-marketplace" role="tabpanel" aria-labelledby="admin-tab-marketplace" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head">
           <h1>Marketplace</h1>
           <p class="section-subtitle">Manage buy &amp; sell items.</p>
@@ -442,7 +447,7 @@
       </section>
 
       <!-- Events -->
-      <section class="admin-panel" id="panel-events" role="tabpanel">
+      <section class="admin-panel" id="panel-events" role="tabpanel" aria-labelledby="admin-tab-events" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head">
           <h1>Events</h1>
           <p class="section-subtitle">Manage campus events.</p>
@@ -477,7 +482,7 @@
         <div class="admin-card">
           <h3>All events</h3>
           <div class="admin-table-wrap">
-            <table class="admin-table">
+            <table class="admin-table admin-listing-table">
               <thead>
                 <tr><th>Title</th><th>Date</th><th>Location</th><th>Organizer</th><th>Status</th><th>Actions</th></tr>
               </thead>
@@ -488,7 +493,7 @@
       </section>
 
       <!-- Messages -->
-      <section class="admin-panel" id="panel-messages" role="tabpanel">
+      <section class="admin-panel" id="panel-messages" role="tabpanel" aria-labelledby="admin-tab-messages" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head">
           <h1>Messages</h1>
           <p class="section-subtitle">Review incoming contact requests and track messages sent to users.</p>

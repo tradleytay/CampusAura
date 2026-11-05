@@ -24,7 +24,7 @@
       <div class="auth-heading">
         <span class="events-preview-glow" aria-hidden="true">🔐</span>
         <h1 id="verifyTitle">One last step</h1>
-        <p>Provider applicants submit an NRC for review before they can publish listings. Students can optionally submit only their student ID from the student dashboard.</p>
+        <p>If you registered as a provider, upload a clear photo or scan of your National Registration Card (NRC). CampusAura reviews it before you can publish. Student ID checks are optional and can be requested from the student dashboard.</p>
       </div>
       <ol class="auth-steps" aria-label="Account setup progress">
         <li class="is-complete"><span>1</span><strong>Account</strong></li>
@@ -33,17 +33,17 @@
       </ol>
       <p id="verificationStatus" class="auth-status" role="status" aria-live="polite">Checking your account...</p>
       <form id="verificationForm" class="auth-form" hidden>
-        <p class="registration-intro"><strong>Provider NRC review</strong><span>Your National Registration Card is stored privately for provider review. PDF, JPG, or PNG; maximum 5 MB.</span></p>
+        <p class="registration-intro"><strong>Provider identity check</strong><span>Your National Registration Card is stored privately for review. Upload a PDF or clear photo (JPG or PNG), up to 5 MB.</span></p>
         <label class="auth-field">
           <span>National Registration Card (NRC)</span>
           <input id="verifyIdentityDocument" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required>
-          <small class="file-help">Upload your NRC as a PDF, JPG, or PNG; maximum 5 MB.</small>
+          <small class="file-help">Upload a PDF or clear photo (JPG or PNG), up to 5 MB.</small>
         </label>
         <label class="consent-check">
           <input id="verifyDocumentConsent" type="checkbox" required>
-          <span>I confirm this NRC belongs to me and may be reviewed for provider account verification.</span>
+          <span>I confirm this card belongs to me and may be reviewed for provider account verification.</span>
         </label>
-        <button id="verificationSubmit" class="btn btn-primary btn-lg" type="submit">Submit NRC</button>
+        <button id="verificationSubmit" class="btn btn-primary btn-lg" type="submit">Submit for review</button>
       </form>
       <a class="auth-back" href="auth.html">Return to sign in</a>
       <a class="auth-back" href="privacy.html">Privacy Policy</a>

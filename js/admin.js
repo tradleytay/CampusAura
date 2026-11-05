@@ -552,10 +552,18 @@
 
   function setupTabs() {
     document.querySelectorAll('.admin-tab').forEach(tab => tab.addEventListener('click', () => {
-      document.querySelectorAll('.admin-tab').forEach(item => { item.classList.remove('active'); item.setAttribute('aria-selected', 'false') })
-      document.querySelectorAll('.admin-panel').forEach(panel => panel.classList.remove('active'))
-      tab.classList.add('active'); tab.setAttribute('aria-selected', 'true')
-      document.getElementById(`panel-${tab.dataset.tab}`)?.classList.add('active')
+      document.querySelectorAll('.admin-tab').forEach(item => {
+        const isActive = item === tab
+        item.classList.toggle('active', isActive)
+        item.setAttribute('aria-selected', String(isActive))
+        item.tabIndex = isActive ? 0 : -1
+      })
+      document.querySelectorAll('.admin-panel').forEach(panel => {
+        const isActive = panel.id === `panel-${tab.dataset.tab}`
+        panel.classList.toggle('active', isActive)
+        panel.setAttribute('aria-hidden', String(!isActive))
+        if (isActive) panel.setAttribute('aria-labelledby', tab.id)
+      })
     }))
     document.querySelectorAll('[data-tab-target]').forEach(button => button.addEventListener('click', () => {
       const target = document.querySelector(`.admin-tab[data-tab="${button.dataset.tabTarget}"]`)
