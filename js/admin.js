@@ -451,18 +451,26 @@
         const access = profile.account_status === 'frozen' ? ' · frozen' : ''
         return `<option value="${escapeHtml(profile.id)}">${escapeHtml(displayName)} · ${escapeHtml(role)}${escapeHtml(reference)}${access}</option>`
       }).join('')
+    const userStatusClass = status => ['pending', 'approved', 'rejected', 'active', 'frozen'].includes(status.toLowerCase())
+      ? `status-${status.toLowerCase()}`
+      : 'status-unknown'
     document.getElementById('usersTable').innerHTML = state.profiles.map(profile => {
+      const verificationStatus = String(profile.verification_status || 'Not provided')
+      const accountStatus = String(profile.account_status || 'active')
+      const role = profile.requested_role || profile.role || 'Unknown'
       return `
         <tr>
           <td data-label="Reference"><strong>${escapeHtml(profile.reference_code || 'Not assigned')}</strong></td>
-          <td data-label="User"><strong>${escapeHtml(profile.full_name || 'Unnamed user')}</strong><br><span class="muted small">${escapeHtml(profile.phone || 'No phone provided')}</span></td>
-          <td data-label="Role">${escapeHtml(profile.requested_role || profile.role)}</td>
+          <td data-label="User"><span class="user-directory-identity"><strong>${escapeHtml(profile.full_name || 'Unnamed user')}</strong><span>${escapeHtml(profile.email || 'No email provided')}</span></span></td>
+          <td data-label="Account type"><span class="user-role-pill">${escapeHtml(role)}</span></td>
+          <td data-label="Verification"><span class="status-pill ${userStatusClass(verificationStatus)}">${escapeHtml(verificationStatus)}</span></td>
+          <td data-label="Access"><span class="status-pill ${userStatusClass(accountStatus)}">${escapeHtml(accountStatus)}</span></td>
           <td data-label="Actions"><div class="admin-row-actions">
             <button class="admin-link-btn" data-preview-table="profiles" data-preview-id="${escapeHtml(profile.id)}">View</button>
           </div></td>
         </tr>
       `
-    }).join('') || '<tr><td colspan="4" class="admin-recent-empty">No users found.</td></tr>'
+    }).join('') || '<tr><td colspan="6" class="admin-recent-empty">No users found.</td></tr>'
     renderUserListPreview()
   }
 
@@ -511,7 +519,7 @@
       body.innerHTML = '<tr><td class="admin-recent-empty">Choose at least one detail to preview or download.</td></tr>'
       return
     }
-    body.innerHTML = matches.slice(0, 25).map(profile => `<tr>${columns.map(column => `<td>${escapeHtml(column.value(profile) || '—')}</td>`).join('')}</tr>`).join('') ||
+    body.innerHTML = matches.slice(0, 25).map(profile => `<tr>${columns.map(column => `<td data-label="${escapeHtml(column.label)}">${escapeHtml(column.value(profile) || '—')}</td>`).join('')}</tr>`).join('') ||
       `<tr><td colspan="${columns.length}" class="admin-recent-empty">No accounts match these filters.</td></tr>`
     const status = document.getElementById('userListStatus')
     status.textContent = matches.length > 25 ? 'Showing the first 25 matches in the preview. The CSV will include every match.' : ''
