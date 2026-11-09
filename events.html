@@ -97,6 +97,8 @@
         </div>
       </section>
       <section class="filters events-filter-card" aria-label="Search and filter events">
+        <button id="newEventSearchToggle" class="events-search-toggle" type="button" aria-expanded="false" aria-controls="newEventFilters"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="m13 13 4 4"></path></svg><span>Search events</span></button>
+        <div id="newEventFilters">
         <div class="filters-header">
           <div><p class="eyebrow">Refine your search</p><h3>Find an event</h3></div>
           <button id="newResetFilters" class="btn btn-ghost" type="button">Reset</button>
@@ -106,6 +108,7 @@
           <div class="filter-group"><label for="newEventLocation">Location</label><select id="newEventLocation"><option value="">All locations</option></select></div>
           <div class="filter-group"><label for="newEventDate">When</label><select id="newEventDate"><option value="">Any time</option><option value="this-week">This week</option><option value="next-week">Next week</option><option value="this-month">This month</option></select></div>
           <button id="newEventFilterBtn" class="btn btn-primary" type="button">Apply filters</button>
+        </div>
         </div>
       </section>
       <div class="results-controls events-results-controls">

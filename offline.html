@@ -2,32 +2,312 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#122033">
+  <meta name="description" content="You are offline. Check your connection or browse pages saved on this device.">
   <meta name="mobile-web-app-capable" content="yes">
   <title>You're offline — CampusAura</title>
-  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
-  <link rel="manifest" href="/icons/site.webmanifest">
-  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="manifest" href="icons/site.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
   <style>
-    :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
-    body { box-sizing: border-box; min-height: 100vh; margin: 0; padding: 2rem; display: grid; place-items: center; background: #07111f; color: #f8fafc; }
-    main { width: min(100%, 32rem); text-align: center; }
-    h1 { margin-bottom: .5rem; font-size: clamp(2rem, 8vw, 3rem); }
-    p { color: #cbd5e1; line-height: 1.6; }
-    button, a { display: inline-block; margin: .75rem .35rem 0; padding: .8rem 1rem; border: 0; border-radius: .6rem; background: #2563eb; color: white; font: inherit; font-weight: 600; text-decoration: none; cursor: pointer; }
-    a { background: #1e293b; }
-    button:focus-visible, a:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
+    :root {
+      color-scheme: light;
+      font-family: "DM Sans", "Segoe UI", sans-serif;
+      color: #122033;
+      background: #f5f7fb;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      min-height: 100svh;
+      margin: 0;
+      padding: clamp(20px, 5vw, 64px);
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(ellipse at 12% 10%, rgba(14, 165, 168, .12), transparent 34rem),
+        radial-gradient(ellipse at 90% 92%, rgba(37, 99, 235, .09), transparent 30rem),
+        #f5f7fb;
+    }
+
+    main {
+      width: min(100%, 620px);
+      overflow: hidden;
+      border: 1px solid #e3e9f2;
+      border-radius: 24px;
+      background: #fff;
+      box-shadow: 0 24px 70px rgba(18, 32, 51, .12);
+    }
+
+    .card-top {
+      position: relative;
+      display: grid;
+      min-height: 220px;
+      place-items: center;
+      overflow: hidden;
+      background: linear-gradient(135deg, #122033, #1d3556);
+    }
+
+    .card-top::before,
+    .card-top::after {
+      position: absolute;
+      width: 240px;
+      height: 240px;
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 50%;
+      content: "";
+    }
+
+    .card-top::before { transform: scale(1.45); }
+    .card-top::after { transform: scale(2.15); }
+
+    .brand {
+      position: absolute;
+      top: 24px;
+      left: 26px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -.03em;
+      text-decoration: none;
+    }
+
+    .brand img { width: 34px; height: 34px; border-radius: 10px; }
+    .brand-accent { color: #5eead4; }
+
+    .signal-art {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      width: 104px;
+      height: 104px;
+      place-items: center;
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 30px;
+      background: rgba(255, 255, 255, .09);
+      color: #fff;
+      box-shadow: 0 16px 38px rgba(0, 0, 0, .18);
+    }
+
+    .signal-art svg { width: 52px; height: 52px; }
+
+    .content { padding: clamp(26px, 6vw, 44px); }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 16px;
+      padding: 7px 11px;
+      border: 1px solid #e3e9f2;
+      border-radius: 999px;
+      background: #f5f7fb;
+      color: #42526a;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #c49a56;
+      box-shadow: 0 0 0 3px rgba(196, 154, 86, .16);
+    }
+
+    .status[data-state="online"] .status-dot {
+      background: #0f9f9a;
+      box-shadow: 0 0 0 3px rgba(15, 159, 154, .14);
+    }
+
+    h1 {
+      margin: 0;
+      color: #122033;
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      font-size: clamp(32px, 7vw, 44px);
+      letter-spacing: -.045em;
+      line-height: 1.08;
+    }
+
+    .intro {
+      max-width: 470px;
+      margin: 14px 0 0;
+      color: #66758a;
+      font-size: 16px;
+      line-height: 1.65;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .button {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      padding: 0 18px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
+    }
+
+    .button:hover { transform: translateY(-1px); }
+    .button-primary { background: #2563eb; color: #fff; }
+    .button-primary:hover { background: #1d4ed8; }
+    .button-secondary { border-color: #e3e9f2; background: #fff; color: #122033; }
+    .button-secondary:hover { border-color: #b9c9dd; background: #f8fafc; }
+    .button:focus-visible, a:focus-visible { outline: 3px solid #0ea5a8; outline-offset: 3px; }
+
+    .saved-pages {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #e3e9f2;
+    }
+
+    .saved-pages h2 {
+      margin: 0 0 14px;
+      color: #42526a;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .page-links { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    .page-links a {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 12px;
+      border: 1px solid #e3e9f2;
+      border-radius: 9px;
+      color: #42526a;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: border-color .18s ease, background-color .18s ease;
+    }
+
+    .page-links a:hover { border-color: #b9c9dd; background: #f8fafc; }
+    .page-links svg { width: 16px; height: 16px; color: #0f9f9a; }
+
+    .footnote {
+      margin: 18px 0 0;
+      color: #718096;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 14px; }
+      main { border-radius: 18px; }
+      .card-top { min-height: 190px; }
+      .brand { top: 18px; left: 18px; }
+      .content { padding: 26px 22px; }
+      .actions { display: grid; }
+      .button { width: 100%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
   </style>
 </head>
 <body>
-  <main>
-    <p>CampusAura</p>
-    <h1>You're offline</h1>
-    <p>This page isn't available offline. Check your internet connection and try again. Previously visited pages may still be available.</p>
-    <button type="button" onclick="window.location.reload()">Try again</button>
-    <a href="/index.html">Go to home</a>
+  <main aria-labelledby="page-title">
+    <div class="card-top" aria-hidden="true">
+      <div class="brand">
+        <img src="icons/icon.png" alt="">
+        <span>Campus<span class="brand-accent">Aura</span></span>
+      </div>
+      <div class="signal-art">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 18.5a23 23 0 0 1 32 0M14 25a14.5 14.5 0 0 1 20 0M20 31.5a6 6 0 0 1 8 0" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <path d="m8 8 32 32" stroke="#5eead4" stroke-width="3.5" stroke-linecap="round"/>
+          <circle cx="24" cy="38" r="2" fill="currentColor"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="content">
+      <p class="status" id="connection-status" role="status" aria-live="polite">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="connection-label">Connection unavailable</span>
+      </p>
+      <h1 id="page-title">You're offline</h1>
+      <p class="intro" id="connection-message">We couldn't reach this page. Check your internet connection, then try again. Pages saved on this device may still be available.</p>
+
+      <div class="actions">
+        <button class="button button-primary" type="button" id="retry-button">
+          Try again
+          <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none">
+            <path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <a class="button button-secondary" href="index.html">Go to home</a>
+      </div>
+
+      <section class="saved-pages" aria-labelledby="saved-pages-title">
+        <h2 id="saved-pages-title">You can still explore</h2>
+        <nav class="page-links" aria-label="Pages available offline">
+          <a href="accommodation.html">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Accommodation
+          </a>
+          <a href="marketplace.html">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><path d="M3 9h18l-1.5-5h-15L3 9Zm1 0v11h16V9M9 20v-6h6v6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Marketplace
+          </a>
+          <a href="events.html">
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M16 3v4M8 3v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Events
+          </a>
+        </nav>
+        <p class="footnote">Some details, including live listings and account features, need an internet connection.</p>
+      </section>
+    </div>
   </main>
-  <script src="/js/pwa.js"></script>
+  <script>
+    const status = document.getElementById('connection-status')
+    const label = document.getElementById('connection-label')
+    const message = document.getElementById('connection-message')
+
+    function updateConnectionStatus() {
+      const online = navigator.onLine
+      status.dataset.state = online ? 'online' : 'offline'
+      label.textContent = online ? 'Connection restored' : 'Connection unavailable'
+      message.textContent = online
+        ? 'Your device is connected, but this page could not be reached. Try again or check back in a moment.'
+        : "We couldn't reach this page. Check your internet connection, then try again. Pages saved on this device may still be available."
+    }
+
+    document.getElementById('retry-button').addEventListener('click', () => window.location.reload())
+    window.addEventListener('online', updateConnectionStatus)
+    window.addEventListener('offline', updateConnectionStatus)
+    updateConnectionStatus()
+  </script>
 </body>
 </html>

@@ -26,12 +26,26 @@
     gtag('config', 'G-C8P3TYMPQ5');
   </script>
 </head>
-<body class="auth-page" data-auth-mode="signup">
+<body class="auth-page register-page" data-auth-mode="signup">
   <main class="auth-shell">
     <a class="auth-brand" href="index.html">
       <img src="icons/icon.png" alt="CampusAura logo">
       <span>Campus<span class="brand-accent">Aura</span></span>
     </a>
+    <aside class="register-welcome" aria-label="CampusAura community">
+      <p class="register-eyebrow"><span aria-hidden="true"></span> Campus life, connected</p>
+      <h2>Your next chapter <span>starts here.</span></h2>
+      <p class="register-welcome-copy">Create your free account and make more of the life happening around campus.</p>
+      <div class="register-benefits" aria-label="What you can do on CampusAura">
+        <div><span aria-hidden="true">⌂</span><strong>Find a place to stay</strong></div>
+        <div><span aria-hidden="true">✦</span><strong>Discover campus finds</strong></div>
+        <div><span aria-hidden="true">↗</span><strong>Show up to more events</strong></div>
+      </div>
+      <div class="register-welcome-note">
+        <img src="icons/icon.png" alt="">
+        <p><strong>Made for campus life.</strong><span>One community, many possibilities.</span></p>
+      </div>
+    </aside>
     <section class="auth-card" aria-labelledby="authTitle">
       <div class="auth-heading" id="registerHeading">
         <span class="events-preview-glow">✨</span>
@@ -46,28 +60,36 @@
       <section id="registrationSuccess" class="registration-success" hidden aria-live="polite" aria-labelledby="registrationSuccessTitle">
         <div class="success-icon" aria-hidden="true">✓</div>
         <h2 id="registrationSuccessTitle" tabindex="-1">Check your email</h2>
-        <p id="registrationSuccessMessage">Students can start after confirming email. Providers upload a National Registration Card for review.</p>
+        <p id="registrationSuccessMessage">Students can start after confirming email. Providers upload a government-issued ID, such as a national ID or passport, for review.</p>
+        <div id="registrationEmailPrompt" class="registration-email-prompt" hidden>
+          <strong>Action required: confirm your email</strong>
+          <span>We sent a confirmation link to <b id="registrationEmailAddress"></b>. Check your inbox and spam folder, then open the link before signing in.</span>
+          <small id="registrationEmailHelp">If your email app opens a new draft, close it and check your inbox for the confirmation message.</small>
+        </div>
+        <a id="registrationEmailAction" class="btn btn-primary btn-lg registration-email-action" href="#" hidden>Open your email</a>
         <div class="success-summary">
           <span>Account type</span>
           <strong id="successRole">Student</strong>
         </div>
         <a id="registrationNextAction" class="btn btn-primary btn-lg" href="auth.html">Go to sign in</a>
-        <p class="registration-next-steps">Student ID checks are optional. Providers upload a National Registration Card for review.</p>
+        <p class="registration-next-steps">Student ID checks are optional. Providers upload a government-issued ID, such as a national ID or passport, for review.</p>
       </section>
       <form id="registerForm" class="auth-form">
         <div class="registration-intro">
           <strong>Choose your account type</strong>
-          <span id="registrationIntroText">Use your UNILUS student email to create a student account. You can submit your student ID for optional verification after signing in.</span>
+          <span id="registrationIntroText">Use your university give student email to create a student account. You can submit your student ID for optional verification after signing in.</span>
         </div>
         <fieldset class="registration-choice">
           <legend>Register as</legend>
           <label class="choice-card">
             <input type="radio" name="accountType" value="student" checked>
+            <span class="choice-icon" aria-hidden="true">✦</span>
             <span><strong>Student</strong><small>For people studying at UNILUS. You’ll need your UNILUS student email. Checking your student ID later is optional.</small></span>
           </label>
           <label class="choice-card">
             <input type="radio" name="accountType" value="provider">
-            <span><strong>Provider</strong><small>For property owners, sellers, service providers, or event organizers. You’ll need an email and a National Registration Card (NRC) for review before publishing.</small></span>
+            <span class="choice-icon" aria-hidden="true">↗</span>
+            <span><strong>Provider</strong><small>For property owners, sellers, service providers, or event organizers. You’ll need an email and a government-issued ID (such as a national ID or passport) for review before publishing.</small></span>
           </label>
         </fieldset>
         <label class="auth-field">
@@ -110,7 +132,7 @@
             </select>
             <small class="file-help">Choose one section. Event organizers can submit events, but cannot list properties or marketplace items.</small>
           </label>
-          <p class="file-help">After confirming your email and signing in, upload your National Registration Card (NRC). CampusAura reviews it before you can publish.</p>
+          <p class="file-help">After confirming your email and signing in, upload a government-issued ID, such as a national ID or passport. CampusAura reviews it before you can publish.</p>
         </fieldset>
         <label class="auth-field">
           <span>Phone number</span>

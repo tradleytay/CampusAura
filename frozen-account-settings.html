@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="Review your CampusAura account details and update your password.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#2563eb">
+  <title>Profile &amp; security — CampusAura</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="manifest" href="icons/site.webmanifest">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/rebuild.css">
+</head>
+<body class="auth-page frozen-settings-page">
+  <main class="auth-shell">
+    <a class="auth-brand" href="index.html">
+      <img src="icons/icon.png" alt="CampusAura logo">
+      <span>Campus<span class="brand-accent">Aura</span></span>
+    </a>
+    <section class="auth-card" aria-labelledby="frozenSettingsTitle">
+      <div class="auth-heading">
+        <span class="events-preview-glow" aria-hidden="true">🔒</span>
+        <p class="frozen-settings-eyebrow">Limited account access</p>
+        <h1 id="frozenSettingsTitle">Profile &amp; security</h1>
+        <p>Your account is frozen, so profile changes and CampusAura activity are unavailable. You can review your account details and update your password here.</p>
+      </div>
+
+      <div id="frozenAccountDetails" class="frozen-account-details" hidden>
+        <h2>Account details</h2>
+        <dl>
+          <div><dt>Name</dt><dd id="frozenSettingsName">—</dd></div>
+          <div><dt>Email</dt><dd id="frozenSettingsEmail">—</dd></div>
+          <div><dt>Account type</dt><dd id="frozenSettingsRole">—</dd></div>
+        </dl>
+        <p id="frozenSettingsReason" class="frozen-settings-reason" hidden></p>
+      </div>
+
+      <form id="frozenPasswordForm" class="auth-form" hidden>
+        <h2>Update your password</h2>
+        <label class="auth-field">
+          <span>New password</span>
+          <span class="password-input-wrap">
+            <input id="frozenNewPassword" type="password" autocomplete="new-password" minlength="8" required>
+            <button class="password-visibility-toggle" type="button" data-password-toggle aria-label="Show password" aria-controls="frozenNewPassword" aria-pressed="false">👁️</button>
+          </span>
+        </label>
+        <label class="auth-field">
+          <span>Confirm new password</span>
+          <span class="password-input-wrap">
+            <input id="frozenConfirmPassword" type="password" autocomplete="new-password" minlength="8" required>
+            <button class="password-visibility-toggle" type="button" data-password-toggle aria-label="Show password" aria-controls="frozenConfirmPassword" aria-pressed="false">👁️</button>
+          </span>
+        </label>
+        <button id="frozenPasswordSubmit" class="btn btn-primary btn-lg" type="submit">Update password</button>
+      </form>
+
+      <p id="frozenSettingsStatus" class="auth-status frozen-settings-status" role="status" aria-live="polite">Checking your account…</p>
+      <div class="frozen-settings-actions">
+        <a class="auth-toggle" href="account-frozen.html">Back to account access</a>
+        <a class="frozen-settings-contact" href="contact.html">Contact CampusAura</a>
+        <button id="frozenSettingsSignOut" type="button">Sign out</button>
+      </div>
+    </section>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/password-visibility.js"></script>
+  <script src="js/frozen-account-settings.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

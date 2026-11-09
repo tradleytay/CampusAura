@@ -7,25 +7,34 @@
   <meta name="theme-color" content="#2563EB">
   <meta name="mobile-web-app-capable" content="yes">
   <title>Account access paused — CampusAura</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
   <link rel="manifest" href="icons/site.webmanifest">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
   <link rel="stylesheet" href="css/rebuild.css">
 </head>
-<body class="account-frozen-page">
-  <main class="account-frozen-shell">
-    <section class="account-frozen-card" aria-labelledby="frozenTitle">
-      <a class="account-frozen-brand" href="index.html">CampusAura</a>
-      <span class="account-frozen-icon" aria-hidden="true">!</span>
-      <p class="account-frozen-eyebrow">Account access</p>
-      <h1 id="frozenTitle">Your account is frozen</h1>
-      <p class="account-frozen-copy">Your account access has been paused by CampusAura. You can contact the team if you have questions or believe this is a mistake.</p>
+<body class="auth-page account-frozen-page">
+  <main class="auth-shell">
+    <a class="auth-brand" href="index.html">
+      <img src="icons/icon.png" alt="CampusAura logo">
+      <span>Campus<span class="brand-accent">Aura</span></span>
+    </a>
+    <section class="auth-card" aria-labelledby="frozenTitle">
+      <div class="auth-heading">
+        <span class="account-frozen-icon" aria-hidden="true">!</span>
+        <p class="account-frozen-eyebrow">Account access</p>
+        <h1 id="frozenTitle">Access is temporarily paused</h1>
+        <p>Your account access has been paused by CampusAura. Contact our team if you have questions or believe this is a mistake.</p>
+      </div>
       <div class="account-frozen-reason" id="frozenReasonWrap" hidden>
         <span>Reason provided</span>
         <p id="frozenReason"></p>
       </div>
       <p class="account-frozen-status" id="frozenStatus" role="status" aria-live="polite">Checking account status…</p>
       <div class="account-frozen-actions">
+        <a class="account-frozen-settings" href="frozen-account-settings.html">Profile &amp; security settings</a>
         <a class="account-frozen-contact" href="contact.html">Contact CampusAura</a>
         <button id="frozenSignOut" type="button">Sign out</button>
       </div>
@@ -33,6 +42,7 @@
   </main>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
+  <script src="js/theme.js"></script>
   <script src="js/account-frozen.js"></script>
   <script src="js/pwa.js"></script>
 </body>

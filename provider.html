@@ -61,7 +61,7 @@
         <h2 id="providerDrawerHeading">Dashboard sections</h2>
         <button class="provider-drawer-close" id="providerDrawerClose" type="button" aria-label="Close dashboard sections">×</button>
       </div>
-      <nav class="admin-tabs" id="providerDashboardNav" role="tablist" aria-label="Provider dashboard sections">
+      <nav class="admin-tabs" id="providerDashboardNav" role="tablist" aria-orientation="vertical" aria-label="Provider dashboard sections">
         <button class="admin-tab active" id="provider-tab-overview" data-tab="overview" role="tab" tabindex="0" aria-selected="true" aria-controls="panel-overview"><span>Overview</span><small>Your workspace</small></button>
         <button class="admin-tab" id="provider-tab-accommodation" data-tab="listings" data-feed-target="accommodation" data-provider-section="accommodation" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-listings"><span>Properties</span><small>Accommodation</small></button>
         <button class="admin-tab" id="provider-tab-marketplace" data-tab="listings" data-feed-target="marketplace" data-provider-section="marketplace" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-listings"><span>Products &amp; services</span><small>Marketplace</small></button>
@@ -82,7 +82,7 @@
         <span class="provider-kicker">Provider approval</span>
         <h2 id="providerApprovalTitle">Your dashboard is read-only</h2>
         <p id="providerApprovalMessage">You can review your workspace, but listing actions unlock after approval.</p>
-        <a class="btn btn-primary" id="providerVerificationAction" href="verify.html">Upload National Registration Card</a>
+        <a class="btn btn-primary" id="providerVerificationAction" href="verify.html">Upload identity document</a>
       </section>
 
       <!-- Overview -->
@@ -99,7 +99,7 @@
           <summary>New to CampusAura? See your first steps</summary>
           <div class="provider-guide-content">
             <ol>
-              <li><strong>Complete approval:</strong> upload your National Registration Card (NRC), a photo ID used for identity review. You can explore your dashboard while CampusAura reviews it.</li>
+              <li><strong>Complete approval:</strong> upload a government-issued photo ID, such as a National Registration Card (NRC), national ID, or passport. You can explore your dashboard while CampusAura reviews it.</li>
               <li><strong>Add your offer:</strong> choose Properties, Products &amp; services, or Events, then fill in the form. You can only use the sections enabled for your account.</li>
               <li><strong>Wait for listing review:</strong> new listings and events are checked before they appear to students.</li>
               <li><strong>Check activity:</strong> Analytics shows views and contact clicks. Students contact you using the details on your listing; this is not a direct-message inbox.</li>
@@ -180,15 +180,15 @@
         <!-- Listing type toggle -->
         <div class="provider-workspace-head">
           <div><span class="provider-kicker">Your listings and events</span><p>Manage only the sections enabled for your account.</p></div>
-          <div class="provider-type-toggle" role="tablist" aria-label="Inventory type">
-            <button class="type-btn active" data-feed="accommodation" data-provider-section="accommodation" role="tab">Properties</button>
-            <button class="type-btn" data-feed="marketplace" data-provider-section="marketplace" role="tab">Products &amp; services</button>
-            <button class="type-btn" data-feed="events" data-provider-section="events" role="tab">Events</button>
+          <div class="provider-type-toggle" role="tablist" aria-orientation="horizontal" aria-label="Inventory type">
+            <button class="type-btn active" id="provider-inventory-accommodation" data-feed="accommodation" data-provider-section="accommodation" role="tab" tabindex="0" aria-selected="true" aria-controls="feed-accommodation">Properties</button>
+            <button class="type-btn" id="provider-inventory-marketplace" data-feed="marketplace" data-provider-section="marketplace" role="tab" tabindex="-1" aria-selected="false" aria-controls="feed-marketplace">Products &amp; services</button>
+            <button class="type-btn" id="provider-inventory-events" data-feed="events" data-provider-section="events" role="tab" tabindex="-1" aria-selected="false" aria-controls="feed-events">Events</button>
           </div>
         </div>
 
         <!-- Accommodation feed -->
-        <div class="provider-feed" id="feed-accommodation">
+        <div class="provider-feed" id="feed-accommodation" role="tabpanel" aria-labelledby="provider-inventory-accommodation" aria-hidden="false" tabindex="0">
           <div class="provider-scope-notice" id="accommodationScopeNotice" hidden>
             <strong>Accommodation listing access is not enabled</strong>
             <p>Your account is approved for a different section. Contact an administrator if you need access to properties.</p>
@@ -238,7 +238,7 @@
         </div>
 
         <!-- Marketplace feed -->
-        <div class="provider-feed" id="feed-marketplace" style="display:none">
+        <div class="provider-feed" id="feed-marketplace" role="tabpanel" aria-labelledby="provider-inventory-marketplace" aria-hidden="true" tabindex="0" style="display:none">
           <div class="provider-scope-notice" id="marketplaceScopeNotice" hidden>
             <strong>Products and services listing access is not enabled</strong>
             <p>Your account is approved for a different section. Contact an administrator if you need access to products and services.</p>
@@ -247,16 +247,16 @@
           <form class="admin-form" id="formMarket">
             <h3>Add a product or service</h3>
             <div class="admin-form-grid">
-              <input type="text" id="marketTitle" placeholder="Title" required>
+              <label for="marketTitle">Offer title<input type="text" id="marketTitle" placeholder="e.g. Calculus textbook" maxlength="180" required></label>
               <label class="provider-display-name-field admin-span" for="marketDisplayName">Seller / business name shown on the listing
                 <input type="text" id="marketDisplayName" placeholder="Leave blank to use your account name" maxlength="100">
               </label>
-              <select id="marketOfferType" required>
+              <label for="marketOfferType">Offer type<select id="marketOfferType" required>
                 <option value="product">Product</option>
                 <option value="service">Service</option>
-              </select>
-              <input type="number" id="marketPrice" placeholder="Price or starting price (K)" min="0" required>
-              <select id="marketCategory" required>
+              </select></label>
+              <label for="marketPrice">Price or starting price (K)<input type="number" id="marketPrice" min="0" step="0.01" required></label>
+              <label for="marketCategory">Category<select id="marketCategory" required>
                 <option value="" disabled selected>Select a category</option>
                 <option value="Electronics">Electronics</option>
                 <option value="Furniture">Furniture</option>
@@ -268,7 +268,7 @@
                 <option value="Sports &amp; recreation">Sports &amp; recreation</option>
                 <option value="Services">Services</option>
                 <option value="Other">Other</option>
-              </select>
+              </select></label>
               <div class="provider-image-picker admin-span" data-image-picker="market">
                 <input type="file" id="marketImageFile" accept="image/jpeg,image/png,image/webp" multiple hidden>
                 <div class="provider-dropzone" tabindex="0" role="button" aria-controls="marketImageFile">
@@ -278,7 +278,7 @@
                 </div>
                 <div class="provider-image-preview" id="marketImagePreview" hidden></div>
               </div>
-              <textarea id="marketDesc" placeholder="Describe what students will receive, including availability or turnaround time." class="admin-span" rows="3"></textarea>
+              <label for="marketDesc" class="admin-span">Description<textarea id="marketDesc" placeholder="Describe what students will receive, including availability or turnaround time." rows="3"></textarea></label>
             </div>
             <p class="provider-form-note">Products can be brand new or pre-owned. Services can include laundry, tutoring, repairs, catering, transport, and more.</p>
             <button type="submit" class="btn btn-primary">+ Add offer</button>
@@ -296,19 +296,19 @@
           </div>
         </div>
 
-        <div class="provider-feed" id="feed-events" style="display:none">
+        <div class="provider-feed" id="feed-events" role="tabpanel" aria-labelledby="provider-inventory-events" aria-hidden="true" tabindex="0" style="display:none">
           <form class="admin-form" id="formEvent">
             <h3>Submit a campus event</h3>
             <div class="admin-form-grid">
-              <input type="text" id="providerEventTitle" maxlength="180" placeholder="Event title" required>
-              <input type="datetime-local" id="providerEventDate" required>
-              <input type="text" id="providerEventLocation" maxlength="180" placeholder="Location" required>
-              <input type="text" id="providerEventOrganizer" maxlength="120" placeholder="Organizer name" required>
-              <select id="providerEventType" required>
+              <label for="providerEventTitle">Event title<input type="text" id="providerEventTitle" maxlength="180" placeholder="e.g. Campus career fair" required></label>
+              <label for="providerEventDate">Date and time<input type="datetime-local" id="providerEventDate" required></label>
+              <label for="providerEventLocation">Location<input type="text" id="providerEventLocation" maxlength="180" placeholder="e.g. Student centre" required></label>
+              <label for="providerEventOrganizer">Organizer name<input type="text" id="providerEventOrganizer" maxlength="120" placeholder="Club or organization" required></label>
+              <label for="providerEventType">Event type<select id="providerEventType" required>
                 <option value="social">Social</option>
                 <option value="career">Career</option>
                 <option value="academic">Academic</option>
-              </select>
+              </select></label>
               <div class="provider-image-picker admin-span" data-image-picker="event">
                 <input type="file" id="eventImageFile" accept="image/jpeg,image/png,image/webp" multiple hidden>
                 <div class="provider-dropzone" tabindex="0" role="button" aria-controls="eventImageFile">
@@ -318,7 +318,7 @@
                 </div>
                 <div class="provider-image-preview" id="eventImagePreview" hidden></div>
               </div>
-              <textarea id="providerEventDescription" class="admin-span" rows="4" maxlength="5000" placeholder="Describe the event for students." required></textarea>
+              <label for="providerEventDescription" class="admin-span">Event description<textarea id="providerEventDescription" rows="4" maxlength="5000" placeholder="Describe the event for students." required></textarea></label>
             </div>
             <p class="provider-form-note">Events are submitted for administrator review before they appear publicly.</p>
             <button type="submit" class="btn btn-primary">+ Submit event</button>

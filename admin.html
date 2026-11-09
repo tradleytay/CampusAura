@@ -59,7 +59,7 @@
         <h2 id="adminDrawerHeading">Dashboard sections</h2>
         <button class="admin-drawer-close" id="adminDrawerClose" type="button" aria-label="Close dashboard sections">×</button>
       </div>
-      <nav class="admin-tabs" id="adminDashboardNav" role="tablist" aria-label="Admin sections">
+      <nav class="admin-tabs" id="adminDashboardNav" role="tablist" aria-orientation="vertical" aria-label="Admin sections">
         <button class="admin-tab active" id="admin-tab-dashboard" data-tab="dashboard" role="tab" tabindex="0" aria-selected="true" aria-controls="panel-dashboard"><span>Overview</span><small>Platform health</small></button>
         <button class="admin-tab" id="admin-tab-review" data-tab="review" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-review"><span>Review queue</span><small>Needs attention</small></button>
         <button class="admin-tab" id="admin-tab-users" data-tab="users" role="tab" tabindex="-1" aria-selected="false" aria-controls="panel-users"><span>Users</span><small>Accounts &amp; roles</small></button>
@@ -137,8 +137,11 @@
           <div class="admin-role-card"><span>Providers</span><strong id="userCountProviders">0</strong><small>Approved or pending</small></div>
           <div class="admin-role-card"><span>Pending review</span><strong id="userCountPending">0</strong><small>Awaiting a decision</small></div>
         </div>
-        <section class="admin-card user-export-card" aria-labelledby="userExportTitle">
-          <div class="admin-card-head"><div><span class="admin-card-label">Custom user list</span><h2 id="userExportTitle">Build a people list</h2></div></div>
+        <details class="admin-card user-export-card admin-disclosure">
+          <summary class="admin-disclosure-summary">
+            <span><span class="admin-card-label">Optional tools</span><strong id="userExportTitle">Build or export a people list</strong></span>
+            <span class="admin-disclosure-hint">Optional tools</span>
+          </summary>
           <p class="admin-email-note">Choose who to include and which details to show. Preview the matching accounts, then download the list as a CSV file.</p>
           <div class="user-list-filters">
             <label class="user-list-field">Account type
@@ -182,16 +185,36 @@
           <div class="admin-table-wrap user-list-preview">
             <table class="admin-table"><thead id="userListPreviewHead"></thead><tbody id="userListPreviewBody"></tbody></table>
           </div>
-        </section>
-        <div class="admin-card">
-          <div class="admin-card-head"><div><span class="admin-card-label">Account directory</span><h2>Registered users</h2><p class="user-directory-note">Account identity, verification, and access status at a glance.</p></div></div>
+        </details>
+        <section class="admin-card user-directory-card" aria-labelledby="userDirectoryTitle">
+          <div class="admin-card-head"><div><span class="admin-card-label">Account directory</span><h2 id="userDirectoryTitle">Registered users</h2><p class="user-directory-note">Search and filter accounts to review identity, verification, and access.</p></div></div>
+          <div class="admin-directory-toolbar">
+            <label class="user-list-field user-directory-search">Search users
+              <input id="userDirectorySearch" type="search" placeholder="Name, email, phone, or reference">
+            </label>
+            <label class="user-list-field">Account type
+              <select id="userDirectoryRole"><option value="all">All account types</option><option value="student">Students</option><option value="provider">Providers</option><option value="admin">Administrators</option></select>
+            </label>
+            <label class="user-list-field">Verification
+              <select id="userDirectoryVerification"><option value="all">Any verification</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="unverified">Unverified</option></select>
+            </label>
+            <label class="user-list-field">Account access
+              <select id="userDirectoryAccess"><option value="all">Any access status</option><option value="active">Active</option><option value="frozen">Frozen</option></select>
+            </label>
+          </div>
+          <p class="admin-directory-count" id="userDirectoryCount" aria-live="polite"></p>
+          <div class="user-status-legend" aria-label="Account status row colors">
+            <span><i class="user-status-swatch user-status-swatch-pending" aria-hidden="true"></i>Pending verification</span>
+            <span><i class="user-status-swatch user-status-swatch-frozen" aria-hidden="true"></i>Temporarily frozen</span>
+            <span><i class="user-status-swatch user-status-swatch-active" aria-hidden="true"></i>Active, no highlight</span>
+          </div>
           <div class="admin-table-wrap">
-            <table class="admin-table admin-listing-table">
+            <table class="admin-table admin-listing-table user-directory-table">
               <thead><tr><th>Reference</th><th>User</th><th>Account type</th><th>Verification</th><th>Access</th><th>Actions</th></tr></thead>
               <tbody id="usersTable"></tbody>
             </table>
           </div>
-        </div>
+        </section>
       </section>
 
       <section class="admin-panel" id="panel-analytics" role="tabpanel" aria-labelledby="admin-tab-analytics" aria-hidden="true" tabindex="0">
@@ -238,7 +261,7 @@
         <div class="analytics-trend-grid">
           <section class="admin-card analytics-chart-card" aria-labelledby="analyticsSignupsTitle">
             <div class="admin-card-head"><div><span class="admin-card-label">Account growth</span><h2 id="analyticsSignupsTitle">Sign-ups over time</h2><p class="analytics-chart-hint">Daily totals · grouped by week for 90-day view</p></div></div>
-            <div id="analyticsSignupsTrend" class="analytics-trend" role="img" aria-label="Account sign-ups in the selected period"></div>
+            <div id="analyticsSignupsTrend" class="analytics-trend" role="group" aria-labelledby="analyticsSignupsTitle"></div>
             <p id="analyticsSignupsEmpty" class="admin-empty-copy" hidden>No sign-ups in this period.</p>
           </section>
           <section class="admin-card analytics-chart-card" aria-labelledby="analyticsEngagementTitle">
@@ -246,7 +269,7 @@
               <div><span class="admin-card-label admin-card-label-teal">Listing engagement</span><h2 id="analyticsEngagementTitle">Views and contact clicks</h2><p class="analytics-chart-hint">Daily totals · grouped by week for 90-day view</p></div>
               <div class="analytics-legend"><span><i class="analytics-legend-views"></i>Views</span><span><i class="analytics-legend-inquiries"></i>Contact clicks</span></div>
             </div>
-            <div id="analyticsEngagementTrend" class="analytics-trend" role="img" aria-label="Listing views and contact clicks in the selected period"></div>
+            <div id="analyticsEngagementTrend" class="analytics-trend" role="group" aria-labelledby="analyticsEngagementTitle"></div>
             <p id="analyticsEngagementEmpty" class="admin-empty-copy" hidden>No listing activity in this period.</p>
           </section>
         </div>
@@ -337,18 +360,13 @@
       <!-- Accommodations -->
       <section class="admin-panel" id="panel-accommodations" role="tabpanel" aria-labelledby="admin-tab-accommodations" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head">
-          <h1>Accommodations</h1>
-          <p class="section-subtitle">Manage student housing listings.</p>
+          <div><h1>Accommodations</h1><p class="section-subtitle">Manage student housing listings.</p></div>
+          <details class="admin-create-disclosure" data-create-form="accommodation">
+            <summary class="admin-quick-action">Add accommodation</summary>
+          </details>
         </div>
 
         <form class="admin-form modern-admin-form" id="formAccom">
-          <div class="modern-form-header">
-            <div>
-              <span class="admin-card-label">Accommodation</span>
-              <h3>Add a listing</h3>
-            </div>
-            <span class="admin-form-badge">Live</span>
-          </div>
           <div class="admin-form-grid">
             <label class="admin-form-field"><span>Title</span><input type="text" id="accomTitle" placeholder="e.g. Cedar House Studio" required></label>
             <label class="admin-form-field"><span>Location</span><input type="text" id="accomLocation" placeholder="North Campus" required></label>
@@ -376,8 +394,16 @@
           </div>
         </form>
 
-        <div class="admin-card">
-          <h3>All listings</h3>
+        <section class="admin-card admin-directory-card" aria-labelledby="accommodationDirectoryTitle">
+          <div class="admin-directory-card-head"><div><span class="admin-card-label">Accommodation inventory</span><h2 id="accommodationDirectoryTitle">All listings</h2></div><p class="admin-directory-count" id="accommodationDirectoryCount" aria-live="polite"></p></div>
+          <div class="admin-directory-toolbar admin-listing-toolbar">
+            <label class="user-list-field admin-directory-search">Search listings
+              <input id="accommodationSearch" type="search" placeholder="Title, location, or reference">
+            </label>
+            <label class="user-list-field">Status
+              <select id="accommodationStatusFilter"><option value="all">All statuses</option><option value="pending">Pending</option><option value="published">Published</option><option value="suspended">Suspended</option><option value="rejected">Rejected</option></select>
+            </label>
+          </div>
           <div class="admin-table-wrap">
             <table class="admin-table admin-listing-table">
               <thead>
@@ -386,28 +412,23 @@
               <tbody id="accomTable"></tbody>
             </table>
           </div>
-        </div>
+        </section>
       </section>
 
       <!-- Marketplace -->
       <section class="admin-panel" id="panel-marketplace" role="tabpanel" aria-labelledby="admin-tab-marketplace" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head">
-          <h1>Marketplace</h1>
-          <p class="section-subtitle">Manage buy &amp; sell items.</p>
+          <div><h1>Marketplace</h1><p class="section-subtitle">Manage buy &amp; sell items.</p></div>
+          <details class="admin-create-disclosure" data-create-form="marketplace">
+            <summary class="admin-quick-action">Add marketplace item</summary>
+          </details>
         </div>
 
         <form class="admin-form modern-admin-form" id="formMarket">
-          <div class="modern-form-header">
-            <div>
-              <span class="admin-card-label admin-card-label-teal">Marketplace</span>
-              <h3>Add an item</h3>
-            </div>
-            <span class="admin-form-badge admin-form-badge-teal">New</span>
-          </div>
           <div class="admin-form-grid">
             <label class="admin-form-field"><span>Title</span><input type="text" id="marketTitle" placeholder="e.g. Chemistry 101 notes" required></label>
             <label class="admin-form-field"><span>Price (K)</span><input type="number" id="marketPrice" placeholder="150" min="0" required></label>
-            <label class="admin-form-field"><span>Seller</span><input type="text" id="marketSeller" placeholder="Seller name" required></label>
+            <label class="admin-form-field"><span>Seller</span><input type="text" id="marketSeller" placeholder="Seller name" maxlength="100" required></label>
             <label class="admin-form-field"><span>Category</span><select id="marketCategory" required>
               <option value="" disabled selected>Select a category</option>
               <option value="Electronics">Electronics</option>
@@ -433,8 +454,19 @@
           </div>
         </form>
 
-        <div class="admin-card">
-          <h3>All items</h3>
+        <section class="admin-card admin-directory-card" aria-labelledby="marketplaceDirectoryTitle">
+          <div class="admin-directory-card-head"><div><span class="admin-card-label">Marketplace inventory</span><h2 id="marketplaceDirectoryTitle">All items</h2></div><p class="admin-directory-count" id="marketplaceDirectoryCount" aria-live="polite"></p></div>
+          <div class="admin-directory-toolbar admin-listing-toolbar">
+            <label class="user-list-field admin-directory-search">Search items
+              <input id="marketplaceSearch" type="search" placeholder="Title, category, seller, or reference">
+            </label>
+            <label class="user-list-field">Status
+              <select id="marketplaceStatusFilter"><option value="all">All statuses</option><option value="pending">Pending</option><option value="published">Published</option><option value="suspended">Suspended</option><option value="rejected">Rejected</option></select>
+            </label>
+            <label class="user-list-field">Category
+              <select id="marketplaceCategoryFilter"><option value="all">All categories</option><option value="Electronics">Electronics</option><option value="Furniture">Furniture</option><option value="Books &amp; study supplies">Books &amp; study supplies</option><option value="Fashion">Fashion</option><option value="Food &amp; groceries">Food &amp; groceries</option><option value="Transport">Transport</option><option value="Health &amp; beauty">Health &amp; beauty</option><option value="Sports &amp; recreation">Sports &amp; recreation</option><option value="Services">Services</option><option value="Other">Other</option></select>
+            </label>
+          </div>
           <div class="admin-table-wrap">
             <table class="admin-table admin-listing-table">
               <thead>
@@ -443,24 +475,19 @@
               <tbody id="marketTable"></tbody>
             </table>
           </div>
-        </div>
+        </section>
       </section>
 
       <!-- Events -->
       <section class="admin-panel" id="panel-events" role="tabpanel" aria-labelledby="admin-tab-events" aria-hidden="true" tabindex="0">
         <div class="admin-panel-head">
-          <h1>Events</h1>
-          <p class="section-subtitle">Manage campus events.</p>
+          <div><h1>Events</h1><p class="section-subtitle">Manage campus events.</p></div>
+          <details class="admin-create-disclosure" data-create-form="events">
+            <summary class="admin-quick-action">Add event</summary>
+          </details>
         </div>
 
         <form class="admin-form modern-admin-form" id="formEvent">
-          <div class="modern-form-header">
-            <div>
-              <span class="admin-card-label">Events</span>
-              <h3>Add an event</h3>
-            </div>
-            <span class="admin-form-badge">Featured</span>
-          </div>
           <div class="admin-form-grid">
             <label class="admin-form-field"><span>Title</span><input type="text" id="eventTitle" placeholder="e.g. Startup Mixer" required></label>
             <label class="admin-form-field"><span>Date and time</span><input type="datetime-local" id="eventDate" required></label>
@@ -479,8 +506,16 @@
           </div>
         </form>
 
-        <div class="admin-card">
-          <h3>All events</h3>
+        <section class="admin-card admin-directory-card" aria-labelledby="eventsDirectoryTitle">
+          <div class="admin-directory-card-head"><div><span class="admin-card-label">Campus calendar</span><h2 id="eventsDirectoryTitle">All events</h2></div><p class="admin-directory-count" id="eventsDirectoryCount" aria-live="polite"></p></div>
+          <div class="admin-directory-toolbar admin-listing-toolbar">
+            <label class="user-list-field admin-directory-search">Search events
+              <input id="eventsSearch" type="search" placeholder="Title, location, or organizer">
+            </label>
+            <label class="user-list-field">Show
+              <select id="eventsStatusFilter"><option value="all">All events</option><option value="upcoming">Upcoming</option><option value="past">Past</option><option value="pending">Pending review</option><option value="published">Published</option><option value="suspended">Suspended</option><option value="cancelled">Cancelled</option></select>
+            </label>
+          </div>
           <div class="admin-table-wrap">
             <table class="admin-table admin-listing-table">
               <thead>
@@ -489,7 +524,7 @@
               <tbody id="eventTable"></tbody>
             </table>
           </div>
-        </div>
+        </section>
       </section>
 
       <!-- Messages -->

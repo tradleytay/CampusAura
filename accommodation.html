@@ -76,7 +76,8 @@
 
     <section class="container accom-browse" id="browse">
       <div class="accom-browse-heading"><div><p class="eyebrow">Find your next place</p><h2>Browse homes near <span>your campus.</span></h2></div><p>Search by area, compare prices, and save the places you want to come back to.</p></div>
-      <section class="accom-filter-panel" aria-label="Accommodation filters">
+      <button id="accomSearchToggle" class="accom-search-toggle" type="button" aria-expanded="false" aria-controls="accomFilterPanel"><svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="m13 13 4 4"></path></svg><span>Search homes</span></button>
+      <section class="accom-filter-panel" id="accomFilterPanel" aria-label="Accommodation filters">
         <div class="accom-filter-top"><div><span class="filter-kicker">Search homes</span><h3>What are you looking for?</h3></div><button id="resetFilters" class="btn btn-ghost">Reset filters</button></div>
         <div class="accom-filter-fields">
           <label for="accomSearch"><span>Search</span><input type="text" id="accomSearch" placeholder="Title or location..."></label>

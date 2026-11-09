@@ -1,7 +1,6 @@
 # About page (CampusAura) — implementation checklist
 
-- [x] Create `about.html` with a student-emotional, premium structure (hero, problem, solution, benefits, mission, vision, future roadmap, final CTA).
-- [ ] Add/adjust CSS in `css/style.css` so the About page visuals (problem-grid, timeline, final CTA, etc.) match the rest of the site.
-- [ ] Ensure mobile nav toggle works on the About page (uses `navToggleAbout` / `navAbout`).
-- [ ] Quick manual test: open `about.html` in browser (desktop + mobile) to confirm layout and responsiveness.
-
+- [x] Build the About page story in `about.html` (hero, purpose, principles, mission, vision, and final CTA).
+- [x] Style the About page in `css/rebuild.css` to match the CampusAura visual system.
+- [x] Keep the shared mobile navigation toggle visible whenever the desktop navigation is hidden.
+- [x] Verify the mobile menu and page layout at phone, tablet, and desktop widths.
