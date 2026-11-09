@@ -1,19 +1,39 @@
 (function () {
   const client = window.campusAuraSupabase
+  const status = document.getElementById('frozenStatus')
+  const signOut = document.getElementById('frozenSignOut')
+
+  function setStatus(message, isError) {
+    status.textContent = message
+    status.classList.toggle('is-error', Boolean(isError))
+  }
 
   async function init() {
-    const status = document.getElementById('frozenStatus')
-    const signOut = document.getElementById('frozenSignOut')
     signOut.addEventListener('click', async () => {
-      await client?.auth.signOut()
-      window.location.href = 'auth.html'
+      if (!client) {
+        setStatus('Sign out is unavailable right now. Please try again later.', true)
+        return
+      }
+
+      signOut.disabled = true
+      setStatus('Signing you out…')
+      try {
+        const { error } = await client.auth.signOut()
+        if (error) throw error
+        window.location.replace('auth.html')
+      } catch (error) {
+        setStatus(`Could not sign you out: ${error.message}`, true)
+        signOut.disabled = false
+      }
     })
 
     if (!client) {
-      status.textContent = 'Account status is unavailable. Please contact CampusAura.'
+      setStatus('Account status is unavailable. Please contact CampusAura.', true)
       return
     }
-    const { data: { session } } = await client.auth.getSession()
+    const { data, error: sessionError } = await client.auth.getSession()
+    if (sessionError) throw sessionError
+    const { session } = data
     if (!session) {
       window.location.replace('auth.html')
       return
@@ -23,10 +43,8 @@
       .select('full_name, role, requested_role, account_status, frozen_reason')
       .eq('id', session.user.id)
       .single()
-    if (error || !profile) {
-      status.textContent = 'We could not load your account status. Please contact CampusAura.'
-      return
-    }
+    if (error) throw error
+    if (!profile) throw new Error('Your account profile was not returned.')
     if (profile.role === 'admin') {
       window.location.replace('admin.html')
       return
@@ -36,7 +54,7 @@
       window.location.replace(isProvider ? 'provider.html' : 'student.html')
       return
     }
-    status.textContent = profile.full_name ? `Account holder: ${profile.full_name}` : 'Your account remains available for support.'
+    setStatus('Your account access is currently paused. Contact our team for help.')
     if (profile.frozen_reason) {
       document.getElementById('frozenReason').textContent = profile.frozen_reason
       document.getElementById('frozenReasonWrap').hidden = false
@@ -45,7 +63,7 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     init().catch(error => {
-      document.getElementById('frozenStatus').textContent = `Could not check your account status: ${error.message}`
+      setStatus(`Could not check your account status: ${error.message}`, true)
     })
   })
 })()

@@ -5,6 +5,7 @@
   const adminImageSelections = { accom: [], market: [], event: [] }
   const maxAdminImages = 10
   const maxAdminImageSize = 5 * 1024 * 1024
+  const modalReturnFocus = new WeakMap()
 
   function setMessage(message, isError) {
     let element = document.getElementById('adminStatus')
@@ -12,6 +13,9 @@
       element = document.createElement('p')
       element.id = 'adminStatus'
       element.className = 'contact-status'
+      element.setAttribute('role', 'status')
+      element.setAttribute('aria-live', 'polite')
+      element.setAttribute('aria-atomic', 'true')
       document.querySelector('.admin-main')?.prepend(element)
     }
     element.textContent = message
@@ -151,6 +155,61 @@
     element.classList.toggle('is-error', isError)
   }
 
+  function getModalFocusables(modal) {
+    const dialog = modal.querySelector('[role="dialog"]')
+    return [...dialog.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )].filter(element => !element.closest('[hidden]') && element.getClientRects().length > 0)
+  }
+
+  function openAdminModal(modal, returnFocusTarget, initialFocusTarget) {
+    modalReturnFocus.set(modal, returnFocusTarget || document.activeElement)
+    modal.classList.add('is-open')
+    modal.setAttribute('aria-hidden', 'false')
+    document.body.classList.add('modal-open')
+    const focusTarget = initialFocusTarget || getModalFocusables(modal)[0] || modal.querySelector('[role="dialog"]')
+    focusTarget?.focus()
+  }
+
+  function closeAdminModal(modal) {
+    if (!modal?.classList.contains('is-open')) return
+    modal.classList.remove('is-open')
+    modal.setAttribute('aria-hidden', 'true')
+    const anotherModalIsOpen = [...document.querySelectorAll('.admin-details-modal.is-open')].length > 0
+    if (!anotherModalIsOpen) document.body.classList.remove('modal-open')
+
+    const returnTarget = modalReturnFocus.get(modal)
+    modalReturnFocus.delete(modal)
+    const focusTarget = returnTarget?.isConnected && returnTarget.getClientRects().length
+      ? returnTarget
+      : document.querySelector('.admin-tab[aria-selected="true"]')
+    focusTarget?.focus()
+  }
+
+  function trapAdminModalFocus(modal, event) {
+    const focusables = getModalFocusables(modal)
+    const dialog = modal.querySelector('[role="dialog"]')
+    if (!focusables.length) {
+      event.preventDefault()
+      dialog?.focus()
+      return
+    }
+
+    const first = focusables[0]
+    const last = focusables[focusables.length - 1]
+    if (!dialog.contains(document.activeElement)) {
+      event.preventDefault()
+      const edge = event.shiftKey ? last : first
+      edge.focus()
+    } else if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault()
+      last.focus()
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault()
+      first.focus()
+    }
+  }
+
   async function loadAnalytics() {
     const period = Number(document.getElementById('analyticsPeriod').value)
     setAnalyticsStatus('Loading analytics…')
@@ -184,40 +243,134 @@
     empty.hidden = hasActivity
     trend.hidden = !hasActivity
     trend.dataset.period = String(period)
+    trend.setAttribute('role', 'group')
     trend.setAttribute('aria-label', `${description} for the selected ${period}-day period`)
     if (!hasActivity) return
 
-    const maximum = Math.max(1, ...chartPoints.flatMap(point => series.map(([key]) => Number(point[key] || 0))))
-    const dailyLabelInterval = Number(period) === 7 ? 1 : 5
-    chartPoints.forEach((point, index) => {
-      const day = document.createElement('div')
-      day.className = 'analytics-trend-day'
-      const firstDate = new Date(`${point.day}T00:00:00`)
-      const lastDate = new Date(`${point.endDay || point.day}T00:00:00`)
-      const formatDate = date => date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-      const dateLabel = point.endDay
-        ? `${formatDate(firstDate)}–${formatDate(lastDate)}`
-        : formatDate(firstDate)
-      day.title = `${dateLabel}: ${series.map(([key, label]) => `${label || 'Sign-ups'}: ${formatCount(point[key])}`).join(', ')}`
+    const maxValue = Math.max(1, ...chartPoints.flatMap(point => series.map(([key]) => Number(point[key]) || 0)))
+    const minimumWidth = Number(period) === 90 ? chartPoints.length * 48 + 60 : 320
+    const width = Math.max(320, trend.clientWidth, minimumWidth)
+    const height = 228
+    const plot = { left: 44, right: width - 16, top: 16, bottom: height - 42 }
+    const plotHeight = plot.bottom - plot.top
+    const xFor = index => chartPoints.length < 2
+      ? (plot.left + plot.right) / 2
+      : plot.left + index * (plot.right - plot.left) / (chartPoints.length - 1)
+    const yFor = value => plot.bottom - (Number(value || 0) / maxValue) * plotHeight
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`)
+    svg.setAttribute('width', String(width))
+    svg.setAttribute('height', String(height))
+    svg.setAttribute('aria-hidden', 'true')
+    svg.setAttribute('focusable', 'false')
 
-      const bars = document.createElement('div')
-      bars.className = 'analytics-trend-bars'
-      for (const [key, className] of series) {
-        const bar = document.createElement('span')
-        bar.className = className
-        const value = Number(point[key] || 0)
-        bar.style.height = `${value ? Math.max(4, value / maximum * 100) : 0}%`
-        bar.setAttribute('aria-hidden', 'true')
-        bars.appendChild(bar)
-      }
+    const defs = document.createElementNS(svg.namespaceURI, 'defs')
+    svg.appendChild(defs)
+    const appendSvg = (parent, name, attributes) => {
+      const element = document.createElementNS(svg.namespaceURI, name)
+      Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, String(value)))
+      parent.appendChild(element)
+      return element
+    }
 
-      const label = document.createElement('small')
-      const showLabel = point.endDay || Number(period) === 7 || index % dailyLabelInterval === 0
-      label.textContent = showLabel ? dateLabel : ''
-      label.setAttribute('aria-hidden', 'true')
-      day.append(bars, label)
-      trend.appendChild(day)
+    for (let tick = 0; tick <= 4; tick += 1) {
+      const value = maxValue * (4 - tick) / 4
+      const y = plot.top + tick * plotHeight / 4
+      appendSvg(svg, 'line', { class: 'analytics-gridline', x1: plot.left, x2: plot.right, y1: y, y2: y })
+      const tickLabel = appendSvg(svg, 'text', { class: 'analytics-axis-label', x: plot.left - 8, y: y + 3, 'text-anchor': 'end' })
+      tickLabel.textContent = formatCount(Math.round(value))
+    }
+
+    const formatDate = value => {
+      const parsed = new Date(`${value}T00:00:00`)
+      return Number.isNaN(parsed.getTime())
+        ? 'Date unavailable'
+        : parsed.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+    }
+    const formatShortDate = value => {
+      const parsed = new Date(`${value}T00:00:00`)
+      return Number.isNaN(parsed.getTime())
+        ? ''
+        : parsed.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+    }
+    const dateRanges = chartPoints.map(point => {
+      const startDate = formatDate(point.day)
+      const endDate = formatDate(point.endDay || point.day)
+      return point.endDay && point.endDay !== point.day ? `${startDate} – ${endDate}` : startDate
     })
+    const dateLabelInterval = Number(period) === 7 ? 1 : Number(period) === 30 ? 5 : 1
+
+    chartPoints.forEach((point, index) => {
+      const x = xFor(index)
+      appendSvg(svg, 'line', { class: 'analytics-gridline analytics-gridline-vertical', x1: x, x2: x, y1: plot.top, y2: plot.bottom })
+      if (index % dateLabelInterval === 0 || index === chartPoints.length - 1) {
+        const label = appendSvg(svg, 'text', { class: 'analytics-axis-label analytics-date-label', x, y: height - 14, 'text-anchor': 'middle' })
+        label.textContent = formatShortDate(point.day)
+      }
+    })
+
+    series.forEach(([key, className, label], seriesIndex) => {
+      const coordinates = chartPoints.map((point, index) => ({ x: xFor(index), y: yFor(point[key]), value: Number(point[key]) || 0 }))
+      const linePath = coordinates.map((coordinate, index) =>
+        `${index === 0 ? 'M' : 'L'} ${coordinate.x} ${coordinate.y}`
+      ).join(' ')
+      const areaPath = `${linePath} L ${coordinates[coordinates.length - 1].x} ${plot.bottom} L ${coordinates[0].x} ${plot.bottom} Z`
+      const gradientId = `${containerId}-area-gradient-${seriesIndex}`
+      const lineGradientId = `${containerId}-line-gradient-${seriesIndex}`
+      const color = className === 'analytics-line-signups' ? '#2563eb' : className === 'analytics-line-views' ? '#0f9f9a' : '#e99a19'
+      const lineEndColor = className === 'analytics-line-inquiries' ? '#b45309' : className === 'analytics-line-views' ? '#2563eb' : '#0f9f9a'
+      const gradient = appendSvg(defs, 'linearGradient', { id: gradientId, x1: '0', x2: '0', y1: '0', y2: '1' })
+      appendSvg(gradient, 'stop', { offset: '0%', 'stop-color': color, 'stop-opacity': '.25' })
+      appendSvg(gradient, 'stop', { offset: '100%', 'stop-color': color, 'stop-opacity': '0' })
+      const lineGradient = appendSvg(defs, 'linearGradient', { id: lineGradientId, x1: '0', x2: '1', y1: '0', y2: '0' })
+      appendSvg(lineGradient, 'stop', { offset: '0%', 'stop-color': color })
+      appendSvg(lineGradient, 'stop', { offset: '100%', 'stop-color': lineEndColor })
+      appendSvg(svg, 'path', { class: `analytics-area ${className}`, d: areaPath, fill: `url(#${gradientId})` })
+      appendSvg(svg, 'path', { class: `analytics-line ${className}`, d: linePath, style: `stroke:url(#${lineGradientId})` })
+
+      coordinates.forEach((coordinate, index) => {
+        const circle = appendSvg(svg, 'circle', {
+          class: `analytics-point ${className}`,
+          cx: coordinate.x,
+          cy: coordinate.y,
+          r: chartPoints.length > 35 ? 2.5 : 4
+        })
+        const title = appendSvg(circle, 'title', {})
+        title.textContent = `${dateRanges[index]}: ${label || 'Sign-ups'} ${formatCount(coordinate.value)}`
+      })
+    })
+
+    const table = document.createElement('table')
+    table.className = 'analytics-data-table'
+    const caption = document.createElement('caption')
+    caption.textContent = `${description}, selected ${period}-day period`
+    table.appendChild(caption)
+    const thead = document.createElement('thead')
+    const headerRow = document.createElement('tr')
+    for (const title of ['Date', ...series.map(([, , label]) => label || 'Sign-ups')]) {
+      const cell = document.createElement('th')
+      cell.scope = 'col'
+      cell.textContent = title
+      headerRow.appendChild(cell)
+    }
+    thead.appendChild(headerRow)
+    table.appendChild(thead)
+    const tbody = document.createElement('tbody')
+    chartPoints.forEach((point, index) => {
+      const row = document.createElement('tr')
+      const dateCell = document.createElement('th')
+      dateCell.scope = 'row'
+      dateCell.textContent = dateRanges[index]
+      row.appendChild(dateCell)
+      series.forEach(([key]) => {
+        const valueCell = document.createElement('td')
+        valueCell.textContent = formatCount(point[key])
+        row.appendChild(valueCell)
+      })
+      tbody.appendChild(row)
+    })
+    table.appendChild(tbody)
+    trend.append(svg, table)
   }
 
   function renderAnalytics() {
@@ -239,7 +392,7 @@
       'analyticsSignupsTrend',
       'analyticsSignupsEmpty',
       report.daily,
-      [['signups', 'analytics-bar-signups']],
+      [['signups', 'analytics-line-signups']],
       report.period_days,
       'Daily account sign-ups'
     )
@@ -247,7 +400,7 @@
       'analyticsEngagementTrend',
       'analyticsEngagementEmpty',
       report.daily,
-      [['listing_views', 'analytics-bar-views', 'Views'], ['listing_inquiries', 'analytics-bar-inquiries', 'Contact clicks']],
+      [['listing_views', 'analytics-line-views', 'Views'], ['listing_inquiries', 'analytics-line-inquiries', 'Contact clicks']],
       report.period_days,
       'Listing views and contact clicks'
     )
@@ -304,6 +457,11 @@
   }
 
   function setupAnalytics() {
+    window.addEventListener('resize', () => {
+      if (state.analytics && document.getElementById('panel-analytics').classList.contains('active')) {
+        renderAnalytics()
+      }
+    })
     document.getElementById('refreshAnalytics').addEventListener('click', () => {
       loadAnalytics().catch(error => {
         console.error('Could not load admin analytics:', error)
@@ -344,6 +502,53 @@
     state.verification = results[6].data || []
   }
 
+  function getDirectoryMatches(items, search, fields, statusFilter, statusField = 'status') {
+    const query = document.getElementById(search).value.trim().toLocaleLowerCase()
+    const status = document.getElementById(statusFilter).value
+    return items.filter(item => {
+      if (query && !fields.some(field => String(field(item) || '').toLocaleLowerCase().includes(query))) return false
+      return status === 'all' || String(item[statusField] || '').toLowerCase() === status
+    })
+  }
+
+  function getUserDirectoryMatches() {
+    const query = document.getElementById('userDirectorySearch').value.trim().toLocaleLowerCase()
+    const roleFilter = document.getElementById('userDirectoryRole').value
+    const verificationFilter = document.getElementById('userDirectoryVerification').value
+    const accessFilter = document.getElementById('userDirectoryAccess').value
+    return state.profiles.filter(profile => {
+      const role = profile.requested_role || profile.role || ''
+      const verification = profile.verification_status || state.verification.find(item => item.user_id === profile.id)?.status || ''
+      const access = profile.account_status || 'active'
+      if (roleFilter !== 'all' && role !== roleFilter) return false
+      if (verificationFilter === 'unverified' ? Boolean(verification) : verificationFilter !== 'all' && verification !== verificationFilter) return false
+      if (accessFilter !== 'all' && access !== accessFilter) return false
+      if (query && ![profile.full_name, profile.email, profile.phone, profile.reference_code].some(value => String(value || '').toLocaleLowerCase().includes(query))) return false
+      return true
+    })
+  }
+
+  function setupCreateFormDisclosures() {
+    for (const [id, disclosure] of [
+      ['formAccom', 'accommodation'],
+      ['formMarket', 'marketplace'],
+      ['formEvent', 'events']
+    ]) {
+      const form = document.getElementById(id)
+      const details = document.querySelector(`[data-create-form="${disclosure}"]`)
+      if (form && details) details.appendChild(form)
+    }
+  }
+
+  function setupDirectoryFilters() {
+    document.querySelectorAll(
+      '#accommodationSearch, #accommodationStatusFilter, #marketplaceSearch, #marketplaceStatusFilter, #marketplaceCategoryFilter, #eventsSearch, #eventsStatusFilter, #userDirectorySearch, #userDirectoryRole, #userDirectoryVerification, #userDirectoryAccess'
+    ).forEach(control => {
+      control.addEventListener('input', render)
+      control.addEventListener('change', render)
+    })
+  }
+
   function render() {
     document.getElementById('statAccom').textContent = state.accommodations.length
     document.getElementById('statMarket').textContent = state.marketplace.length
@@ -356,7 +561,15 @@
     document.getElementById('overviewPendingAccom').textContent = pendingAccommodations
     document.getElementById('overviewPendingMarket').textContent = pendingMarketplace
 
-    document.getElementById('accomTable').innerHTML = state.accommodations.map(item => `
+    const accommodations = getDirectoryMatches(
+      state.accommodations,
+      'accommodationSearch',
+      [item => item.title, item => item.location, item => item.reference_code],
+      'accommodationStatusFilter'
+    )
+    document.getElementById('accommodationDirectoryCount').textContent =
+      `${accommodations.length.toLocaleString()} of ${state.accommodations.length.toLocaleString()} ${state.accommodations.length === 1 ? 'listing' : 'listings'}`
+    document.getElementById('accomTable').innerHTML = accommodations.map(item => `
       <tr>
         <td data-label="Reference"><strong>${escapeHtml(item.reference_code || 'Not assigned')}</strong></td>
         <td data-label="Title"><strong>${escapeHtml(item.title)}</strong><br><span class="muted small">${escapeHtml([item.room_type, item.description || ''].filter(Boolean).join(' · '))}</span></td>
@@ -373,14 +586,28 @@
           </div>
         </td>
       </tr>
-    `).join('') || '<tr><td colspan="6" class="admin-recent-empty">No listings yet.</td></tr>'
+    `).join('') || `<tr><td colspan="6" class="admin-recent-empty">${state.accommodations.length ? 'No listings match these filters.' : 'No listings yet.'}</td></tr>`
 
-    document.getElementById('marketTable').innerHTML = state.marketplace.map(item => `
+    const categoryFilter = document.getElementById('marketplaceCategoryFilter').value
+    const marketplace = getDirectoryMatches(
+      state.marketplace,
+      'marketplaceSearch',
+      [
+        item => item.title,
+        item => item.category,
+        item => item.seller_display_name || state.profiles.find(profile => profile.id === item.seller_id)?.full_name,
+        item => item.reference_code
+      ],
+      'marketplaceStatusFilter'
+    ).filter(item => categoryFilter === 'all' || item.category === categoryFilter)
+    document.getElementById('marketplaceDirectoryCount').textContent =
+      `${marketplace.length.toLocaleString()} of ${state.marketplace.length.toLocaleString()} ${state.marketplace.length === 1 ? 'item' : 'items'}`
+    document.getElementById('marketTable').innerHTML = marketplace.map(item => `
       <tr>
         <td data-label="Reference"><strong>${escapeHtml(item.reference_code || 'Not assigned')}</strong></td>
         <td data-label="Product or service"><strong>${escapeHtml(item.title)}</strong></td>
         <td data-label="Category">${escapeHtml(item.category)}</td>
-        <td data-label="Seller">${escapeHtml(item.seller_id || 'Student seller')}</td>
+        <td data-label="Seller">${escapeHtml(item.seller_display_name || state.profiles.find(profile => profile.id === item.seller_id)?.full_name || 'CampusAura seller')}</td>
         <td data-label="Price">${price(item.price)}</td>
         <td data-label="Status"><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(item.status)}</span></td>
         <td data-label="Actions">
@@ -392,9 +619,24 @@
           </div>
         </td>
       </tr>
-    `).join('') || '<tr><td colspan="7" class="admin-recent-empty">No items yet.</td></tr>'
+    `).join('') || `<tr><td colspan="7" class="admin-recent-empty">${state.marketplace.length ? 'No items match these filters.' : 'No items yet.'}</td></tr>`
 
-    document.getElementById('eventTable').innerHTML = state.events.map(item => `
+    const eventQuery = document.getElementById('eventsSearch').value.trim().toLocaleLowerCase()
+    const eventFilter = document.getElementById('eventsStatusFilter').value
+    const now = Date.now()
+    const events = state.events.filter(item => {
+      const eventStatus = String(item.status || '').toLowerCase()
+      const eventTime = new Date(item.event_date).getTime()
+      if (eventQuery && ![item.title, item.location, item.organizer_name].some(value => String(value || '').toLocaleLowerCase().includes(eventQuery))) return false
+      if (eventFilter === 'pending' && !['draft', 'pending'].includes(eventStatus)) return false
+      if (eventFilter === 'upcoming' && (!Number.isFinite(eventTime) || eventTime < now || eventStatus !== 'published')) return false
+      if (eventFilter === 'past' && (!Number.isFinite(eventTime) || eventTime >= now || eventStatus !== 'published')) return false
+      if (!['all', 'pending', 'upcoming', 'past'].includes(eventFilter) && eventStatus !== eventFilter) return false
+      return true
+    }).sort((a, b) => new Date(a.event_date).getTime() - new Date(b.event_date).getTime())
+    document.getElementById('eventsDirectoryCount').textContent =
+      `${events.length.toLocaleString()} of ${state.events.length.toLocaleString()} ${state.events.length === 1 ? 'event' : 'events'}`
+    document.getElementById('eventTable').innerHTML = events.map(item => `
       <tr>
         <td data-label="Event"><strong>${escapeHtml(item.title)}</strong></td>
         <td data-label="Date">${date(item.event_date)}</td>
@@ -410,7 +652,7 @@
           </div>
         </td>
       </tr>
-    `).join('') || '<tr><td colspan="6" class="admin-recent-empty">No events yet.</td></tr>'
+    `).join('') || `<tr><td colspan="6" class="admin-recent-empty">${state.events.length ? 'No events match these filters.' : 'No events yet.'}</td></tr>`
 
     const messages = state.messages.map(item => `
       <div class="admin-message"><div class="admin-message-head">
@@ -430,8 +672,8 @@
       </div>
     `).join('') || '<div class="admin-recent-empty">No sent messages yet.</div>'
 
-    const students = state.profiles.filter(profile => profile.requested_role !== 'provider').length
-    const providers = state.profiles.filter(profile => profile.requested_role === 'provider').length
+    const students = state.profiles.filter(profile => (profile.requested_role || profile.role) === 'student').length
+    const providers = state.profiles.filter(profile => (profile.requested_role || profile.role) === 'provider').length
     const pendingProfileIds = state.profiles.filter(profile => profile.verification_status === 'pending').map(profile => profile.id)
     const pendingStudentIds = state.verification.filter(item => item.requested_role === 'student' && item.status === 'pending').map(item => item.user_id)
     const pending = new Set([...pendingProfileIds, ...pendingStudentIds]).size
@@ -454,23 +696,36 @@
     const userStatusClass = status => ['pending', 'approved', 'rejected', 'active', 'frozen'].includes(status.toLowerCase())
       ? `status-${status.toLowerCase()}`
       : 'status-unknown'
-    document.getElementById('usersTable').innerHTML = state.profiles.map(profile => {
-      const verificationStatus = String(profile.verification_status || 'Not provided')
-      const accountStatus = String(profile.account_status || 'active')
+    const users = getUserDirectoryMatches()
+    document.getElementById('userDirectoryCount').textContent =
+      `${users.length.toLocaleString()} of ${state.profiles.length.toLocaleString()} ${state.profiles.length === 1 ? 'account' : 'accounts'}`
+    document.getElementById('usersTable').innerHTML = users.map(profile => {
       const role = profile.requested_role || profile.role || 'Unknown'
+      const accountStatus = String(profile.account_status || 'active')
+      const verificationDocument = state.verification.find(item => item.user_id === profile.id && item.requested_role === role)
+      const verificationStatus = String(
+        profile.verification_status === 'pending' || verificationDocument?.status === 'pending'
+          ? 'pending'
+          : profile.verification_status || verificationDocument?.status || 'Not provided'
+      )
+      const rowState = accountStatus.toLowerCase() === 'frozen'
+        ? 'user-row-frozen'
+        : verificationStatus.toLowerCase() === 'pending'
+          ? 'user-row-pending'
+          : ''
       return `
-        <tr>
+        <tr class="${rowState}">
           <td data-label="Reference"><strong>${escapeHtml(profile.reference_code || 'Not assigned')}</strong></td>
           <td data-label="User"><span class="user-directory-identity"><strong>${escapeHtml(profile.full_name || 'Unnamed user')}</strong><span>${escapeHtml(profile.email || 'No email provided')}</span></span></td>
           <td data-label="Account type"><span class="user-role-pill">${escapeHtml(role)}</span></td>
           <td data-label="Verification"><span class="status-pill ${userStatusClass(verificationStatus)}">${escapeHtml(verificationStatus)}</span></td>
           <td data-label="Access"><span class="status-pill ${userStatusClass(accountStatus)}">${escapeHtml(accountStatus)}</span></td>
           <td data-label="Actions"><div class="admin-row-actions">
-            <button class="admin-link-btn" data-preview-table="profiles" data-preview-id="${escapeHtml(profile.id)}">View</button>
+            <button class="admin-link-btn" data-preview-table="profiles" data-preview-id="${escapeHtml(profile.id)}">Manage</button>
           </div></td>
         </tr>
       `
-    }).join('') || '<tr><td colspan="6" class="admin-recent-empty">No users found.</td></tr>'
+    }).join('') || `<tr><td colspan="6" class="admin-recent-empty">${state.profiles.length ? 'No accounts match these filters.' : 'No users found.'}</td></tr>`
     renderUserListPreview()
   }
 
@@ -559,8 +814,13 @@
   }
 
   function setupTabs() {
-    document.querySelectorAll('.admin-tab').forEach(tab => tab.addEventListener('click', () => {
-      document.querySelectorAll('.admin-tab').forEach(item => {
+    const tablist = document.getElementById('adminDashboardNav')
+    if (!tablist) return
+    const tabs = () => [...tablist.querySelectorAll('[role="tab"]')].filter(tab =>
+      !tab.disabled && !tab.hidden && !tab.closest('[hidden]') && getComputedStyle(tab).display !== 'none'
+    )
+    const activate = tab => {
+      tabs().forEach(item => {
         const isActive = item === tab
         item.classList.toggle('active', isActive)
         item.setAttribute('aria-selected', String(isActive))
@@ -572,7 +832,28 @@
         panel.setAttribute('aria-hidden', String(!isActive))
         if (isActive) panel.setAttribute('aria-labelledby', tab.id)
       })
-    }))
+      if (tab.dataset.tab === 'analytics' && state.analytics) renderAnalytics()
+    }
+
+    tabs().forEach(tab => tab.addEventListener('click', () => activate(tab)))
+    tablist.addEventListener('keydown', event => {
+      const currentTab = event.target.closest('[role="tab"]')
+      if (!currentTab) return
+      const availableTabs = tabs()
+      const currentIndex = availableTabs.indexOf(currentTab)
+      if (currentIndex < 0) return
+      let nextIndex
+      if (event.key === 'Home') nextIndex = 0
+      else if (event.key === 'End') nextIndex = availableTabs.length - 1
+      else if (event.key === 'ArrowDown') nextIndex = (currentIndex + 1) % availableTabs.length
+      else if (event.key === 'ArrowUp') nextIndex = (currentIndex - 1 + availableTabs.length) % availableTabs.length
+      else return
+      event.preventDefault()
+      const nextTab = availableTabs[nextIndex]
+      activate(nextTab)
+      nextTab.focus()
+    })
+
     document.querySelectorAll('[data-tab-target]').forEach(button => button.addEventListener('click', () => {
       const target = document.querySelector(`.admin-tab[data-tab="${button.dataset.tabTarget}"]`)
       target?.click()
@@ -630,8 +911,7 @@
 
   function closeAdminDetailsModal() {
     const modal = document.getElementById('adminDetailsModal')
-    modal?.classList.remove('is-open')
-    modal?.setAttribute('aria-hidden', 'true')
+    closeAdminModal(modal)
   }
 
   function setupForms(user) {
@@ -679,6 +959,7 @@
         clearAdminImageSelection('accom')
         setMessage('Accommodation added with its photos.')
         await loadData(); render()
+        document.querySelector('[data-create-form="accommodation"]').open = false
       } catch (error) {
         await removeAdminImageUploads(uploads)
         setMessage(`Could not add accommodation: ${error.message}`, true)
@@ -696,6 +977,7 @@
         const imageUrls = uploads.length ? uploads.map(upload => upload.url) : ['images/books.jpeg']
         const { error } = await client.from('marketplace_items').insert({
           seller_id: user.id, title: marketTitle.value.trim(), price: Number(marketPrice.value),
+          seller_display_name: document.getElementById('marketSeller').value.trim(),
           category: marketCategory.value.trim(), image_url: imageUrls[0], image_urls: imageUrls,
           listing_type: document.getElementById('marketListingType')?.value || 'product',
           status: 'published'
@@ -705,6 +987,7 @@
         clearAdminImageSelection('market')
         setMessage('Marketplace item added with its photos.')
         await loadData(); render()
+        document.querySelector('[data-create-form="marketplace"]').open = false
       } catch (error) {
         await removeAdminImageUploads(uploads)
         setMessage(`Could not add marketplace item: ${error.message}`, true)
@@ -733,6 +1016,7 @@
         clearAdminImageSelection('event')
         setMessage('Event added with its photos.')
         await loadData(); render()
+        document.querySelector('[data-create-form="events"]').open = false
       } catch (error) {
         await removeAdminImageUploads(uploads)
         setMessage(`Could not add event: ${error.message}`, true)
@@ -748,8 +1032,7 @@
     if (!modal || !form) return
 
     const close = () => {
-      modal.classList.remove('is-open')
-      modal.setAttribute('aria-hidden', 'true')
+      closeAdminModal(modal)
     }
 
     document.addEventListener('click', event => {
@@ -778,9 +1061,7 @@
         document.getElementById('adminEditAccomAmenities').value = (item.amenities || []).join(', ')
         document.getElementById('adminEditAccomDescription').value = item.description || ''
         document.getElementById('adminAccommodationEditStatus').textContent = ''
-        modal.classList.add('is-open')
-        modal.setAttribute('aria-hidden', 'false')
-        document.getElementById('adminEditAccomTitle').focus()
+        openAdminModal(modal, editButton, document.getElementById('adminEditAccomTitle'))
         return
       }
 
@@ -788,7 +1069,9 @@
     })
 
     document.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && modal.classList.contains('is-open')) close()
+      if (!modal.classList.contains('is-open')) return
+      if (event.key === 'Escape') close()
+      else if (event.key === 'Tab') trapAdminModalFocus(modal, event)
     })
 
     form.addEventListener('submit', async event => {
@@ -1024,7 +1307,7 @@
       if (previewButton) {
         const { data, error } = await client.from(previewButton.dataset.previewTable).select('*').eq('id', previewButton.dataset.previewId).single()
         if (error) { setMessage(error.message, true); return }
-        await openDetailModal(previewButton.dataset.previewTable, data)
+        await openDetailModal(previewButton.dataset.previewTable, data, previewButton)
       }
     })
 
@@ -1044,9 +1327,9 @@
         }
       })
       document.addEventListener('keydown', event => {
-        if (event.key === 'Escape' && modal.classList.contains('is-open')) {
-          closeAdminDetailsModal()
-        }
+        if (!modal.classList.contains('is-open')) return
+        if (event.key === 'Escape') closeAdminDetailsModal()
+        else if (event.key === 'Tab') trapAdminModalFocus(modal, event)
       })
     }
   }
@@ -1107,7 +1390,7 @@
     return true
   }
 
-  async function openDetailModal(table, item) {
+  async function openDetailModal(table, item, trigger) {
     const modal = document.getElementById('adminDetailsModal')
     if (!modal || !item) return
 
@@ -1148,6 +1431,7 @@
       meta.innerHTML = `<strong>${escapeHtml(item.category || 'General')}</strong><span>•</span><strong>K${Number(item.price || 0).toLocaleString()}</strong><span>•</span><span>${escapeHtml(item.status || 'Published')}</span>`
       description.textContent = item.description || 'No description provided.'
       footer.innerHTML = `
+        <span class="detail-chip">Seller: ${escapeHtml(item.seller_display_name || state.profiles.find(profile => profile.id === item.seller_id)?.full_name || 'CampusAura seller')}</span>
         <span class="detail-chip">Seller ID: ${escapeHtml(item.seller_id || 'N/A')}</span>
         <span class="detail-chip">Image: ${escapeHtml(item.image_url || 'Not supplied')}</span>
         ${['published', 'suspended'].includes(item.status) ? `<button class="admin-quick-action" data-suspend-listing="${escapeHtml(item.id)}" data-listing-table="marketplace_items" data-listing-status="${item.status === 'published' ? 'suspended' : 'published'}">${item.status === 'published' ? 'Suspend listing' : 'Restore listing'}</button>` : ''}
@@ -1318,8 +1602,7 @@
       footer.innerHTML = `<span class="detail-chip">Received: ${item.created_at ? new Date(item.created_at).toLocaleString() : 'N/A'}</span>`
     }
 
-    modal.classList.add('is-open')
-    modal.setAttribute('aria-hidden', 'false')
+    openAdminModal(modal, trigger, modal.querySelector('.admin-details-close'))
   }
 
   async function init() {
@@ -1333,11 +1616,13 @@
     }
     const name = session.user.user_metadata?.full_name || session.user.email
     const displayName = name || 'Admin'
-    const welcomeHeading = document.querySelector('#panel-dashboard .admin-panel-head h1')
+    const welcomeHeading = document.querySelector('#panel-dashboard .admin-overview-hero h1')
     if (welcomeHeading) {
       welcomeHeading.textContent = `Welcome back, ${displayName.split(' ')[0]} 👋`
     }
     setupTabs();
+    setupCreateFormDisclosures()
+    setupDirectoryFilters()
     setupForms(session.user);
     setupAnalytics();
     setupActions();

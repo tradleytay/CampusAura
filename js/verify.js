@@ -80,12 +80,12 @@
     }
 
     form.hidden = false
-    setStatus('Your provider account is awaiting review. Submit your NRC to continue.')
+    setStatus('Your provider account is awaiting review. Submit a government-issued ID, such as a national ID or passport, to continue.')
   }
 
   form.addEventListener('submit', async event => {
     event.preventDefault()
-    const identityError = validateFile(identityDocument.files[0], 'NRC')
+    const identityError = validateFile(identityDocument.files[0], 'Identity document')
     if (identityError) {
       setStatus(identityError, true)
       return
@@ -96,7 +96,7 @@
     }
 
     submitButton.disabled = true
-    setStatus('Uploading your NRC securely...')
+    setStatus('Uploading your identity document securely...')
     const uploadedPaths = []
     try {
       const identityPath = await upload(identityDocument.files[0], 'identity')

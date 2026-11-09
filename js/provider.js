@@ -16,6 +16,8 @@
       element = document.createElement('p')
       element.id = 'providerStatus'
       element.className = 'contact-status'
+      element.setAttribute('role', 'status')
+      element.setAttribute('aria-live', 'polite')
       document.querySelector('.admin-main')?.prepend(element)
     }
     element.textContent = message
@@ -350,7 +352,7 @@
     document.getElementById('accomTable').innerHTML = state.accommodations.map(item => `
       <tr><td><strong>${escapeHtml(item.title)}</strong><br><span class="muted small">${escapeHtml([item.room_type, item.description || ''].filter(Boolean).join(' · '))}</span></td>
       <td>${escapeHtml(item.location)}</td><td>${formatPrice(item.price)}/mo</td><td><button class="provider-gallery-open" type="button" data-provider-gallery="accommodation" data-id="${escapeHtml(item.id)}">View photos (${getProviderImageUrls(item).length})</button></td><td><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(item.status)}</span></td><td>${Number(analyticsById.get(item.id)?.view_count || 0).toLocaleString()}</td>
-      <td>${providerApproved ? `<button class="provider-edit" type="button" data-edit-kind="accommodation" data-id="${escapeHtml(item.id)}">Edit</button><button class="admin-delete" data-kind="accommodation" data-id="${escapeHtml(item.id)}">Delete</button>` : ''}</td></tr>
+      <td>${providerApproved ? `<button class="provider-edit" type="button" data-edit-kind="accommodation" data-id="${escapeHtml(item.id)}">Edit</button><button class="admin-delete" type="button" data-kind="accommodation" data-id="${escapeHtml(item.id)}" aria-label="Delete ${escapeHtml(item.title)}">Delete</button>` : ''}</td></tr>
     `).join('') || '<tr><td colspan="7" class="admin-recent-empty">Your properties will appear here. Use the form above to add one.</td></tr>'
 
     const offers = state.marketplace.map(item => ({
@@ -360,7 +362,7 @@
     document.getElementById('marketTable').innerHTML = offers.map(item => `
       <tr><td><strong>${escapeHtml(item.title)}</strong></td><td>${escapeHtml(item.offerType || 'Product')}</td>
       <td>${formatPrice(item.price)}</td><td><button class="provider-gallery-open" type="button" data-provider-gallery="marketplace" data-id="${escapeHtml(item.id)}">View photos (${getProviderImageUrls(item).length})</button></td><td><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(item.status)}</span></td><td>${Number(analyticsById.get(item.id)?.view_count || 0).toLocaleString()}</td>
-      <td>${providerApproved ? `<button class="provider-edit" type="button" data-edit-kind="marketplace" data-id="${escapeHtml(item.id)}">Edit</button><button class="admin-delete" data-kind="marketplace" data-id="${escapeHtml(item.id)}">Delete</button>` : ''}</td></tr>
+      <td>${providerApproved ? `<button class="provider-edit" type="button" data-edit-kind="marketplace" data-id="${escapeHtml(item.id)}">Edit</button><button class="admin-delete" type="button" data-kind="marketplace" data-id="${escapeHtml(item.id)}" aria-label="Delete ${escapeHtml(item.title)}">Delete</button>` : ''}</td></tr>
     `).join('') || '<tr><td colspan="7" class="admin-recent-empty">Your products and services will appear here. Use the form above to add one.</td></tr>'
 
     document.getElementById('providerEventTable').innerHTML = state.events.map(item => {
@@ -370,7 +372,7 @@
       return `<tr><td><strong>${escapeHtml(item.title)}</strong><br><span class="muted small">${escapeHtml(item.description || '')}</span></td>
         <td>${escapeHtml(formattedDate)}</td><td>${escapeHtml(item.organizer_name || '')}</td>
         <td><span class="status-pill status-${escapeHtml(item.status)}">${escapeHtml(status)}</span></td>
-        <td>${providerApproved ? `<button class="admin-delete" data-kind="event" data-id="${escapeHtml(item.id)}">Delete</button>` : ''}</td></tr>`
+        <td>${providerApproved ? `<button class="admin-delete" type="button" data-kind="event" data-id="${escapeHtml(item.id)}" aria-label="Delete ${escapeHtml(item.title)}">Delete</button>` : ''}</td></tr>`
     }).join('') || '<tr><td colspan="5" class="admin-recent-empty">Your events will appear here. Use the form above to submit one.</td></tr>'
 
     document.getElementById('overviewInquiries').textContent = totalInquiries
@@ -510,15 +512,44 @@
     document.addEventListener('click', async event => {
       const button = event.target.closest('.admin-delete')
       if (!button) return
-      const table = button.dataset.kind === 'accommodation'
-        ? 'accommodations'
-        : button.dataset.kind === 'event' ? 'events' : 'marketplace_items'
-      const ownerColumn = button.dataset.kind === 'accommodation'
-        ? 'owner_id'
-        : button.dataset.kind === 'event' ? 'organizer_id' : 'seller_id'
-      const { error } = await client.from(table).delete().eq('id', button.dataset.id).eq(ownerColumn, user.id)
-      if (error) { setMessage(error.message, true); return }
-      await loadData(user); render()
+      const collections = {
+        accommodation: { table: 'accommodations', ownerColumn: 'owner_id', items: state.accommodations },
+        event: { table: 'events', ownerColumn: 'organizer_id', items: state.events },
+        marketplace: { table: 'marketplace_items', ownerColumn: 'seller_id', items: state.marketplace }
+      }
+      const kind = button.dataset.kind
+      const collection = collections[kind]
+      if (!collection) {
+        setMessage('Could not identify this listing type. Refresh the dashboard and try again.', true)
+        return
+      }
+      const item = collection.items.find(listing => String(listing.id) === button.dataset.id)
+      const title = item?.title || 'this listing'
+      if (!window.confirm(`Delete "${title}"? This action cannot be undone.`)) return
+
+      button.disabled = true
+      setMessage(`Deleting "${title}"…`)
+      try {
+        const { data, error } = await client.from(collection.table)
+          .delete()
+          .eq('id', button.dataset.id)
+          .eq(collection.ownerColumn, user.id)
+          .select('id')
+          .maybeSingle()
+        if (error) throw error
+        if (!data) throw new Error('The listing was not found or is no longer available to delete.')
+
+        try {
+          await loadData(user)
+          render()
+          setMessage(`"${title}" was deleted.`)
+        } catch (refreshError) {
+          setMessage(`"${title}" was deleted, but the dashboard could not refresh: ${refreshError.message}`, true)
+        }
+      } catch (error) {
+        button.disabled = false
+        setMessage(`Could not delete "${title}": ${error.message}`, true)
+      }
     })
   }
 
@@ -526,11 +557,43 @@
     const modal = document.getElementById('providerEditModal')
     const form = document.getElementById('providerEditForm')
     if (!modal || !form) return
+    let returnFocusTarget = null
 
     const close = () => {
+      if (!modal.classList.contains('is-open')) return
       modal.classList.remove('is-open')
       modal.setAttribute('aria-hidden', 'true')
       document.body.classList.remove('modal-open')
+      const fallbackTarget = document.querySelector('.admin-tab[aria-selected="true"]')
+      const focusTarget = returnFocusTarget?.isConnected ? returnFocusTarget : fallbackTarget
+      returnFocusTarget = null
+      focusTarget?.focus()
+    }
+
+    const trapFocus = event => {
+      const dialog = modal.querySelector('[role="dialog"]')
+      const focusable = [...dialog.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )].filter(element => !element.closest('[hidden]') && element.getClientRects().length > 0)
+      if (!focusable.length) {
+        event.preventDefault()
+        dialog.focus()
+        return
+      }
+
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
+      if (!dialog.contains(document.activeElement)) {
+        event.preventDefault()
+        const edge = event.shiftKey ? last : first
+        edge.focus()
+      } else if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
     }
 
     document.addEventListener('click', event => {
@@ -575,6 +638,7 @@
         document.getElementById('providerEditLocation').required = kind === 'accommodation'
         document.getElementById('providerEditCategory').required = kind === 'marketplace'
         document.getElementById('providerEditStatus').textContent = ''
+        returnFocusTarget = editButton
         modal.classList.add('is-open')
         modal.setAttribute('aria-hidden', 'false')
         document.body.classList.add('modal-open')
@@ -586,7 +650,12 @@
     })
 
     document.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && modal.classList.contains('is-open')) close()
+      if (!modal.classList.contains('is-open')) return
+      if (event.key === 'Escape') {
+        close()
+      } else if (event.key === 'Tab') {
+        trapFocus(event)
+      }
     })
 
     form.addEventListener('submit', async event => {
@@ -676,7 +745,7 @@
       ? 'Your provider account is approved. Keep your contact and listing information up to date.'
       : verificationStatus === 'rejected'
         ? `Your application was not approved${profile.rejection_reason ? `: ${profile.rejection_reason}` : ''}. Contact support for next steps.`
-        : 'Submit your National Registration Card (NRC) for review. Listing actions remain locked until approval.'
+        : 'Submit a government-issued photo ID, such as a national ID or passport, for review. Listing actions remain locked until approval.'
     const verificationLink = document.getElementById('providerSettingsVerificationLink')
     if (verificationStatus === 'rejected') {
       verificationLink.href = 'contact.html'
@@ -792,8 +861,11 @@
   }
 
   function showPanel(tabName, feedName) {
+    const activeFeedName = tabName === 'listings'
+      ? feedName || document.querySelector('.type-btn[aria-selected="true"]')?.dataset.feed || ['accommodation', 'marketplace', 'events'].find(canManageSection)
+      : null
     const activeTab = [...document.querySelectorAll('.admin-tab')].find(tab =>
-      feedName ? tab.dataset.tab === tabName && tab.dataset.feedTarget === feedName : tab.dataset.tab === tabName
+      activeFeedName ? tab.dataset.tab === tabName && tab.dataset.feedTarget === activeFeedName : tab.dataset.tab === tabName
     )
     document.querySelectorAll('.admin-tab').forEach(tab => {
       const isActive = tab === activeTab
@@ -807,23 +879,69 @@
       panel.setAttribute('aria-hidden', String(!isActive))
       if (isActive && activeTab) panel.setAttribute('aria-labelledby', activeTab.id)
     })
-    if (tabName === 'listings' && feedName) showFeed(feedName)
+    if (activeFeedName) showFeed(activeFeedName)
   }
 
   function showFeed(feedName) {
-    const section = feedName
-    if (!canManageSection(section)) return
+    if (!canManageSection(feedName)) return
     document.querySelectorAll('.provider-feed').forEach(feed => {
-      feed.style.display = feed.id === `feed-${feedName}` ? 'block' : 'none'
+      const isActive = feed.id === `feed-${feedName}`
+      feed.style.display = isActive ? 'block' : 'none'
+      feed.setAttribute('aria-hidden', String(!isActive))
     })
-    document.querySelectorAll('.type-btn').forEach(button => button.classList.toggle('active', button.dataset.feed === feedName))
+    document.querySelectorAll('.type-btn').forEach(button => {
+      const isActive = button.dataset.feed === feedName
+      button.classList.toggle('active', isActive)
+      button.setAttribute('aria-selected', String(isActive))
+      button.tabIndex = isActive ? 0 : -1
+    })
+  }
+
+  function setupTabKeyboardNavigation(tablist, getTabs, activateTab) {
+    tablist?.addEventListener('keydown', event => {
+      const currentTab = event.target.closest('[role="tab"]')
+      if (!currentTab) return
+      const tabs = getTabs().filter(tab =>
+        !tab.disabled &&
+        !tab.hidden &&
+        !tab.closest('[hidden]') &&
+        getComputedStyle(tab).display !== 'none'
+      )
+      const currentIndex = tabs.indexOf(currentTab)
+      if (currentIndex < 0) return
+
+      const isVertical = tablist.getAttribute('aria-orientation') === 'vertical'
+      let nextIndex
+      if (event.key === 'Home') {
+        nextIndex = 0
+      } else if (event.key === 'End') {
+        nextIndex = tabs.length - 1
+      } else if ((!isVertical && event.key === 'ArrowRight') || (isVertical && event.key === 'ArrowDown')) {
+        nextIndex = (currentIndex + 1) % tabs.length
+      } else if ((!isVertical && event.key === 'ArrowLeft') || (isVertical && event.key === 'ArrowUp')) {
+        nextIndex = (currentIndex - 1 + tabs.length) % tabs.length
+      } else {
+        return
+      }
+
+      event.preventDefault()
+      const nextTab = tabs[nextIndex]
+      activateTab(nextTab)
+      nextTab.focus()
+    })
   }
 
   function setupNavigation() {
-    document.querySelectorAll('.admin-tab').forEach(tab => tab.addEventListener('click', () => showPanel(tab.dataset.tab, tab.dataset.feedTarget)))
-    document.querySelectorAll('.type-btn').forEach(button => button.addEventListener('click', () => {
-      showPanel('listings', button.dataset.feed)
-    }))
+    const dashboardTabs = document.getElementById('providerDashboardNav')
+    const inventoryTabs = document.querySelector('.provider-type-toggle')
+    const getDashboardTabs = () => [...dashboardTabs.querySelectorAll('[role="tab"]')]
+    const getInventoryTabs = () => [...inventoryTabs.querySelectorAll('[role="tab"]')]
+
+    getDashboardTabs().forEach(tab => tab.addEventListener('click', () => showPanel(tab.dataset.tab, tab.dataset.feedTarget)))
+    getInventoryTabs().forEach(tab => tab.addEventListener('click', () => showPanel('listings', tab.dataset.feed)))
+    setupTabKeyboardNavigation(dashboardTabs, getDashboardTabs, tab => showPanel(tab.dataset.tab, tab.dataset.feedTarget))
+    setupTabKeyboardNavigation(inventoryTabs, getInventoryTabs, tab => showPanel('listings', tab.dataset.feed))
+
     document.querySelectorAll('[data-tab-target]').forEach(button => button.addEventListener('click', () => {
       showPanel(button.dataset.tabTarget, button.dataset.feedTarget)
     }))
@@ -888,7 +1006,7 @@
       document.getElementById('providerApprovalTitle').textContent = status === 'rejected' ? 'Provider approval not granted' : 'Your dashboard is available while we review your application'
       document.getElementById('providerApprovalMessage').textContent = status === 'rejected'
         ? 'Your provider application was not approved. Contact CampusAura support for next steps. Listing actions remain locked.'
-        : 'You can explore your dashboard while we review your application. If you have not already, upload your National Registration Card (NRC). Creating or changing listings unlocks after approval.'
+        : 'You can explore your dashboard while we review your application. If you have not already, upload a government-issued photo ID, such as a national ID or passport. Creating or changing listings unlocks after approval.'
       if (status === 'rejected') {
         const action = document.getElementById('providerVerificationAction')
         action.href = 'contact.html'

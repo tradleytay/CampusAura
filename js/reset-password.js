@@ -5,6 +5,8 @@
   const confirmationInput = document.getElementById('confirmPassword')
   const submitButton = document.getElementById('resetSubmit')
   const status = document.getElementById('resetStatus')
+  const heading = document.getElementById('resetTitle')
+  const description = document.getElementById('resetDescription')
 
   function setStatus(message, isError) {
     status.textContent = message
@@ -21,6 +23,8 @@
       const { data, error } = await client.auth.getSession()
       if (error) throw error
       if (!data.session) {
+        heading.textContent = 'Reset link unavailable'
+        description.textContent = 'Request a new password reset link from the sign-in page to continue.'
         setStatus('This password reset link is invalid or has expired. Request a new one from the sign-in page.', true)
         return
       }
@@ -28,6 +32,8 @@
       form.hidden = false
       setStatus('Enter and confirm your new password.')
     } catch (error) {
+      heading.textContent = 'Could not verify reset link'
+      description.textContent = 'We could not confirm this password reset link.'
       setStatus(`Could not validate your password reset link: ${error.message}`, true)
     }
   }
@@ -50,6 +56,8 @@
       const { error } = await client.auth.updateUser({ password: passwordInput.value })
       if (error) throw error
 
+      heading.textContent = 'Password updated'
+      description.textContent = 'Your new password is ready. Sign in to CampusAura with it whenever you are ready.'
       const { error: signOutError } = await client.auth.signOut({ scope: 'local' })
       if (signOutError) {
         form.hidden = true

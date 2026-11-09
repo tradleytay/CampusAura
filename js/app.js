@@ -715,6 +715,7 @@ function renderEvents(){
 
 function createHomeListingCard(item, type, { action, includeSave = false, imageLoading = 'lazy' } = {}){
   const isAccommodation = type === 'accommodation'
+  const useMarketplaceDesign = !isAccommodation && document.body.dataset.page === 'marketplace'
   const category = isAccommodation ? 'Accommodation' : item.category || 'Marketplace'
   const subtitle = item.subtitle || (isAccommodation
     ? [item.location || 'Student accommodation', item.roomType, item.distanceKm != null ? `${item.distanceKm} km from campus` : ''].filter(Boolean).join(' · ')
@@ -723,6 +724,7 @@ function createHomeListingCard(item, type, { action, includeSave = false, imageL
   const fallbackImage = isAccommodation ? 'images/room.jpeg' : 'images/market.jpeg'
   const card = document.createElement('article')
   card.className = 'card fade-in listing-card home-update-card'
+  if(useMarketplaceDesign) card.classList.add('marketplace-product-card')
   card.dataset.modalType = type
   card.dataset.itemId = item.id
   card.tabIndex = 0
@@ -730,13 +732,14 @@ function createHomeListingCard(item, type, { action, includeSave = false, imageL
     <div class="home-update-image">
       <img src="${escapeHtml(safeImageUrl(image, fallbackImage))}" alt="${escapeHtml(item.title)}" loading="${imageLoading}">
       <span class="home-update-type">${escapeHtml(category)}</span>
+      ${useMarketplaceDesign && item.price ? `<span class="marketplace-product-price">K${escapeHtml(item.price)}</span>` : ''}
     </div>
     <div class="home-update-content">
       <p class="home-update-date">${escapeHtml(item.publishedAt ? formatAddedDate(item.publishedAt) : 'On CampusAura')}</p>
       <h3>${escapeHtml(item.title)}</h3>
       <p class="home-update-subtitle">${escapeHtml(subtitle)}</p>
       <div class="home-update-footer">
-        <strong>${item.price ? `K${escapeHtml(item.price)}${isAccommodation ? '<span>/mo</span>' : ''}` : ''}</strong>
+        <strong>${item.price && (!useMarketplaceDesign || isAccommodation) ? `K${escapeHtml(item.price)}${isAccommodation ? '<span>/mo</span>' : ''}` : ''}</strong>
         <div class="home-update-actions">
           <button class="home-update-action" type="button" data-listing-open>${escapeHtml(action || 'View details')} <span aria-hidden="true">→</span></button>
           ${includeSave ? `<button class="home-update-save save-listing" type="button" data-accommodation-id="${escapeHtml(item.id)}" aria-label="Save ${escapeHtml(item.title)}" aria-pressed="false">Save</button>` : ''}
@@ -1323,6 +1326,28 @@ if(searchBtn && globalSearch){
   }
 
   // accommodation filters
+  const accomSearchToggle = document.getElementById('accomSearchToggle')
+  const accomFilterPanel = document.getElementById('accomFilterPanel')
+  const accomSearchInput = document.getElementById('accomSearch')
+  const mobileAccommodation = window.matchMedia('(max-width: 650px)')
+  const setAccommodationSearchExpanded = expanded => {
+    if(!accomSearchToggle || !accomFilterPanel) return
+    accomFilterPanel.classList.toggle('is-open', expanded)
+    accomSearchToggle.setAttribute('aria-expanded', String(expanded))
+    const label = accomSearchToggle.querySelector('span')
+    if(label) label.textContent = expanded ? 'Hide search' : 'Search homes'
+  }
+  if(accomSearchToggle && accomFilterPanel){
+    accomSearchToggle.addEventListener('click', ()=>{
+      const expanded = !accomFilterPanel.classList.contains('is-open')
+      setAccommodationSearchExpanded(expanded)
+      if(expanded) accomSearchInput?.focus()
+    })
+    mobileAccommodation.addEventListener('change', event=>{
+      if(!event.matches) setAccommodationSearchExpanded(false)
+    })
+  }
+
   const accomBtn = document.getElementById('accomFilterBtn')
   if(accomBtn){
     accomBtn.addEventListener('click',()=>{
@@ -1337,10 +1362,36 @@ if(searchBtn && globalSearch){
         results = results.filter(r=>r.price>=min && r.price<=max)
       }
       renderAccommodations('accommodationGrid',results)
+      if(mobileAccommodation.matches){
+        setAccommodationSearchExpanded(false)
+        accomSearchToggle?.focus()
+      }
     })
   }
 
 // marketplace filters
+  const marketSearchToggle = document.getElementById('marketSearchToggle')
+  const marketFilterPanel = document.getElementById('marketFilterPanel')
+  const marketSearchInput = document.getElementById('marketSearch')
+  const mobileMarketplace = window.matchMedia('(max-width: 650px)')
+  const setMarketplaceSearchExpanded = expanded => {
+    if(!marketSearchToggle || !marketFilterPanel) return
+    marketFilterPanel.classList.toggle('is-open', expanded)
+    marketSearchToggle.setAttribute('aria-expanded', String(expanded))
+    const label = marketSearchToggle.querySelector('span')
+    if(label) label.textContent = expanded ? 'Hide search' : 'Search items'
+  }
+  if(marketSearchToggle && marketFilterPanel){
+    marketSearchToggle.addEventListener('click', ()=>{
+      const expanded = !marketFilterPanel.classList.contains('is-open')
+      setMarketplaceSearchExpanded(expanded)
+      if(expanded) marketSearchInput?.focus()
+    })
+    mobileMarketplace.addEventListener('change', event=>{
+      if(!event.matches) setMarketplaceSearchExpanded(false)
+    })
+  }
+
   const marketBtn = document.getElementById('marketFilterBtn')
   if(marketBtn){
     marketBtn.addEventListener('click',()=>{
@@ -1355,10 +1406,36 @@ if(price){
         results = results.filter(p=>p.price>=min && p.price<=max)
       }
       renderMarketplaceGrid(results)
+      if(mobileMarketplace.matches){
+        setMarketplaceSearchExpanded(false)
+        marketSearchToggle?.focus()
+      }
     })
   }
 
   // events filters
+  const eventSearchToggle = document.getElementById('newEventSearchToggle')
+  const eventFilterPanel = document.getElementById('newEventFilters')
+  const eventSearchInput = document.getElementById('newEventSearch')
+  const mobileEvents = window.matchMedia('(max-width: 600px)')
+  const setEventSearchExpanded = expanded => {
+    if(!eventSearchToggle || !eventFilterPanel) return
+    eventFilterPanel.classList.toggle('is-open', expanded)
+    eventSearchToggle.setAttribute('aria-expanded', String(expanded))
+    const label = eventSearchToggle.querySelector('span')
+    if(label) label.textContent = expanded ? 'Hide search' : 'Search events'
+  }
+  if(eventSearchToggle && eventFilterPanel){
+    eventSearchToggle.addEventListener('click', ()=>{
+      const expanded = !eventFilterPanel.classList.contains('is-open')
+      setEventSearchExpanded(expanded)
+      if(expanded) eventSearchInput?.focus()
+    })
+    mobileEvents.addEventListener('change', event=>{
+      if(!event.matches) setEventSearchExpanded(false)
+    })
+  }
+
   const eventBtn = document.getElementById('newEventFilterBtn') || document.getElementById('eventFilterBtn')
   if(eventBtn){
     eventBtn.addEventListener('click',()=>{
@@ -1370,6 +1447,10 @@ if(price){
       if(loc) results = results.filter(e=>e.location===loc)
       if(range) results = results.filter(e=>isEventInRange(e.eventDate, range))
       renderEventsGrid(results)
+      if(mobileEvents.matches){
+        setEventSearchExpanded(false)
+        eventSearchToggle?.focus()
+      }
     })
   }
 
@@ -1394,6 +1475,10 @@ if(price){
           renderAccommodations('accommodationGrid', data.accommodations)
           const emptyState = container.querySelector('#emptyState')
           if(emptyState) emptyState.style.display = 'none'
+          if(mobileAccommodation.matches){
+            setAccommodationSearchExpanded(false)
+            accomSearchToggle?.focus()
+          }
         }
         if(container.querySelector('#marketplaceGrid')){
           renderMarketplaceGrid(data.marketplace)
@@ -1419,6 +1504,10 @@ if(container.querySelector('#eventsGrid')){
     document.getElementById('newEventDate').value = ''
     document.querySelectorAll('.events-content .filter-chip').forEach(chip=>chip.classList.toggle('active', chip.textContent.includes('All')))
     renderEventsGrid(data.events)
+    if(mobileEvents.matches){
+      setEventSearchExpanded(false)
+      eventSearchToggle?.focus()
+    }
   }
   if(newReset) newReset.addEventListener('click', resetEvents)
   if(newClear) newClear.addEventListener('click', resetEvents)
@@ -2108,10 +2197,27 @@ function setupLoader(){
 setupLoader()
 
 // ===== Contact page handlers (moved from inline script) =====
+const contactCampusSelect = document.getElementById('campus')
+const otherCampusField = document.getElementById('otherCampusField')
+const otherCampusInput = document.getElementById('otherCampus')
+
+function updateContactCampusField(){
+  if(!contactCampusSelect || !otherCampusField || !otherCampusInput) return
+  const isOther = contactCampusSelect.value === 'other'
+  otherCampusField.hidden = !isOther
+  otherCampusInput.disabled = !isOther
+  otherCampusInput.required = isOther
+  if(!isOther) otherCampusInput.value = ''
+}
+
+if(contactCampusSelect) contactCampusSelect.addEventListener('change', updateContactCampusField)
+updateContactCampusField()
+
 function handleContactReset(){
   const form = document.querySelector('.contact-form')
   if(!form) return
   form.reset()
+  updateContactCampusField()
   const status = document.getElementById('contactStatus')
   if(status) status.textContent = ''
 }
@@ -2135,7 +2241,9 @@ async function handleContactSubmit(event){
     name,
     email,
     topic: form.querySelector('#topic')?.value || '',
-    campus: form.querySelector('#campus')?.value || '',
+    campus: form.querySelector('#campus')?.value === 'other'
+      ? otherCampusInput?.value?.trim() || ''
+      : form.querySelector('#campus')?.value || '',
     message,
     created_at: new Date().toISOString()
   }
@@ -2165,6 +2273,7 @@ async function handleContactSubmit(event){
 
   if(status) status.textContent = '✓ Message sent! We will get back to you soon.'
   form.reset()
+  updateContactCampusField()
 }
 
 // expose to inline HTML attributes (onsubmit/onClick)

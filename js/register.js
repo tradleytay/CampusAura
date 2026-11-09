@@ -6,6 +6,9 @@
   const successRole = document.getElementById('successRole')
   const successTitle = document.getElementById('registrationSuccessTitle')
   const successMessage = document.getElementById('registrationSuccessMessage')
+  const emailPrompt = document.getElementById('registrationEmailPrompt')
+  const emailAddress = document.getElementById('registrationEmailAddress')
+  const emailAction = document.getElementById('registrationEmailAction')
   const nextAction = document.getElementById('registrationNextAction')
   const studentEmailInput = document.getElementById('registerEmail')
   const providerEmailInput = document.getElementById('registerProviderEmail')
@@ -52,7 +55,7 @@
     providerVerificationStep.hidden = !isProvider
     steps.style.gridTemplateColumns = isProvider ? 'repeat(3, minmax(0, 1fr))' : 'repeat(2, minmax(0, 1fr))'
     registrationIntro.textContent = isProvider
-      ? 'Create an account with your email. After confirming it and signing in, upload your National Registration Card (NRC). CampusAura reviews it before you can publish.'
+      ? 'Create an account with your email. After confirming it and signing in, upload a government-issued ID, such as a national ID or passport. CampusAura reviews it before you can publish.'
       : 'Use your UNILUS student email and select your campus. You can start after confirming your email; checking your student ID later is optional.'
   }
 
@@ -69,6 +72,32 @@
   function setStatus(message, isError = false) {
     status.textContent = message
     status.classList.toggle('is-error', isError)
+  }
+
+  function prepareEmailConfirmation(email) {
+    const inboxUrls = {
+      'gmail.com': 'https://mail.google.com/mail/u/0/#inbox',
+      'googlemail.com': 'https://mail.google.com/mail/u/0/#inbox',
+      'outlook.com': 'https://outlook.live.com/mail/0/inbox',
+      'hotmail.com': 'https://outlook.live.com/mail/0/inbox',
+      'live.com': 'https://outlook.live.com/mail/0/inbox',
+      'msn.com': 'https://outlook.live.com/mail/0/inbox',
+      'yahoo.com': 'https://mail.yahoo.com/',
+      'icloud.com': 'https://www.icloud.com/mail',
+      'me.com': 'https://www.icloud.com/mail',
+      'mac.com': 'https://www.icloud.com/mail',
+      'proton.me': 'https://mail.proton.me/',
+      'protonmail.com': 'https://mail.proton.me/'
+    }
+    const domain = email.split('@')[1]?.toLowerCase()
+    const inboxUrl = inboxUrls[domain]
+
+    emailAddress.textContent = email
+    emailPrompt.hidden = false
+    emailAction.href = inboxUrl || `mailto:${email}`
+    emailAction.target = inboxUrl ? '_blank' : '_self'
+    if (inboxUrl) emailAction.rel = 'noopener noreferrer'
+    emailAction.hidden = false
   }
 
   form.addEventListener('submit', async event => {
@@ -150,21 +179,23 @@
           nextAction.href = 'student.html'
           nextAction.textContent = 'Go to student dashboard'
         } else {
-          successTitle.textContent = 'Check your email'
-          successMessage.textContent = 'If this email can be registered, we will send a confirmation link. Confirm your email, then sign in to start using CampusAura.'
+          successTitle.textContent = 'Check your inbox now'
+          successMessage.textContent = 'Your account is nearly ready. Confirm your email address to activate it, then sign in.'
+          prepareEmailConfirmation(email)
           nextAction.href = 'auth.html'
           nextAction.textContent = 'Go to sign in'
         }
       } else if (data.session) {
-        successNextSteps.textContent = 'Your dashboard is available now. Upload your National Registration Card (NRC) and wait for approval before creating or changing listings or events.'
+        successNextSteps.textContent = 'Your dashboard is available now. Upload a government-issued ID, such as a national ID or passport, and wait for approval before creating or changing listings or events.'
         successTitle.textContent = 'Account created'
         successMessage.textContent = 'Your dashboard is ready. Your selected actions unlock after your application is approved.'
         nextAction.href = 'provider.html'
         nextAction.textContent = 'Open provider dashboard'
       } else {
-        successNextSteps.textContent = 'Confirm your email, then sign in to access your dashboard. Upload your National Registration Card (NRC) and wait for approval before creating listings or events.'
-        successTitle.textContent = 'Check your email'
-        successMessage.textContent = 'If this email can be registered, we will send a confirmation link. After confirming, sign in to access your provider dashboard.'
+        successNextSteps.textContent = 'Confirm your email, then sign in to access your dashboard. Upload a government-issued ID, such as a national ID or passport, and wait for approval before creating listings or events.'
+        successTitle.textContent = 'Check your inbox now'
+        successMessage.textContent = 'Your provider account is nearly ready. Confirm your email address to activate it, then sign in to access your dashboard.'
+        prepareEmailConfirmation(email)
         nextAction.href = 'auth.html'
         nextAction.textContent = 'Go to sign in'
       }
