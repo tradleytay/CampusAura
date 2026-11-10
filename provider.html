@@ -90,8 +90,8 @@
         <div class="admin-panel-head">
           <div>
             <span class="provider-kicker">Provider workspace</span>
-            <h1>Welcome to your provider dashboard</h1>
-            <p class="section-subtitle">Manage the sections enabled for your account.</p>
+            <h1>Provider overview</h1>
+            <p class="section-subtitle">Manage your listings, track engagement, and review your account.</p>
           </div>
         </div>
 
@@ -226,7 +226,8 @@
           </form>
           <div class="admin-card">
             <h3>Accommodations</h3>
-            <div class="admin-table-wrap">
+            <div class="admin-table-wrap" role="region" tabindex="0" aria-label="Accommodations table">
+              <p class="provider-table-hint">Scroll horizontally to view all columns.</p>
               <table class="admin-table">
                 <thead>
                   <tr><th>Title</th><th>Location</th><th>Price</th><th>Photos</th><th>Status</th><th>Views</th><th></th></tr>
@@ -285,7 +286,8 @@
           </form>
           <div class="admin-card">
             <h3>Products &amp; services</h3>
-            <div class="admin-table-wrap">
+            <div class="admin-table-wrap" role="region" tabindex="0" aria-label="Products and services table">
+              <p class="provider-table-hint">Scroll horizontally to view all columns.</p>
               <table class="admin-table">
                 <thead>
                   <tr><th>Title</th><th>Type</th><th>Price</th><th>Photos</th><th>Status</th><th>Views</th><th></th></tr>
@@ -325,7 +327,8 @@
           </form>
           <div class="admin-card">
             <h3>My events</h3>
-            <div class="admin-table-wrap">
+            <div class="admin-table-wrap" role="region" tabindex="0" aria-label="Events table">
+              <p class="provider-table-hint">Scroll horizontally to view all columns.</p>
               <table class="admin-table">
                 <thead><tr><th>Event</th><th>Date</th><th>Organizer</th><th>Status</th><th></th></tr></thead>
                 <tbody id="providerEventTable"></tbody>
