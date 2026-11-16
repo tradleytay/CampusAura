@@ -549,6 +549,162 @@
     })
   }
 
+  function formatMessageTimestamp(value) {
+    const timestamp = new Date(value)
+    if (Number.isNaN(timestamp.getTime())) return 'Date unavailable'
+    return new Intl.DateTimeFormat(undefined, {
+      dateStyle: 'medium',
+      timeStyle: 'short'
+    }).format(timestamp)
+  }
+
+  function renderAdminMessages() {
+    const inboxSearch = document.getElementById('adminInboxSearch').value.trim().toLocaleLowerCase()
+    const topicFilter = document.getElementById('adminInboxTopic')
+    const selectedTopic = topicFilter.value
+    const topics = [...new Set(state.messages.map(item => String(item.topic || 'General').trim() || 'General'))]
+      .sort((a, b) => a.localeCompare(b))
+    topicFilter.innerHTML = '<option value="all">All topics</option>' + topics
+      .map(topic => `<option value="${escapeHtml(topic)}">${escapeHtml(topic)}</option>`)
+      .join('')
+    topicFilter.value = topics.includes(selectedTopic) ? selectedTopic : 'all'
+
+    const inboxMessages = state.messages.filter(item => {
+      const topic = String(item.topic || 'General').trim() || 'General'
+      const matchesTopic = topicFilter.value === 'all' || topic === topicFilter.value
+      const searchableText = [item.name, item.email, topic, item.campus, item.message]
+        .map(value => String(value || '').toLocaleLowerCase())
+        .join(' ')
+      return matchesTopic && (!inboxSearch || searchableText.includes(inboxSearch))
+    })
+    document.getElementById('msgCount').textContent = formatCount(state.messages.length)
+    document.getElementById('inboxResultCount').textContent =
+      `Showing ${formatCount(inboxMessages.length)} of ${formatCount(state.messages.length)}`
+    document.getElementById('messageList').innerHTML = inboxMessages.map(item => {
+      const topic = String(item.topic || 'General').trim() || 'General'
+      const timestamp = formatMessageTimestamp(item.created_at)
+      const email = String(item.email || '').replace(/[\r\n]/g, '').trim()
+      return `
+        <article class="admin-message admin-inbox-message">
+          <div class="admin-message-head">
+            <div class="admin-message-sender">
+              <strong class="admin-message-name">${escapeHtml(item.name || 'Unknown sender')}</strong>
+              ${email
+                ? `<a class="admin-message-email" href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a>`
+                : '<span class="admin-message-email">No email provided</span>'}
+            </div>
+            <time class="admin-message-meta" datetime="${escapeHtml(item.created_at || '')}">${escapeHtml(timestamp)}</time>
+          </div>
+          <div class="admin-message-context">
+            <span class="admin-message-topic">${escapeHtml(topic)}</span>
+            ${item.campus ? `<span class="admin-message-campus">${escapeHtml(item.campus)}</span>` : ''}
+          </div>
+          <p class="admin-message-body">${escapeHtml(item.message)}</p>
+        </article>
+      `
+    }).join('') || `<div class="admin-message-empty">
+      <strong>${state.messages.length ? 'No matching messages' : 'Your inbox is clear'}</strong>
+      <span>${state.messages.length ? 'Try another search or topic filter.' : 'New contact requests will appear here.'}</span>
+    </div>`
+
+    const sentSearch = document.getElementById('adminSentSearch').value.trim().toLocaleLowerCase()
+    const sentMessages = state.outbox.filter(item =>
+      [item.recipient_name, item.recipient_email, item.subject, item.body]
+        .some(value => String(value || '').toLocaleLowerCase().includes(sentSearch))
+    )
+    document.getElementById('outboxCount').textContent = formatCount(state.outbox.length)
+    document.getElementById('sentResultCount').textContent =
+      `Showing ${formatCount(sentMessages.length)} of ${formatCount(state.outbox.length)}`
+    document.getElementById('adminOutbox').innerHTML = sentMessages.map(item => {
+      const timestamp = formatMessageTimestamp(item.sent_at)
+      return `
+        <article class="admin-message admin-sent-message">
+          <div class="admin-message-head">
+            <div class="admin-message-sender">
+              <strong class="admin-message-name">${escapeHtml(item.recipient_name || 'Unknown recipient')}</strong>
+              <span class="admin-message-email">${escapeHtml(item.recipient_email || 'No email provided')}</span>
+            </div>
+            <time class="admin-message-meta" datetime="${escapeHtml(item.sent_at || '')}">${escapeHtml(timestamp)}</time>
+          </div>
+          <div class="admin-message-context">
+            <strong class="admin-message-subject">${escapeHtml(item.subject || 'No subject')}</strong>
+            <span class="admin-message-delivery">Accepted by email service</span>
+          </div>
+          <p class="admin-message-body">${escapeHtml(item.body)}</p>
+        </article>
+      `
+    }).join('') || `<div class="admin-message-empty">
+      <strong>${state.outbox.length ? 'No matching sent messages' : 'No emails sent yet'}</strong>
+      <span>${state.outbox.length ? 'Try a different search.' : 'Emails you send to registered users will be listed here.'}</span>
+    </div>`
+  }
+
+  function renderAdminEmailRecipients() {
+    const search = document.getElementById('adminEmailRecipientSearch').value.trim().toLocaleLowerCase()
+    const recipient = document.getElementById('adminEmailRecipient')
+    const selectedId = recipient.value
+    const eligibleProfiles = state.profiles.filter(profile => {
+      const role = profile.requested_role || profile.role
+      if (profile.role === 'admin' || !['student', 'provider'].includes(role)) return false
+      return [profile.full_name, profile.email, profile.reference_code, role]
+        .some(value => String(value || '').toLocaleLowerCase().includes(search))
+    })
+    recipient.innerHTML = '<option value="">Choose a student or provider</option>' + eligibleProfiles
+      .map(profile => {
+        const role = profile.requested_role || profile.role
+        const displayName = profile.full_name || 'Unnamed user'
+        const reference = profile.reference_code ? ` · ${profile.reference_code}` : ''
+        const email = profile.email ? ` · ${profile.email}` : ''
+        return `<option value="${escapeHtml(profile.id)}">${escapeHtml(displayName)} · ${escapeHtml(role)}${escapeHtml(reference)}${escapeHtml(email)}</option>`
+      }).join('')
+    if (eligibleProfiles.some(profile => profile.id === selectedId)) recipient.value = selectedId
+    document.getElementById('adminRecipientCount').textContent =
+      search
+        ? `${formatCount(eligibleProfiles.length)} matching ${eligibleProfiles.length === 1 ? 'account' : 'accounts'}`
+        : `${formatCount(eligibleProfiles.length)} available ${eligibleProfiles.length === 1 ? 'account' : 'accounts'}`
+  }
+
+  function setupAdminMessageViews() {
+    const tabs = [...document.querySelectorAll('[data-message-tab]')]
+    const activate = (tab, focus = false) => {
+      tabs.forEach(item => {
+        const isActive = item === tab
+        item.classList.toggle('is-active', isActive)
+        item.setAttribute('aria-selected', String(isActive))
+        item.tabIndex = isActive ? 0 : -1
+      })
+      document.querySelectorAll('[data-message-panel]').forEach(panel => {
+        panel.hidden = panel.dataset.messagePanel !== tab.dataset.messageTab
+      })
+      if (focus) tab.focus()
+    }
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => activate(tab))
+      tab.addEventListener('keydown', event => {
+        let nextIndex
+        if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length
+        else if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length
+        else if (event.key === 'Home') nextIndex = 0
+        else if (event.key === 'End') nextIndex = tabs.length - 1
+        else return
+        event.preventDefault()
+        activate(tabs[nextIndex], true)
+      })
+    })
+
+    document.getElementById('adminInboxSearch').addEventListener('input', renderAdminMessages)
+    document.getElementById('adminInboxTopic').addEventListener('change', renderAdminMessages)
+    document.getElementById('adminSentSearch').addEventListener('input', renderAdminMessages)
+    document.getElementById('adminEmailRecipientSearch').addEventListener('input', renderAdminEmailRecipients)
+    const bodyField = document.getElementById('adminEmailBody')
+    bodyField.addEventListener('input', () => {
+      document.getElementById('adminEmailCharacterCount').textContent =
+        `${formatCount(bodyField.value.length)} / 10,000`
+    })
+    activate(tabs[0])
+  }
+
   function render() {
     document.getElementById('statAccom').textContent = state.accommodations.length
     document.getElementById('statMarket').textContent = state.marketplace.length
@@ -654,23 +810,7 @@
       </tr>
     `).join('') || `<tr><td colspan="6" class="admin-recent-empty">${state.events.length ? 'No events match these filters.' : 'No events yet.'}</td></tr>`
 
-    const messages = state.messages.map(item => `
-      <div class="admin-message"><div class="admin-message-head">
-        <span class="admin-message-name">${escapeHtml(item.name)} <span class="muted">(${escapeHtml(item.email)})</span></span>
-        <span class="admin-message-meta">${escapeHtml(item.topic || 'General')} · ${date(item.created_at)}</span>
-      </div><p class="admin-message-body">${escapeHtml(item.message)}</p></div>
-    `).join('') || '<div class="admin-recent-empty">No messages yet.</div>'
-    document.getElementById('messageList').innerHTML = messages
-    document.getElementById('msgCount').textContent = `(${state.messages.length})`
-    document.getElementById('adminOutbox').innerHTML = state.outbox.map(item => `
-      <div class="admin-message">
-        <div class="admin-message-head">
-          <span class="admin-message-name">${escapeHtml(item.recipient_name)} <span class="muted">(${escapeHtml(item.recipient_email)})</span></span>
-          <span class="admin-message-meta">${escapeHtml(item.subject)} · ${date(item.sent_at)}</span>
-        </div>
-        <p class="admin-message-body">${escapeHtml(item.body)}</p>
-      </div>
-    `).join('') || '<div class="admin-recent-empty">No sent messages yet.</div>'
+    renderAdminMessages()
 
     const students = state.profiles.filter(profile => (profile.requested_role || profile.role) === 'student').length
     const providers = state.profiles.filter(profile => (profile.requested_role || profile.role) === 'provider').length
@@ -683,16 +823,7 @@
     document.getElementById('userCountStudents').textContent = students
     document.getElementById('userCountProviders').textContent = providers
     document.getElementById('userCountPending').textContent = pending
-    const emailRecipient = document.getElementById('adminEmailRecipient')
-    emailRecipient.innerHTML = '<option value="">Choose a student or provider</option>' + state.profiles
-      .filter(profile => profile.role !== 'admin' && ['student', 'provider'].includes(profile.requested_role || profile.role))
-      .map(profile => {
-        const role = profile.requested_role || profile.role
-        const displayName = profile.full_name || 'Unnamed user'
-        const reference = profile.reference_code ? ` · ${profile.reference_code}` : ''
-        const access = profile.account_status === 'frozen' ? ' · frozen' : ''
-        return `<option value="${escapeHtml(profile.id)}">${escapeHtml(displayName)} · ${escapeHtml(role)}${escapeHtml(reference)}${access}</option>`
-      }).join('')
+    renderAdminEmailRecipients()
     const userStatusClass = status => ['pending', 'approved', 'rejected', 'active', 'frozen'].includes(status.toLowerCase())
       ? `status-${status.toLowerCase()}`
       : 'status-unknown'
@@ -888,12 +1019,14 @@
         }
         const result = await window.campusAuraEmail.sendAdminMessageEmail({ userId, subject, body })
         status.textContent = result.outboxLogged === false
-          ? 'Email was accepted by Resend, but could not be saved to the outbox. Check the admin outbox migration and function logs.'
-          : 'Email accepted by Resend. Check Resend email logs for its final delivery status.'
+          ? 'Resend accepted the email, but it could not be saved to Sent. Delivery is not confirmed; check the email service logs.'
+          : 'Email accepted for sending. Delivery or bounce status is not available here.'
         form.reset()
+        document.getElementById('adminEmailCharacterCount').textContent = '0 / 10,000'
         try {
           await loadData()
           render()
+          if (result.outboxLogged !== false) document.getElementById('admin-message-tab-sent').click()
         } catch (refreshError) {
           console.error('Email was accepted by Resend, but the admin dashboard could not refresh:', refreshError)
           status.textContent = `Email was accepted by Resend, but the message history could not refresh: ${refreshError.message}`
@@ -1627,7 +1760,8 @@
     setupAnalytics();
     setupActions();
     setupUserList();
-    setupAdminEmailComposer();
+    setupAdminEmailComposer()
+    setupAdminMessageViews()
     try {
       await loadData();
       render();

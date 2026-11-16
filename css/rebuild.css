@@ -6532,3 +6532,382 @@ body.provider-page {
     transition: none;
   }
 }
+
+.admin-page .admin-message-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 16px;
+  padding: 5px;
+  border: 1px solid var(--ca-line);
+  border-radius: 12px;
+  background: #edf1f7;
+}
+
+.admin-page .admin-message-tab {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--ca-ink-soft);
+  font: 700 13px 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: background .16s ease, color .16s ease, box-shadow .16s ease;
+}
+
+.admin-page .admin-message-tab:hover {
+  color: var(--ca-ink);
+}
+
+.admin-page .admin-message-tab.is-active {
+  border-color: var(--ca-line);
+  background: var(--ca-paper);
+  color: var(--ca-ink);
+  box-shadow: 0 2px 6px rgba(18, 32, 51, .07);
+}
+
+.admin-page .admin-message-tab:focus-visible,
+.admin-page .admin-message-filters :is(input, select):focus-visible,
+.admin-page .admin-sent-search input:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, .24);
+  outline-offset: 2px;
+}
+
+.admin-page .admin-message-tab-count {
+  display: inline-grid;
+  min-width: 22px;
+  height: 22px;
+  place-items: center;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #e9eef6;
+  color: var(--ca-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-page .admin-message-tab.is-active .admin-message-tab-count {
+  background: #edf3ff;
+  color: var(--ca-blue);
+}
+
+.admin-page .admin-message-view[hidden] {
+  display: none !important;
+}
+
+.admin-page .admin-message-inbox-card {
+  margin-top: 0;
+  padding: clamp(18px, 2.5vw, 26px);
+}
+
+.admin-page .admin-message-section-head {
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.admin-page .admin-message-section-head h2 {
+  margin: 4px 0 0;
+}
+
+.admin-page .admin-message-total {
+  color: var(--ca-muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-page .admin-message-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 210px);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.admin-page .admin-message-search,
+.admin-page .admin-message-topic-filter {
+  display: block;
+  min-width: 0;
+}
+
+.admin-page .admin-message-filters :is(input, select),
+.admin-page .admin-sent-search input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--ca-line);
+  border-radius: 9px;
+  background: var(--ca-paper);
+  color: var(--ca-ink);
+  font: 400 14px 'DM Sans', sans-serif;
+}
+
+.admin-page .admin-message-filters :is(input, select):focus,
+.admin-page .admin-sent-search input:focus {
+  border-color: var(--ca-blue);
+  outline: 3px solid rgba(37, 99, 235, .12);
+}
+
+.admin-page .admin-message-filters select {
+  cursor: pointer;
+}
+
+.admin-page .admin-message-inbox-card .admin-messages {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-page .admin-message-inbox-card .admin-message {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 16px;
+  border-color: var(--ca-line);
+  border-radius: 12px;
+  background: var(--ca-paper);
+  box-shadow: 0 3px 12px rgba(18, 32, 51, .035);
+}
+
+.admin-page .admin-message-head {
+  align-items: flex-start;
+  margin: 0;
+}
+
+.admin-page .admin-message-sender {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.admin-page .admin-message-name {
+  overflow-wrap: anywhere;
+  color: var(--ca-ink);
+}
+
+.admin-page .admin-message-email,
+.admin-page .admin-message-meta {
+  color: var(--ca-muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.admin-page .admin-message-meta {
+  flex: 0 0 auto;
+  text-align: right;
+}
+
+.admin-page .admin-message-context {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-page .admin-message-topic,
+.admin-page .admin-message-campus,
+.admin-page .admin-message-delivery {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #edf3ff;
+  color: #2859ad;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.admin-page .admin-message-campus {
+  background: #f1f4f8;
+  color: var(--ca-ink-soft);
+}
+
+.admin-page .admin-message-subject {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--ca-ink);
+  font-size: 13px;
+}
+
+.admin-page .admin-message-delivery {
+  background: #edf7f3;
+  color: #13745b;
+  font-weight: 600;
+}
+
+.admin-page .admin-message-body {
+  margin: 0;
+  color: var(--ca-ink-soft);
+  font-size: 13px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.admin-page .admin-message-empty {
+  display: grid;
+  gap: 5px;
+  padding: 30px 18px;
+  border: 1px dashed var(--ca-line);
+  border-radius: 12px;
+  background: #f8fafd;
+  text-align: center;
+}
+
+.admin-page .admin-message-empty strong {
+  color: var(--ca-ink);
+  font: 600 15px 'Space Grotesk', sans-serif;
+}
+
+.admin-page .admin-message-empty span,
+.admin-page .admin-recipient-count,
+.admin-page .admin-email-character-count {
+  color: var(--ca-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.admin-page .admin-email-card {
+  margin-top: 0;
+  padding: clamp(18px, 2.5vw, 26px);
+}
+
+.admin-page .admin-email-card .admin-email-note {
+  margin: -5px 0 18px;
+}
+
+.admin-page .admin-email-form {
+  max-width: 800px;
+}
+
+.admin-page .admin-email-field small {
+  font-weight: 400;
+}
+
+.admin-page .admin-recipient-count,
+.admin-page .admin-email-character-count {
+  text-align: right;
+}
+
+.admin-page .admin-email-actions button:disabled {
+  cursor: wait;
+  opacity: .65;
+}
+
+@media (max-width: 600px) {
+  .admin-page .admin-message-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .admin-page .admin-message-tab {
+    gap: 5px;
+    padding: 8px 7px;
+    font-size: 12px;
+  }
+
+  .admin-page .admin-message-filters {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-page .admin-message-head {
+    flex-direction: column;
+  }
+
+  .admin-page .admin-message-meta {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-page .admin-message-tab {
+    transition: none;
+  }
+}
+
+:root[data-theme="dark"] .admin-page .admin-message-tabs,
+body[data-theme="dark"] .admin-page .admin-message-tabs {
+  border-color: #26364b;
+  background: #0b1220;
+}
+
+:root[data-theme="dark"] .admin-page .admin-message-tab,
+body[data-theme="dark"] .admin-page .admin-message-tab {
+  color: #a7b5c8;
+}
+
+:root[data-theme="dark"] .admin-page .admin-message-tab.is-active,
+body[data-theme="dark"] .admin-page .admin-message-tab.is-active {
+  border-color: #334155;
+  background: #111827;
+  color: #f1f5f9;
+}
+
+:root[data-theme="dark"] .admin-page .admin-message-tab-count,
+body[data-theme="dark"] .admin-page .admin-message-tab-count {
+  background: #26364b;
+  color: #cbd5e1;
+}
+
+:root[data-theme="dark"] .admin-page .admin-message-tab.is-active .admin-message-tab-count,
+body[data-theme="dark"] .admin-page .admin-message-tab.is-active .admin-message-tab-count {
+  background: #1e3a5f;
+  color: #bfdbfe;
+}
+
+:root[data-theme="dark"] .admin-page .admin-message-filters :is(input, select),
+:root[data-theme="dark"] .admin-page .admin-sent-search input,
+body[data-theme="dark"] .admin-page .admin-message-filters :is(input, select),
+body[data-theme="dark"] .admin-page .admin-sent-search input {
+  border-color: #334155;
+  background: #0b1220;
+  color: #e2e8f0;
+}
+
+:root[data-theme="dark"] .admin-page .admin-message-email,
+:root[data-theme="dark"] .admin-page .admin-message-meta,
+:root[data-theme="dark"] .admin-page .admin-message-total,
+body[data-theme="dark"] .admin-page .admin-message-email,
+body[data-theme="dark"] .admin-page .admin-message-meta,
+body[data-theme="dark"] .admin-page .admin-message-total {
+  color: #a7b5c8;
+}
+
+:root[data-theme="dark"] .admin-page .admin-message-campus,
+:root[data-theme="dark"] .admin-page .admin-message-empty,
+body[data-theme="dark"] .admin-page .admin-message-campus,
+body[data-theme="dark"] .admin-page .admin-message-empty {
+  border-color: #26364b;
+  background: #0b1220;
+  color: #cbd5e1;
+}
+
+:root[data-theme="dark"] .admin-page .admin-message-topic,
+:root[data-theme="dark"] .admin-page .admin-message-delivery,
+body[data-theme="dark"] .admin-page .admin-message-topic,
+body[data-theme="dark"] .admin-page .admin-message-delivery {
+  background: #1e3a5f;
+  color: #bfdbfe;
+}
+
+:root[data-theme="dark"] .admin-page .admin-message-delivery,
+body[data-theme="dark"] .admin-page .admin-message-delivery {
+  background: #123b35;
+  color: #a7f3d0;
+}
+
+:root[data-theme="dark"] .admin-page .admin-message-empty strong,
+:root[data-theme="dark"] .admin-page .admin-message-subject,
+body[data-theme="dark"] .admin-page .admin-message-empty strong,
+body[data-theme="dark"] .admin-page .admin-message-subject {
+  color: #e2e8f0;
+}
+
+:root[data-theme="dark"] .admin-page .admin-message-body,
+body[data-theme="dark"] .admin-page .admin-message-body {
+  color: #cbd5e1;
+}
